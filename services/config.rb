@@ -1,6 +1,20 @@
 # NOTE and PLEASE READ
 # changes to resources need to be reflected in the ../config.yaml AUDIT_AWS_EC2_ALERT_LIST property
 #
+coreo_aws_advisor_alert "ec2-inventory" do
+  action :define
+  service :ec2
+  display_name "EC2 Instance Inventory"
+  description "This rule performs an inventory on all EC2 instances in the target AWS account."
+  category "Inventory"
+  suggested_action "None."
+  level "Information"
+  objectives ["instances"]
+  audit_objects ["reservation_set.instances_set.instance_id"]
+  operators ["=~"]
+  alert_when [//]
+end
+
 coreo_aws_advisor_alert "ec2-ip-address-whitelisted" do
   action :define
   service :ec2
