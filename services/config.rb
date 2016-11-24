@@ -231,18 +231,91 @@ coreo_aws_advisor_ec2 "advise-ec2" do
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_uni_util_notify "advise-ec2" do
-  action :notify
+coreo_uni_util_notify "advise-ec2-json" do
+  action :${AUDIT_AWS_EC2_FULL_JSON_REPORT}
   type 'email'
   allow_empty ${AUDIT_AWS_EC2_ALLOW_EMPTY}
-  send_on "${AUDIT_AWS_EC2_SEND_ON}"
-  payload '{"stack name":"PLAN::stack_name",
-  "instance name":"PLAN::name",
+  send_on 'always'
+  payload '{"composite name":"PLAN::stack_name",
+  "plan name":"PLAN::name",
   "number_of_checks":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks",
   "number_of_violations":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_violations",
   "number_violations_ignored":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations",
   "violations": COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report }'
   payload_type "json"
+  endpoint ({
+      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
+  })
+end
+
+## Create Notifiers
+coreo_uni_util_jsrunner "tags-to-notifiers-array" do
+  action :run
+  data_type "json"
+  packages([
+               {
+                   :name => "cloudcoreo-jsrunner-commons",
+                   :version => "1.0.4"
+               }       ])
+  json_input '{ "composite name":"PLAN::stack_name",
+                "plan name":"PLAN::name",
+                "number_of_checks":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks",
+                "number_of_violations":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_violations",
+                "number_violations_ignored":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations",
+                "violations": COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
+  function <<-EOH
+const CloudCoreoJSRunner = require('cloudcoreo-jsrunner-commons');
+const AuditEC2 = new CloudCoreoJSRunner(json_input, false, "${AUDIT_AWS_EC2_ALERT_NO_OWNER_RECIPIENT}", "${AUDIT_AWS_EC2_OWNER_TAG}");
+const notifiers = AuditEC2.getNotifiers();
+callback(notifiers);
+  EOH
+end
+
+
+## Create rollup String
+coreo_uni_util_jsrunner "tags-rollup" do
+  action :run
+  data_type "text"
+  json_input 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
+  function <<-EOH
+var rollup_string = "";
+for (var entry=0; entry < json_input.length; entry++) {
+  console.log(json_input[entry]);
+  if (json_input[entry]['endpoint']['to'].length) {
+    console.log('got an email to rollup');
+    rollup_string = rollup_string + "recipient: " + json_input[entry]['endpoint']['to'] + " - " + "nViolations: " + json_input[entry]['num_violations'] + "\\n";
+  }
+}
+callback(rollup_string);
+  EOH
+end
+
+
+## Send Notifiers
+coreo_uni_util_notify "advise-ec2-to-tag-values" do
+  action :${AUDIT_AWS_EC2_OWNERS_HTML_REPORT}
+  notifiers 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
+end
+
+
+
+
+coreo_uni_util_notify "advise-ec2-rollup" do
+  action :${AUDIT_AWS_EC2_ROLLUP_REPORT}
+  type 'email'
+  allow_empty true
+  send_on 'always'
+  payload '
+composite name: PLAN::stack_name
+plan name: PLAN::name
+number_of_checks: COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks
+number_of_violations: COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_violations
+number_violations_ignored: COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations
+
+rollup report:
+COMPOSITE::coreo_uni_util_jsrunner.tags-rollup.return
+  '
+  payload_type 'text'
   endpoint ({
       :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
   })
