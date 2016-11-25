@@ -231,6 +231,11 @@ coreo_aws_advisor_ec2 "advise-ec2" do
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
+=begin
+  START EC2 methods
+  JSON send method
+  HTML send method
+=end
 coreo_uni_util_notify "advise-ec2-json" do
   action :${AUDIT_AWS_EC2_FULL_JSON_REPORT}
   type 'email'
@@ -248,14 +253,13 @@ coreo_uni_util_notify "advise-ec2-json" do
   })
 end
 
-## Create Notifiers
 coreo_uni_util_jsrunner "tags-to-notifiers-array" do
   action :run
   data_type "json"
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.0.4"
+                   :version => "1.0.5"
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
@@ -271,8 +275,6 @@ callback(notifiers);
   EOH
 end
 
-
-## Create rollup String
 coreo_uni_util_jsrunner "tags-rollup" do
   action :run
   data_type "text"
@@ -290,15 +292,10 @@ callback(rollup_string);
   EOH
 end
 
-
-## Send Notifiers
 coreo_uni_util_notify "advise-ec2-to-tag-values" do
   action :${AUDIT_AWS_EC2_OWNERS_HTML_REPORT}
   notifiers 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
 end
-
-
-
 
 coreo_uni_util_notify "advise-ec2-rollup" do
   action :${AUDIT_AWS_EC2_ROLLUP_REPORT}
@@ -320,3 +317,4 @@ COMPOSITE::coreo_uni_util_jsrunner.tags-rollup.return
       :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
   })
 end
+# END EC2
