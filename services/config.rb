@@ -259,7 +259,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.0.5"
+                   :version => "1.0.9"
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
@@ -269,7 +269,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
                 "violations": COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
   function <<-EOH
 const CloudCoreoJSRunner = require('cloudcoreo-jsrunner-commons');
-const AuditEC2 = new CloudCoreoJSRunner(json_input, false, "${AUDIT_AWS_EC2_ALERT_NO_OWNER_RECIPIENT}", "${AUDIT_AWS_EC2_OWNER_TAG}");
+const AuditEC2 = new CloudCoreoJSRunner(json_input, false, "${AUDIT_AWS_EC2_ALERT_NO_OWNER_RECIPIENT}", "${AUDIT_AWS_EC2_OWNER_TAG}", 'ec2');
 const notifiers = AuditEC2.getNotifiers();
 callback(notifiers);
   EOH
