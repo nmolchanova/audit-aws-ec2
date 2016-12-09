@@ -77,5 +77,5 @@ This repo is designed to work with CloudCoreo. It will monitor EC2 against best 
 
 
 ## Icon
-
+![icon](https://raw.githubusercontent.com/CloudCoreo/audit-aws-ec2/master/images/icon.png "icon")
 
