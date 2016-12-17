@@ -237,7 +237,7 @@ end
   HTML send method
 =end
 coreo_uni_util_notify "advise-ec2-json" do
-  action :${AUDIT_AWS_EC2_FULL_JSON_REPORT}
+  action :nothing
   type 'email'
   allow_empty ${AUDIT_AWS_EC2_ALLOW_EMPTY}
   send_on '${AUDIT_AWS_EC2_SEND_ON}'
@@ -271,7 +271,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
   
   
 const JSON = json_input;
-const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT_2}";
+const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT}";
 const OWNER_TAG = "${AUDIT_AWS_EC2_OWNER_TAG}";
 const AUDIT_NAME = 'ec2';
 const IS_KILL_SCRIPTS_SHOW = false;
@@ -312,7 +312,7 @@ callback(rollup_string);
 end
 
 coreo_uni_util_notify "advise-ec2-to-tag-values" do
-  action :${AUDIT_AWS_EC2_OWNERS_HTML_REPORT}
+  action :${AUDIT_AWS_EC2_HTML_REPORT}
   notifiers 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
 end
 
@@ -333,7 +333,7 @@ COMPOSITE::coreo_uni_util_jsrunner.tags-rollup.return
   '
   payload_type 'text'
   endpoint ({
-      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT_2}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
+      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
   })
 end
 # END EC2
