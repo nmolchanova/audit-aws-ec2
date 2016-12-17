@@ -324,7 +324,7 @@ if( !ec2_alerts_list['ec2-security-groups-list'] ||
     !ec2_alerts_list['ec2-instances-active-security-groups-list'] ||
     !ec2_alerts_list['elb-load-balancers-active-security-groups-list'] ) {
   coreoExport('report', json_input.ec2_report);
-  callback(json_input.ec2_report);
+  callback(JSON.stringify(json_input.ec2_report));
   return;
 }
 
@@ -375,7 +375,7 @@ Object.keys(json_input.ec2_report).forEach((key) => {
 });
 console.log(json_input.ec2_report);
 coreoExport('report', json_input.ec2_report);
-callback(json_input.ec2_report);
+callback(JSON.stringify(json_input.ec2_report));
   EOH
 end
 
