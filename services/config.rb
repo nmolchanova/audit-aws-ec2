@@ -308,13 +308,21 @@ coreo_uni_util_jsrunner "security-groups" do
       "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
       "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report,
       "ec2_alerts_list":"${AUDIT_AWS_EC2_ALERT_LIST}",
-      "elb_alerts_list":"${AUDIT_AWS_ELB_ALERT_LIST}"
+      "elb_alerts_list":"${AUDIT_AWS_ELB_ALERT_LIST}",
+      "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.advise-ec2.number_checks",
+      "number_of_violations":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_violations",
+      "number_violations_ignored":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations"
   }'
   function <<-EOH
+
+coreoExport('number_of_checks', json_input.number_of_checks);
+coreoExport('number_of_violations', json_input.number_of_violations);
+coreoExport('number_violations_ignored', json_input.number_violations_ignored);
 
 if( !json_input.ec2_alerts_list['ec2-security-groups-list'] ||
     !json_input.ec2_alerts_list['ec2-instances-active-security-groups-list'] ||
     !json_input.ec2_alerts_list['elb-load-balancers-active-security-groups-list'] ) {
+  coreoExport('report', json_input.ec2_report);
   callback(json_input.ec2_report);
   return;
 }
@@ -364,7 +372,7 @@ Object.keys(json_input.ec2_report).forEach((key) => {
         json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
     });
 });
-
+coreoExport('report', json_input.ec2_report);
 callback(json_input.ec2_report);
   EOH
 end
@@ -379,10 +387,10 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
-                "number_of_checks":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks",
-                "number_of_violations":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_violations",
-                "number_violations_ignored":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations",
-                "violations": COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
+                "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_checks",
+                "number_of_violations":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_violations",
+                "number_violations_ignored":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_ignored_violations",
+                "violations": COMPOSITE::coreo_uni_util_jsrunner.security-groups.report}'
   function <<-EOH
   
   
