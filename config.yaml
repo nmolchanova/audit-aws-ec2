@@ -25,7 +25,7 @@ variables:
     default:
   AUDIT_AWS_EC2_ALLOW_EMPTY:
     description: "Would you like to receive empty reports? Options - true / false. Default is false."
-    required: false
+    required: true
     type: string
     default: false
   AUDIT_AWS_EC2_SEND_ON:
