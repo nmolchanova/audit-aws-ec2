@@ -373,6 +373,7 @@ Object.keys(json_input.ec2_report).forEach((key) => {
         json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
     });
 });
+console.log(json_input.ec2_report);
 coreoExport('report', json_input.ec2_report);
 callback(json_input.ec2_report);
   EOH
