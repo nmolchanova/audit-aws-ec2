@@ -49,7 +49,7 @@ variables:
     required: true
     type: string
     default: "nothing"
-  AUDIT_AWS_EC2_OWNERS_HTML_REPORT:
+  AUDIT_AWS_EC2_HTML_REPORT:
       description: notify or nothing
       required: true
       type: string

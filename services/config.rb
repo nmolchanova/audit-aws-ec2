@@ -353,7 +353,7 @@ callback(rollup_string);
 end
 
 coreo_uni_util_notify "advise-ec2-to-tag-values" do
-  action :${AUDIT_AWS_EC2_OWNERS_HTML_REPORT}
+  action :${AUDIT_AWS_EC2_HTML_REPORT}
   notifiers 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
 end
 
