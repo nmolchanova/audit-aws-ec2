@@ -272,7 +272,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
   
   
 const JSON = json_input;
-const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT}";
+const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT_2}";
 const OWNER_TAG = "${AUDIT_AWS_EC2_OWNER_TAG}";
 const ALLOW_EMPTY = "${AUDIT_AWS_EC2_ALLOW_EMPTY}";
 const SEND_ON = "${AUDIT_AWS_EC2_SEND_ON}";
@@ -346,7 +346,7 @@ callback(rollup_string);
 end
 
 coreo_uni_util_notify "advise-ec2-to-tag-values" do
-  action :${AUDIT_AWS_EC2_HTML_REPORT}
+  action :${AUDIT_AWS_EC2_OWNERS_HTML_REPORT}
   notifiers 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
 end
 
