@@ -334,6 +334,7 @@ coreo_uni_util_jsrunner "tags-rollup" do
   json_input 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
   function <<-EOH
 var rollup_string = "";
+let rollup = '';
 let emailText = '';
 let numberOfViolations = 0;
 for (var entry=0; entry < json_input.length; entry++) {
