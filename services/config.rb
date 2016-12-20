@@ -334,13 +334,20 @@ coreo_uni_util_jsrunner "tags-rollup" do
   json_input 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
   function <<-EOH
 var rollup_string = "";
+let emailText = '';
+let numberOfViolations = 0;
 for (var entry=0; entry < json_input.length; entry++) {
-  console.log(json_input[entry]);
-  if (json_input[entry]['endpoint']['to'].length) {
-    console.log('got an email to rollup');
-    rollup_string = rollup_string + "recipient: " + json_input[entry]['endpoint']['to'] + " - " + "nViolations: " + json_input[entry]['num_violations'] + "\\n";
-  }
+    if (json_input[entry]['endpoint']['to'].length) {
+        numberOfViolations += parseInt(json_input[entry]['num_violations']);
+        emailText += "recipient: " + json_input[entry]['endpoint']['to'] + " - " + "nViolations: " + json_input[entry]['num_violations'] + "\\n";
+    }
 }
+
+rollup += 'number of Violations: ' + numberOfViolations + "\\n";
+rollup += 'Rollup' + "\\n";
+rollup += emailText;
+
+rollup_string = rollup;
 callback(rollup_string);
   EOH
 end
