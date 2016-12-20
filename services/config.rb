@@ -278,7 +278,7 @@ const ALLOW_EMPTY = "${AUDIT_AWS_EC2_ALLOW_EMPTY}";
 const SEND_ON = "${AUDIT_AWS_EC2_SEND_ON}";
 const AUDIT_NAME = 'ec2';
 
-const IS_KILL_SCRIPTS_SHOW = false;
+const ARE_KILL_SCRIPTS_SHOWN = false;
 const EC2_LOGIC = ''; // you can choose 'and' or 'or';
 const EXPECTED_TAGS = ['example_2', 'example_1'];
 
