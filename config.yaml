@@ -58,10 +58,10 @@ variables:
     type: string
     default: "nothing"
   AUDIT_AWS_EC2_HTML_REPORT:
-    description: notify or nothing
-    required: true
-    type: string
-    default: "notify"
+      description: notify or nothing
+      required: true
+      type: string
+      default: "notify"
   AUDIT_AWS_EC2_OWNER_TAG:
     description: "Enter an AWS tag whose value is an email address of owner of the ELB object. (Optional)"
     required: false
