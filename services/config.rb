@@ -374,8 +374,8 @@ Object.keys(json_input.ec2_report).forEach((key) => {
     });
 });
 console.log(json_input.ec2_report);
-coreoExport('report', json_input.ec2_report);
-callback(JSON.stringify(json_input.ec2_report));
+coreoExport('report', JSON.stringify(json_input.ec2_report));
+callback(json_input.ec2_report);
   EOH
 end
 
