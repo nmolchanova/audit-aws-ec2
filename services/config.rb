@@ -316,6 +316,9 @@ coreo_uni_util_jsrunner "security-groups" do
 const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
 const elb_alerts_list = ${AUDIT_AWS_ELB_ALERT_LIST};
 
+console.log(ec2_alerts_list);
+console.log(elb_alerts_list);
+
 coreoExport('number_of_checks', json_input.number_of_checks);
 coreoExport('number_of_violations', json_input.number_of_violations);
 coreoExport('number_violations_ignored', json_input.number_violations_ignored);
