@@ -353,28 +353,25 @@ Object.keys(json_input.ec2_report).forEach((key) => {
         activeSecurityGroups.push(obj.object.group_id);
     });
 });
-let unusedCount = 0;
 Object.keys(json_input.ec2_report).forEach((key) => {
     const tags = json_input.ec2_report[key].tags;
     const violations = json_input.ec2_report[key].violations["ec2-security-groups-list"];
     if (!violations) return;
-    const currentSecGroup = violations.violating_object[0].object;
-    console.log(currentSecGroup);
-    if (groupIsActive(currentSecGroup.group_id)) return;
-    const securityGroupIsNotUsedAlert = {
-        'display_name': 'EC2 security group is not used',
-        'description': 'Security group is not used anywhere',
-        'category': 'Audit',
-        'suggested_action': 'Remove this security group',
-        'level': 'Warning',
-        'region': violations.region
-    };
-    const violationKey = 'ec2-not-used-security-groups'
-    json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
-    ++unusedCount;
+    violations.violating_object.forEach((item) => {
+        const currentSecGroup = item.object;
+        if (groupIsActive(currentSecGroup.group_id)) return;
+        const securityGroupIsNotUsedAlert = {
+            'display_name': 'EC2 security group is not used',
+            'description': 'Security group is not used anywhere',
+            'category': 'Audit',
+            'suggested_action': 'Remove this security group',
+            'level': 'Warning',
+            'region': violations.region
+        };
+        const violationKey = 'ec2-not-used-security-groups'
+        json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
+    });
 });
-console.log('Unuesd count ' +unusedCount);
-
 coreoExport('report', json_input.ec2_report);
 callback(json_input.ec2_report);
   EOH
