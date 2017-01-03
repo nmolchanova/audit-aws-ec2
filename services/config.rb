@@ -324,7 +324,9 @@ if( !ec2_alerts_list['ec2-security-groups-list'] ||
     !ec2_alerts_list['ec2-instances-active-security-groups-list'] ||
     !ec2_alerts_list['elb-load-balancers-active-security-groups-list'] ) {
   coreoExport('report', json_input.ec2_report);
-  callback(json_input.ec2_report);
+  callback(!ec2_alerts_list['ec2-security-groups-list'] +' ' +
+    !ec2_alerts_list['ec2-instances-active-security-groups-list'] +" " +
+    !ec2_alerts_list['elb-load-balancers-active-security-groups-list']);
   return;
 }
 
@@ -334,6 +336,7 @@ const groupIsActive = (groupId) => {
     for (let activeGroupId of activeSecurityGroups) {
         if (activeGroupId === groupId) return true;
     }
+    console.log(groupId);
     return false;
 };
 
