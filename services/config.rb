@@ -323,8 +323,8 @@ coreoExport('number_violations_ignored', json_input.number_violations_ignored);
 if( !ec2_alerts_list['ec2-security-groups-list'] ||
     !ec2_alerts_list['ec2-instances-active-security-groups-list'] ||
     !ec2_alerts_list['elb-load-balancers-active-security-groups-list'] ) {
-  coreoExport('report', JSON.stringify(json_input.ec2_report));
-  callback(JSON.stringify(json_input.ec2_report));
+  coreoExport('report', json_input.ec2_report);
+  callback(json_input.ec2_report);
   return;
 }
 
@@ -371,8 +371,8 @@ Object.keys(json_input.ec2_report).forEach((key) => {
     const violationKey = 'ec2-not-used-security-groups'
     json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
 });
-  coreoExport('report', JSON.stringify(json_input.ec2_report));
-  callback(JSON.stringify(json_input.ec2_report));
+coreoExport('report', json_input.ec2_report);
+callback(json_input.ec2_report);
   EOH
 end
 
@@ -389,9 +389,8 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
                 "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_checks",
                 "number_of_violations":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_violations",
                 "number_violations_ignored":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_ignored_violations",
-                "violations": "COMPOSITE::coreo_uni_util_jsrunner.security-groups.report"}'
+                "violations": COMPOSITE::coreo_uni_util_jsrunner.security-groups.report}'
   function <<-EOH
-json_input.violations = JSON.parse(json_input.violations);
 const JSON = json_input;
 const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT}";
 const OWNER_TAG = "${AUDIT_AWS_EC2_OWNER_TAG}";
