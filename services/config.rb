@@ -358,20 +358,18 @@ Object.keys(json_input.ec2_report).forEach((key) => {
     const tags = json_input.ec2_report[key].tags;
     const violations = json_input.ec2_report[key].violations["ec2-security-groups-list"];
     if (!violations) return;
-    violations.violating_object.forEach((item) => {
-        const currentSecGroup = item.object;
-        if (groupIsActive(currentSecGroup.group_id)) return;
-        const securityGroupIsNotUsedAlert = {
-            'display_name': 'EC2 security group is not used',
-            'description': 'Security group is not used anywhere',
-            'category': 'Audit',
-            'suggested_action': 'Remove this security group',
-            'level': 'Warning',
-            'region': violations.region
-        };
-        const violationKey = 'ec2-not-used-security-groups'
-        json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
-    });
+    const currentSecGroup = violations.violating_object[0].object;
+    if (groupIsActive(currentSecGroup.group_id)) return;
+    const securityGroupIsNotUsedAlert = {
+        'display_name': 'EC2 security group is not used',
+        'description': 'Security group is not used anywhere',
+        'category': 'Audit',
+        'suggested_action': 'Remove this security group',
+        'level': 'Warning',
+        'region': violations.region
+    };
+    const violationKey = 'ec2-not-used-security-groups'
+    json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
 });
 coreoExport('report', json_input.ec2_report);
 callback(json_input.ec2_report);
@@ -393,7 +391,6 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
                 "number_violations_ignored":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_ignored_violations",
                 "violations": "COMPOSITE::coreo_uni_util_jsrunner.security-groups.report"}'
   function <<-EOH
-console.log('Violations: gcfgvgvghv');
 console.log(json_input.violations);
 const JSON = json_input;
 const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT}";
