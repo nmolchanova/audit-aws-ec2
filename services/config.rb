@@ -316,20 +316,16 @@ coreo_uni_util_jsrunner "security-groups" do
 const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
 const elb_alerts_list = ${AUDIT_AWS_ELB_ALERT_LIST};
 
-console.log(ec2_alerts_list);
-console.log(elb_alerts_list);
-
 coreoExport('number_of_checks', json_input.number_of_checks);
 coreoExport('number_of_violations', json_input.number_of_violations);
 coreoExport('number_violations_ignored', json_input.number_violations_ignored);
 
-if( !ec2_alerts_list['ec2-security-groups-list'] ||
-    !ec2_alerts_list['ec2-instances-active-security-groups-list'] ||
-    !ec2_alerts_list['elb-load-balancers-active-security-groups-list'] ) {
+if( !ec2_alerts_list.includes('ec2-security-groups-list') ||
+    !ec2_alerts_list.includes('ec2-instances-active-security-groups-list') ||
+    !elb_alerts_list.includes('elb-load-balancers-active-security-groups-list') ) {
+  console.log("Unable to count unused security groups. Required definitions were disabled.")
   coreoExport('report', json_input.ec2_report);
-  callback(!ec2_alerts_list['ec2-security-groups-list'] +' ' +
-    !ec2_alerts_list['ec2-instances-active-security-groups-list'] +" " +
-    !ec2_alerts_list['elb-load-balancers-active-security-groups-list']);
+  callback(json_input.ec2_report);
   return;
 }
 
@@ -363,20 +359,19 @@ Object.keys(json_input.ec2_report).forEach((key) => {
     const tags = json_input.ec2_report[key].tags;
     const violations = json_input.ec2_report[key].violations["ec2-security-groups-list"];
     if (!violations) return;
-    violations.violating_object.forEach((item) => {
-        const currentSecGroup = item.object;
-        if (groupIsActive(currentSecGroup.group_id)) return;
-        const securityGroupIsNotUsedAlert = {
-            'display_name': 'EC2 security group is not used',
-            'description': 'Security group is not used anywhere',
-            'category': 'Audit',
-            'suggested_action': 'Remove this security group',
-            'level': 'Warning',
-            'region': violations.region
-        };
-        const violationKey = 'ec2-not-used-security-groups'
-        json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
-    });
+
+    const currentSecGroup = violations.violating_object[0].object;
+    if (groupIsActive(currentSecGroup.group_id)) return;
+    const securityGroupIsNotUsedAlert = {
+        'display_name': 'EC2 security group is not used',
+        'description': 'Security group is not used anywhere',
+        'category': 'Audit',
+        'suggested_action': 'Remove this security group',
+        'level': 'Warning',
+        'region': violations.region
+    };
+    const violationKey = 'ec2-not-used-security-groups'
+    json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
 });
 coreoExport('report', json_input.ec2_report);
 callback(json_input.ec2_report);
