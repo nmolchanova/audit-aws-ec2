@@ -324,7 +324,7 @@ if( !ec2_alerts_list['ec2-security-groups-list'] ||
     !ec2_alerts_list['ec2-instances-active-security-groups-list'] ||
     !ec2_alerts_list['elb-load-balancers-active-security-groups-list'] ) {
   coreoExport('report', json_input.ec2_report);
-  callback(JSON.stringify(json_input.ec2_report));
+  callback(json_input.ec2_report);
   return;
 }
 
@@ -389,7 +389,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
                 "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_checks",
                 "number_of_violations":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_violations",
                 "number_violations_ignored":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_ignored_violations",
-                "violations": "COMPOSITE::coreo_uni_util_jsrunner.security-groups.report"}'
+                "violations": COMPOSITE::coreo_uni_util_jsrunner.security-groups.report}'
   function <<-EOH
 console.log(json_input.violations);
 const JSON = json_input;
