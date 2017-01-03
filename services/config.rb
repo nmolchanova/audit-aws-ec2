@@ -373,7 +373,6 @@ Object.keys(json_input.ec2_report).forEach((key) => {
         json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
     });
 });
-console.log(json_input.ec2_report);
 coreoExport('report', json_input.ec2_report);
 callback(json_input.ec2_report);
   EOH
@@ -392,7 +391,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
                 "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_checks",
                 "number_of_violations":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_violations",
                 "number_violations_ignored":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_ignored_violations",
-                "violations": COMPOSITE::coreo_uni_util_jsrunner.security-groups.report}'
+                "violations": "COMPOSITE::coreo_uni_util_jsrunner.security-groups.report"}'
   function <<-EOH
 console.log('Violations: gcfgvgvghv');
 console.log(json_input.violations);
