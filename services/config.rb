@@ -389,7 +389,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
                 "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_checks",
                 "number_of_violations":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_violations",
                 "number_violations_ignored":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_ignored_violations",
-                "violations": COMPOSITE::coreo_uni_util_jsrunner.security-groups.report}'
+                "violations": COMPOSITE::coreo_uni_util_jsrunner.security-groups.return}'
   function <<-EOH
 const JSON = json_input;
 const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT}";
