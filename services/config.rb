@@ -226,9 +226,57 @@ coreo_aws_advisor_alert "ec2-ports-range" do
   alert_when ["object[:to_port]"]
 end
 
+coreo_aws_advisor_alert "ec2-security-groups-list" do
+  action :define
+  service :ec2
+  display_name "Security Groups Inventory"
+  description "This rule lists all security groups."
+  category "Inventory"
+  suggested_action "None."
+  level "Informational"
+  objectives ["security_groups"]
+  audit_objects ["security_group_info.group_name"]
+  operators ["=~"]
+  alert_when [//]
+end
+
+coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
+  action :define
+  service :ec2
+  display_name "EC2 Instances Active Security Groups"
+  description "This rule gets all active security groups for instances"
+  category "Inventory"
+  suggested_action "None."
+  level "Informational"
+  objectives ["instances"]
+  audit_objects ["reservation_set.instances_set.group_set.group_id"]
+  operators ["=~"]
+  alert_when [//]
+end
+
 coreo_aws_advisor_ec2 "advise-ec2" do
   action :advise
   alerts ${AUDIT_AWS_EC2_ALERT_LIST}
+  regions ${AUDIT_AWS_EC2_REGIONS}
+end
+
+coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
+  action :define
+  service :elb
+  display_name "Elb load balancers active security groups list"
+  description "This rule gets all active security groups for load balancers"
+  category "Inventory"
+  suggested_action "None."
+  level "Informational"
+  objectives ["load_balancers"]
+  audit_objects ["load_balancer_descriptions.security_groups"]
+  operators ["=~"]
+  alert_when [//]
+end
+
+coreo_aws_advisor_elb "advise-elb" do
+  action :advise
+  alerts ${AUDIT_AWS_ELB_ALERT_LIST}
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
@@ -254,6 +302,82 @@ coreo_uni_util_notify "advise-ec2-json" do
   })
 end
 
+coreo_uni_util_jsrunner "security-groups" do
+  action :run
+  json_input '{
+      "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
+      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report,
+      "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.advise-ec2.number_checks",
+      "number_of_violations":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_violations",
+      "number_violations_ignored":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations"
+  }'
+  function <<-EOH
+
+const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
+const elb_alerts_list = ${AUDIT_AWS_ELB_ALERT_LIST};
+
+coreoExport('number_of_checks', json_input.number_of_checks);
+coreoExport('number_of_violations', json_input.number_of_violations);
+coreoExport('number_violations_ignored', json_input.number_violations_ignored);
+
+if( !ec2_alerts_list.includes('ec2-security-groups-list') ||
+    !ec2_alerts_list.includes('ec2-instances-active-security-groups-list') ||
+    !elb_alerts_list.includes('elb-load-balancers-active-security-groups-list') ) {
+  console.log("Unable to count unused security groups. Required definitions were disabled.")
+  coreoExport('report', json_input.ec2_report);
+  callback(json_input.ec2_report);
+  return;
+}
+
+const activeSecurityGroups = [];
+
+const groupIsActive = (groupId) => {
+    for (let activeGroupId of activeSecurityGroups) {
+        if (activeGroupId === groupId) return true;
+    }
+    console.log(groupId);
+    return false;
+};
+
+Object.keys(json_input.elb_report).forEach((key) => {
+    const violation = json_input.elb_report[key].violations['elb-load-balancers-active-security-groups-list'];
+    if (!violation) return;
+    violation.violating_object.forEach((obj) => {
+        obj.object.forEach((secGroup) => {
+            activeSecurityGroups.push(secGroup);
+        })
+    });
+});
+Object.keys(json_input.ec2_report).forEach((key) => {
+    const violation = json_input.ec2_report[key].violations['ec2-instances-active-security-groups-list'];
+    if (!violation) return;
+    violation.violating_object.forEach((obj) => {
+        activeSecurityGroups.push(obj.object.group_id);
+    });
+});
+Object.keys(json_input.ec2_report).forEach((key) => {
+    const tags = json_input.ec2_report[key].tags;
+    const violations = json_input.ec2_report[key].violations["ec2-security-groups-list"];
+    if (!violations) return;
+
+    const currentSecGroup = violations.violating_object[0].object;
+    if (groupIsActive(currentSecGroup.group_id)) return;
+    const securityGroupIsNotUsedAlert = {
+        'display_name': 'EC2 security group is not used',
+        'description': 'Security group is not used anywhere',
+        'category': 'Audit',
+        'suggested_action': 'Remove this security group',
+        'level': 'Warning',
+        'region': violations.region
+    };
+    const violationKey = 'ec2-not-used-security-groups'
+    json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
+});
+coreoExport('report', json_input.ec2_report);
+callback(json_input.ec2_report);
+  EOH
+end
+
 coreo_uni_util_jsrunner "tags-to-notifiers-array" do
   action :run
   data_type "json"
@@ -264,12 +388,11 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
-                "number_of_checks":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks",
-                "number_of_violations":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_violations",
-                "number_violations_ignored":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations",
-                "violations": COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
+                "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_checks",
+                "number_of_violations":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_violations",
+                "number_violations_ignored":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_ignored_violations",
+                "violations": COMPOSITE::coreo_uni_util_jsrunner.security-groups.return}'
   function <<-EOH
-   
 const JSON = json_input;
 const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT}";
 const OWNER_TAG = "${AUDIT_AWS_EC2_OWNER_TAG}";
