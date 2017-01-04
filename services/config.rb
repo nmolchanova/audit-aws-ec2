@@ -306,25 +306,17 @@ coreo_uni_util_jsrunner "security-groups" do
   action :run
   json_input '{
       "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report,
-      "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.advise-ec2.number_checks",
-      "number_of_violations":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_violations",
-      "number_violations_ignored":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations"
+      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report
   }'
   function <<-EOH
 
 const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
 const elb_alerts_list = ${AUDIT_AWS_ELB_ALERT_LIST};
 
-coreoExport('number_of_checks', json_input.number_of_checks);
-coreoExport('number_of_violations', json_input.number_of_violations);
-coreoExport('number_violations_ignored', json_input.number_violations_ignored);
-
 if( !ec2_alerts_list.includes('ec2-security-groups-list') ||
     !ec2_alerts_list.includes('ec2-instances-active-security-groups-list') ||
     !elb_alerts_list.includes('elb-load-balancers-active-security-groups-list') ) {
   console.log("Unable to count unused security groups. Required definitions were disabled.")
-  coreoExport('report', json_input.ec2_report);
   callback(json_input.ec2_report);
   return;
 }
@@ -373,10 +365,17 @@ Object.keys(json_input.ec2_report).forEach((key) => {
     const violationKey = 'ec2-not-used-security-groups'
     json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
 });
-coreoExport('report', json_input.ec2_report);
 callback(json_input.ec2_report);
   EOH
 end
+
+coreo_uni_util_variables "update-advisor-output" do
+  action :set
+  variables([
+                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups.return'}
+            ])
+end
+
 
 coreo_uni_util_jsrunner "tags-to-notifiers-array" do
   action :run
@@ -388,9 +387,9 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
-                "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_checks",
-                "number_of_violations":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_violations",
-                "number_violations_ignored":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_ignored_violations",
+                "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.advise-ec2.number_checks",
+                "number_of_violations":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_violations",
+                "number_violations_ignored":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations",
                 "violations": COMPOSITE::coreo_uni_util_jsrunner.security-groups.return}'
   function <<-EOH
 const JSON = json_input;
