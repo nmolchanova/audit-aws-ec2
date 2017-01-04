@@ -4,6 +4,7 @@
 coreo_aws_advisor_alert "ec2-inventory" do
   action :define
   service :ec2
+  link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
   include_violations_in_count false
   display_name "EC2 Instance Inventory"
   description "This rule performs an inventory on all EC2 instances in the target AWS account."
