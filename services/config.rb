@@ -10,7 +10,7 @@ coreo_aws_advisor_alert "ec2-inventory" do
   description "This rule performs an inventory on all EC2 instances in the target AWS account."
   category "Inventory"
   suggested_action "None."
-  level "Information"
+  level "Informational"
   objectives ["instances"]
   audit_objects ["reservation_set.instances_set.instance_id"]
   operators ["=~"]
