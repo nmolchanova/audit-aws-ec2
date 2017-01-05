@@ -227,14 +227,28 @@ coreo_aws_advisor_alert "ec2-ports-range" do
   alert_when ["object[:to_port]"]
 end
 
+coreo_aws_advisor_alert "ec2-not-used-security-groups" do
+  action :nothing
+  service :ec2
+  category "Inventory"
+  suggested_action "The metadata for this definition is defined in the jsrunner below. Do not put metadata here."
+  level "Informational"
+  objectives [""]
+  audit_objects [""]
+  operators [""]
+  alert_when [true]
+  id_map ""
+end
+
 coreo_aws_advisor_alert "ec2-security-groups-list" do
   action :define
   service :ec2
-  display_name "Security Groups Inventory"
-  description "This rule lists all security groups."
-  category "Inventory"
-  suggested_action "None."
-  level "Informational"
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
   objectives ["security_groups"]
   audit_objects ["security_group_info.group_name"]
   operators ["=~"]
@@ -244,11 +258,12 @@ end
 coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
   action :define
   service :ec2
-  display_name "EC2 Instances Active Security Groups"
-  description "This rule gets all active security groups for instances"
-  category "Inventory"
-  suggested_action "None."
-  level "Informational"
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
   objectives ["instances"]
   audit_objects ["reservation_set.instances_set.group_set.group_id"]
   operators ["=~"]
@@ -264,11 +279,12 @@ end
 coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
   action :define
   service :elb
-  display_name "Elb load balancers active security groups list"
-  description "This rule gets all active security groups for load balancers"
-  category "Inventory"
-  suggested_action "None."
-  level "Informational"
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
   objectives ["load_balancers"]
   audit_objects ["load_balancer_descriptions.security_groups"]
   operators ["=~"]
