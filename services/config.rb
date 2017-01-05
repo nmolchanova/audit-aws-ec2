@@ -389,9 +389,6 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
-                "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_checks",
-                "number_of_violations":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_violations",
-                "number_violations_ignored":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_ignored_violations",
                 "violations": COMPOSITE::coreo_uni_util_jsrunner.security-groups.return}'
   function <<-EOH
 const JSON = json_input;
@@ -489,8 +486,6 @@ coreo_uni_util_notify "advise-ec2-rollup" do
   payload '
 composite name: PLAN::stack_name
 plan name: PLAN::name
-number_of_checks: COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks
-number_violations_ignored: COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations
 COMPOSITE::coreo_uni_util_jsrunner.tags-rollup.return
   '
   payload_type 'text'
