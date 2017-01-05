@@ -266,7 +266,13 @@ end
 
 coreo_aws_advisor_ec2 "advise-ec2" do
   action :advise
-  alerts 'ec2-security-groups-list, ec2-instances-active-security-groups-list,' + ${AUDIT_AWS_EC2_ALERT_LIST}
+  alerts ${AUDIT_AWS_EC2_ALERT_LIST}
+  regions ${AUDIT_AWS_EC2_REGIONS}
+end
+
+coreo_aws_advisor_ec2 "advise-unused-security-groups-ec2" do
+  action :advise
+  alerts ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
@@ -315,7 +321,8 @@ end
 coreo_uni_util_jsrunner "security-groups" do
   action :run
   json_input '{
-      "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
+      "main_report":COMPOSITE::coreo_aws_advisor_ec2.main_report.report,
+      "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report,
       "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report
   }'
   function <<-EOH
@@ -341,8 +348,8 @@ const groupIsActive = (groupId) => {
 
 Object.keys(json_input.elb_report).forEach((key) => {
     const violation = json_input.elb_report[key].violations['elb-load-balancers-active-security-groups-list'];
-    delete json_input.elb_report[key].violations['elb-load-balancers-active-security-groups-list'];
     if (!violation) return;
+    delete json_input.elb_report[key].violations['elb-load-balancers-active-security-groups-list'];
     violation.violating_object.forEach((obj) => {
         obj.object.forEach((secGroup) => {
             activeSecurityGroups.push(secGroup);
@@ -351,8 +358,8 @@ Object.keys(json_input.elb_report).forEach((key) => {
 });
 Object.keys(json_input.ec2_report).forEach((key) => {
     const violation = json_input.ec2_report[key].violations['ec2-instances-active-security-groups-list'];
-    delete json_input.ec2_report[key].violations['ec2-instances-active-security-groups-list'];
     if (!violation) return;
+    delete json_input.ec2_report[key].violations['ec2-instances-active-security-groups-list'];
     violation.violating_object.forEach((obj) => {
         activeSecurityGroups.push(obj.object.group_id);
     });
@@ -373,8 +380,9 @@ Object.keys(json_input.ec2_report).forEach((key) => {
         'level': 'Warning',
         'region': violations.region
     };
-    const violationKey = 'ec2-not-used-security-groups'
-    json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
+    const violationKey = 'ec2-not-used-security-groups';
+    if(!json_input.main_report[key]) json_input.main_report[key] = {};
+    json_input.main_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
 });
 callback(json_input.ec2_report);
   EOH
