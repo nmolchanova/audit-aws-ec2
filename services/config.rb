@@ -230,9 +230,9 @@ end
 coreo_aws_advisor_alert "ec2-not-used-security-groups" do
   action :nothing
   service :ec2
-  category "Inventory"
+  category "jsrunner"
   suggested_action "The metadata for this definition is defined in the jsrunner below. Do not put metadata here."
-  level "Informational"
+  level "jsrunner"
   objectives [""]
   audit_objects [""]
   operators [""]
@@ -249,6 +249,7 @@ coreo_aws_advisor_alert "ec2-security-groups-list" do
   description "This is an internally defined alert."
   category "Internal"
   suggested_action "Ignore"
+  level "Internal"
   objectives ["security_groups"]
   audit_objects ["security_group_info.group_name"]
   operators ["=~"]
@@ -264,6 +265,7 @@ coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
   description "This is an internally defined alert."
   category "Internal"
   suggested_action "Ignore"
+  level "Internal"
   objectives ["instances"]
   audit_objects ["reservation_set.instances_set.group_set.group_id"]
   operators ["=~"]
@@ -285,6 +287,7 @@ coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
   description "This is an internally defined alert."
   category "Internal"
   suggested_action "Ignore"
+  level "Internal"
   objectives ["load_balancers"]
   audit_objects ["load_balancer_descriptions.security_groups"]
   operators ["=~"]
