@@ -292,7 +292,7 @@ end
 
 coreo_aws_advisor_elb "advise-elb" do
   action :advise
-  alerts 'elb-load-balancers-active-security-groups-list'
+  alerts ['elb-load-balancers-active-security-groups-list']
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
