@@ -227,14 +227,30 @@ coreo_aws_advisor_alert "ec2-ports-range" do
   alert_when ["object[:to_port]"]
 end
 
+coreo_aws_advisor_alert "ec2-not-used-security-groups" do
+  action :define
+  service :ec2
+  display_name "EC2 security group is not used"
+  description "Security group is not used anywhere"
+  category "Audit"
+  suggested_action "Remove this security group"
+  level "Warning"
+  objectives ["security_groups"]
+  audit_objects ["security_group_info"]
+  operators ["=="]
+  alert_when [false]
+end
+
 coreo_aws_advisor_alert "ec2-security-groups-list" do
   action :define
   service :ec2
-  display_name "Security Groups Inventory"
-  description "This rule lists all security groups."
-  category "Inventory"
-  suggested_action "None."
-  level "Informational"
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
   objectives ["security_groups"]
   audit_objects ["security_group_info.group_name"]
   operators ["=~"]
@@ -244,11 +260,13 @@ end
 coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
   action :define
   service :ec2
-  display_name "EC2 Instances Active Security Groups"
-  description "This rule gets all active security groups for instances"
-  category "Inventory"
-  suggested_action "None."
-  level "Informational"
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
   objectives ["instances"]
   audit_objects ["reservation_set.instances_set.group_set.group_id"]
   operators ["=~"]
@@ -261,14 +279,22 @@ coreo_aws_advisor_ec2 "advise-ec2" do
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
+coreo_aws_advisor_ec2 "advise-unused-security-groups-ec2" do
+  action :advise
+  alerts ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
+end
+
 coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
   action :define
   service :elb
-  display_name "Elb load balancers active security groups list"
-  description "This rule gets all active security groups for load balancers"
-  category "Inventory"
-  suggested_action "None."
-  level "Informational"
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
   objectives ["load_balancers"]
   audit_objects ["load_balancer_descriptions.security_groups"]
   operators ["=~"]
@@ -277,7 +303,7 @@ end
 
 coreo_aws_advisor_elb "advise-elb" do
   action :advise
-  alerts ${AUDIT_AWS_ELB_ALERT_LIST}
+  alerts ['elb-load-balancers-active-security-groups-list']
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
@@ -306,27 +332,16 @@ end
 coreo_uni_util_jsrunner "security-groups" do
   action :run
   json_input '{
-      "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report,
-      "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.advise-ec2.number_checks",
-      "number_of_violations":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_violations",
-      "number_violations_ignored":"COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations"
+      "main_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
+      "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report,
+      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report
   }'
   function <<-EOH
 
 const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
-const elb_alerts_list = ${AUDIT_AWS_ELB_ALERT_LIST};
-
-coreoExport('number_of_checks', json_input.number_of_checks);
-coreoExport('number_of_violations', json_input.number_of_violations);
-coreoExport('number_violations_ignored', json_input.number_violations_ignored);
-
-if( !ec2_alerts_list.includes('ec2-security-groups-list') ||
-    !ec2_alerts_list.includes('ec2-instances-active-security-groups-list') ||
-    !elb_alerts_list.includes('elb-load-balancers-active-security-groups-list') ) {
+if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
   console.log("Unable to count unused security groups. Required definitions were disabled.")
-  coreoExport('report', json_input.ec2_report);
-  callback(json_input.ec2_report);
+  callback(json_input.main_report);
   return;
 }
 
@@ -371,13 +386,22 @@ Object.keys(json_input.ec2_report).forEach((key) => {
         'level': 'Warning',
         'region': violations.region
     };
-    const violationKey = 'ec2-not-used-security-groups'
-    json_input.ec2_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
+    const violationKey = 'ec2-not-used-security-groups';
+    if (!json_input.main_report[key]) json_input.main_report[key] = { violations: {}, tags: [] };
+    json_input.main_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
+    json_input.main_report[key].tags.concat(tags);
 });
-coreoExport('report', json_input.ec2_report);
-callback(json_input.ec2_report);
+callback(json_input.main_report);
   EOH
 end
+
+coreo_uni_util_variables "update-advisor-output" do
+  action :set
+  variables([
+                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups.return'}
+            ])
+end
+
 
 coreo_uni_util_jsrunner "tags-to-notifiers-array" do
   action :run
@@ -385,14 +409,11 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.2.6"
+                   :version => "1.3.8"
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
-                "number_of_checks":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_checks",
-                "number_of_violations":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_violations",
-                "number_violations_ignored":"COMPOSITE::coreo_uni_util_jsrunner.security-groups.number_ignored_violations",
-                "violations": COMPOSITE::coreo_uni_util_jsrunner.security-groups.return}'
+                "violations": COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
   function <<-EOH
 const JSON = json_input;
 const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT}";
@@ -489,8 +510,6 @@ coreo_uni_util_notify "advise-ec2-rollup" do
   payload '
 composite name: PLAN::stack_name
 plan name: PLAN::name
-number_of_checks: COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_checks
-number_violations_ignored: COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.number_ignored_violations
 COMPOSITE::coreo_uni_util_jsrunner.tags-rollup.return
   '
   payload_type 'text'

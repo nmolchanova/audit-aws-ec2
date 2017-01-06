@@ -19,14 +19,7 @@ variables:
       - ec2-TCP-21
       - ec2-TCP-20
       - ec2-ports-range
-      - ec2-security-groups-list
-      - ec2-instances-active-security-groups-list
-  AUDIT_AWS_ELB_ALERT_LIST:
-      description: "Which alerts would you like to check for? (Is used to count unused security groups)"
-      required: true
-      type: array
-      default:
-       - elb-load-balancers-active-security-groups-list
+      - ec2-not-used-security-groups
   AUDIT_AWS_EC2_ALERT_RECIPIENT:
     description: "Enter the email address(es) that will receive notifications. If more than one, separate each with a comma."
     required: true
