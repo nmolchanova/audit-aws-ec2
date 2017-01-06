@@ -228,15 +228,17 @@ coreo_aws_advisor_alert "ec2-ports-range" do
 end
 
 coreo_aws_advisor_alert "ec2-not-used-security-groups" do
-  action :nothing
+  action :define
   service :ec2
-  category "jsrunner"
-  suggested_action "The metadata for this definition is defined in the jsrunner below. Do not put metadata here."
-  level "jsrunner"
-  objectives [""]
+  display_name "EC2 security group is not used"
+  description "Security group is not used anywhere"
+  category "Audit"
+  suggested_action "Remove this security group"
+  level "Warning"
+  objectives ["security_groups"]
   audit_objects [""]
   operators [""]
-  alert_when [true]
+  alert_when [false]
   id_map ""
 end
 
@@ -408,7 +410,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.2.6"
+                   :version => "1.3.7"
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
