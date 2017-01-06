@@ -374,7 +374,6 @@ Object.keys(json_input.ec2_report).forEach((key) => {
 Object.keys(json_input.ec2_report).forEach((key) => {
     const tags = json_input.ec2_report[key].tags;
     const violations = json_input.ec2_report[key].violations["ec2-security-groups-list"];
-    delete json_input.ec2_report[key].violations["ec2-security-groups-list"];
     if (!violations) return;
 
     const currentSecGroup = violations.violating_object[0].object;
@@ -388,7 +387,7 @@ Object.keys(json_input.ec2_report).forEach((key) => {
         'region': violations.region
     };
     const violationKey = 'ec2-not-used-security-groups';
-    if(!json_input.main_report[key]) json_input.main_report[key] = { violations: {} };
+    if (!json_input.main_report[key]) json_input.main_report[key] = { violations: {} };
     json_input.main_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
 });
 callback(json_input.main_report);
@@ -413,7 +412,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
-                "violations": COMPOSITE::coreo_uni_util_jsrunner.security-groups.return}'
+                "violations": COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
   function <<-EOH
 const JSON = json_input;
 const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT}";
