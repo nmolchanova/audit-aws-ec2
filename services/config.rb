@@ -255,13 +255,14 @@ coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
 end
 
 coreo_aws_advisor_alert "ec2-not-used-security-groups" do
-  action :nothing
+  action :define
   service :ec2
   display_name "EC2 security group is not used"
   description "Security group is not used anywhere"
   category "Audit"
   suggested_action "Remove this security group"
   level "Warning"
+  objectives ["security_groups"]
 end
 
 coreo_aws_advisor_ec2 "advise-ec2" do
