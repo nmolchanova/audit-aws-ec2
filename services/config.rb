@@ -329,11 +329,9 @@ coreo_uni_util_jsrunner "security-groups" do
   function <<-EOH
 
 const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
-const elb_alerts_list = ${AUDIT_AWS_ELB_ALERT_LIST};
-
 if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
   console.log("Unable to count unused security groups. Required definitions were disabled.")
-  callback(json_input.ec2_report);
+  callback(json_input.main_report);
   return;
 }
 
@@ -350,7 +348,6 @@ const groupIsActive = (groupId) => {
 Object.keys(json_input.elb_report).forEach((key) => {
     const violation = json_input.elb_report[key].violations['elb-load-balancers-active-security-groups-list'];
     if (!violation) return;
-    delete json_input.elb_report[key].violations['elb-load-balancers-active-security-groups-list'];
     violation.violating_object.forEach((obj) => {
         obj.object.forEach((secGroup) => {
             activeSecurityGroups.push(secGroup);
@@ -360,7 +357,6 @@ Object.keys(json_input.elb_report).forEach((key) => {
 Object.keys(json_input.ec2_report).forEach((key) => {
     const violation = json_input.ec2_report[key].violations['ec2-instances-active-security-groups-list'];
     if (!violation) return;
-    delete json_input.ec2_report[key].violations['ec2-instances-active-security-groups-list'];
     violation.violating_object.forEach((obj) => {
         activeSecurityGroups.push(obj.object.group_id);
     });
@@ -385,7 +381,7 @@ Object.keys(json_input.ec2_report).forEach((key) => {
     if(!json_input.main_report[key]) json_input.main_report[key] = {};
     json_input.main_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
 });
-callback(json_input.ec2_report);
+callback(json_input.main_report);
   EOH
 end
 
