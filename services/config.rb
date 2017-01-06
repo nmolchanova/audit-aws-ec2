@@ -228,7 +228,7 @@ coreo_aws_advisor_alert "ec2-ports-range" do
 end
 
 coreo_aws_advisor_alert "ec2-not-used-security-groups" do
-  action :define
+  action :nothing
   service :ec2
   display_name "EC2 security group is not used"
   description "Security group is not used anywhere"
@@ -236,9 +236,9 @@ coreo_aws_advisor_alert "ec2-not-used-security-groups" do
   suggested_action "Remove this security group"
   level "Warning"
   objectives ["security_groups"]
-  audit_objects ["security_group_info"]
-  operators ["=="]
-  alert_when [false]
+  audit_objects [""]
+  operators [""]
+  alert_when [true]
 end
 
 coreo_aws_advisor_alert "ec2-security-groups-list" do
@@ -398,8 +398,7 @@ end
 coreo_uni_util_variables "update-advisor-output" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups.return'},
-                {'COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report' => '{}'}
+                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups.return'}
             ])
 end
 
