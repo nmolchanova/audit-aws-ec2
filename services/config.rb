@@ -387,8 +387,9 @@ Object.keys(json_input.ec2_report).forEach((key) => {
         'region': violations.region
     };
     const violationKey = 'ec2-not-used-security-groups';
-    if (!json_input.main_report[key]) json_input.main_report[key] = { violations: {} };
+    if (!json_input.main_report[key]) json_input.main_report[key] = { violations: {}, tags: {} };
     json_input.main_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
+    json_input.main_report[key].tags.concat(tags);
 });
 callback(json_input.main_report);
   EOH
@@ -408,7 +409,7 @@ coreo_uni_util_jsrunner "tags-to-notifiers-array" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.3.7"
+                   :version => "1.3.8"
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
