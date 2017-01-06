@@ -236,10 +236,9 @@ coreo_aws_advisor_alert "ec2-not-used-security-groups" do
   suggested_action "Remove this security group"
   level "Warning"
   objectives ["security_groups"]
-  audit_objects [""]
-  operators [""]
+  audit_objects ["security_group_info"]
+  operators ["=="]
   alert_when [false]
-  id_map ""
 end
 
 coreo_aws_advisor_alert "ec2-security-groups-list" do
