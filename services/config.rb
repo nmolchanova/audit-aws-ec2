@@ -398,7 +398,8 @@ end
 coreo_uni_util_variables "update-advisor-output" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups.return'}
+                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups.return'},
+                {'COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report' => '{}'}
             ])
 end
 
