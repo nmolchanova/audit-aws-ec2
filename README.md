@@ -14,19 +14,23 @@ This repo is designed to work with CloudCoreo. It will monitor EC2 against best 
 
 ## Required variables with no default
 
-### `AUDIT_AWS_EC2_ALERT_RECIPIENT_2`:
-  * description: Enter the email address(es) that will receive notifications for objects with no owner tag (Optional, only if owner tag is enabled).
+### `AUDIT_AWS_EC2_ALERT_RECIPIENT`:
+  * description: Enter the email address(es) that will receive notifications. If more than one, separate each with a comma.
 
 
 ## Required variables with default
 
 ### `AUDIT_AWS_EC2_ALERT_LIST`:
   * description: Which alerts would you like to check for? (Default is all EC2 alerts)
-  * default: ec2-ip-address-whitelisted, ec2-unrestricted-traffic, ec2-TCP-1521-0.0.0.0/0, ec2-TCP-3306-0.0.0.0/0, ec2-TCP-5432-0.0.0.0/0, ec2-TCP-27017-0.0.0.0/0, ec2-TCP-1433-0.0.0.0/0, ec2-TCP-3389-0.0.0.0/0, ec2-TCP-22-0.0.0.0/0, ec2-TCP-5439-0.0.0.0/0, ec2-TCP-23, ec2-TCP-21, ec2-TCP-20, ec2-ports-range
+  * default: ec2-inventory, ec2-ip-address-whitelisted, ec2-unrestricted-traffic, ec2-TCP-1521-0.0.0.0/0, ec2-TCP-3306-0.0.0.0/0, ec2-TCP-5432-0.0.0.0/0, ec2-TCP-27017-0.0.0.0/0, ec2-TCP-1433-0.0.0.0/0, ec2-TCP-3389-0.0.0.0/0, ec2-TCP-22-0.0.0.0/0, ec2-TCP-5439-0.0.0.0/0, ec2-TCP-23, ec2-TCP-21, ec2-TCP-20, ec2-ports-range, ec2-security-groups-list, ec2-instances-active-security-groups-list
+
+### `AUDIT_AWS_ELB_ALERT_LIST`:
+  * description: Which alerts would you like to check for? (Is used to count unused security groups)
+  * default: elb-load-balancers-active-security-groups-list
 
 ### `AUDIT_AWS_EC2_ALLOW_EMPTY`:
   * description: Would you like to receive empty reports? Options - true / false. Default is false.
-  * default: true
+  * default: false
 
 ### `AUDIT_AWS_EC2_SEND_ON`:
   * description: Send reports always or only when there is a change? Options - always / change. Default is change.
@@ -36,15 +40,11 @@ This repo is designed to work with CloudCoreo. It will monitor EC2 against best 
   * description: List of AWS regions to check. Default is us-east-1,us-west-1,us-west-2.
   * default: us-east-1, us-east-2, us-west-1, us-west-2, eu-west-1
 
-### `AUDIT_AWS_EC2_FULL_JSON_REPORT`:
-  * description: Would you like to send the full JSON report? Options - notify / nothing. Default is notify.
-  * default: nothing
-
 ### `AUDIT_AWS_EC2_ROLLUP_REPORT`:
   * description: Would you like to send a Summary ELB report? Options - notify / nothing. Default is no / nothing.
   * default: nothing
 
-### `AUDIT_AWS_EC2_OWNERS_HTML_REPORT`:
+### `AUDIT_AWS_EC2_HTML_REPORT`:
   * description: notify or nothing
   * default: notify
 
@@ -58,8 +58,7 @@ This repo is designed to work with CloudCoreo. It will monitor EC2 against best 
 
 ## Optional variables with no default
 
-### `AUDIT_AWS_EC2_ALERT_RECIPIENT`:
-  * description: Enter the email address(es) that will receive notifications. If more than one, separate each with a comma.
+**None**
 
 ## Tags
 1. Audit
