@@ -328,77 +328,78 @@ coreo_uni_util_notify "advise-ec2-json" do
       :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
   })
 end
-
-coreo_uni_util_jsrunner "security-groups" do
-  action :run
-  json_input '{
-      "main_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
-      "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report
-  }'
-  function <<-EOH
-
-const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
-if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
-  console.log("Unable to count unused security groups. Required definitions were disabled.")
-  callback(json_input.main_report);
-  return;
-}
-
-const activeSecurityGroups = [];
-
-const groupIsActive = (groupId) => {
-    for (let activeGroupId of activeSecurityGroups) {
-        if (activeGroupId === groupId) return true;
-    }
-    console.log(groupId);
-    return false;
-};
-
-Object.keys(json_input.elb_report).forEach((key) => {
-    const violation = json_input.elb_report[key].violations['elb-load-balancers-active-security-groups-list'];
-    if (!violation) return;
-    violation.violating_object.forEach((obj) => {
-        obj.object.forEach((secGroup) => {
-            activeSecurityGroups.push(secGroup);
-        })
-    });
-});
-Object.keys(json_input.ec2_report).forEach((key) => {
-    const violation = json_input.ec2_report[key].violations['ec2-instances-active-security-groups-list'];
-    if (!violation) return;
-    violation.violating_object.forEach((obj) => {
-        activeSecurityGroups.push(obj.object.group_id);
-    });
-});
-Object.keys(json_input.ec2_report).forEach((key) => {
-    const tags = json_input.ec2_report[key].tags;
-    const violations = json_input.ec2_report[key].violations["ec2-security-groups-list"];
-    if (!violations) return;
-
-    const currentSecGroup = violations.violating_object[0].object;
-    if (groupIsActive(currentSecGroup.group_id)) return;
-    const securityGroupIsNotUsedAlert = {
-        'display_name': 'EC2 security group is not used',
-        'description': 'Security group is not used anywhere',
-        'category': 'Audit',
-        'suggested_action': 'Remove this security group',
-        'level': 'Warning',
-        'region': violations.region
-    };
-    const violationKey = 'ec2-not-used-security-groups';
-    if (!json_input.main_report[key]) json_input.main_report[key] = { violations: {}, tags: [] };
-    json_input.main_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
-    json_input.main_report[key].tags.concat(tags);
-});
-callback(json_input.main_report);
-  EOH
-end
+#
+# coreo_uni_util_jsrunner "security-groups" do
+#   action :run
+#   json_input '{
+#       "main_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
+#       "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report,
+#       "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report
+#   }'
+#   function <<-EOH
+#
+# const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
+# if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
+#   console.log("Unable to count unused security groups. Required definitions were disabled.")
+#   callback(json_input.main_report);
+#   return;
+# }
+#
+# const activeSecurityGroups = [];
+#
+# const groupIsActive = (groupId) => {
+#     for (let activeGroupId of activeSecurityGroups) {
+#         if (activeGroupId === groupId) return true;
+#     }
+#     console.log(groupId);
+#     return false;
+# };
+#
+# Object.keys(json_input.elb_report).forEach((key) => {
+#     const violation = json_input.elb_report[key].violations['elb-load-balancers-active-security-groups-list'];
+#     if (!violation) return;
+#     violation.violating_object.forEach((obj) => {
+#         obj.object.forEach((secGroup) => {
+#             activeSecurityGroups.push(secGroup);
+#         })
+#     });
+# });
+# Object.keys(json_input.ec2_report).forEach((key) => {
+#     const violation = json_input.ec2_report[key].violations['ec2-instances-active-security-groups-list'];
+#     if (!violation) return;
+#     violation.violating_object.forEach((obj) => {
+#         activeSecurityGroups.push(obj.object.group_id);
+#     });
+# });
+# Object.keys(json_input.ec2_report).forEach((key) => {
+#     const tags = json_input.ec2_report[key].tags;
+#     const violations = json_input.ec2_report[key].violations["ec2-security-groups-list"];
+#     if (!violations) return;
+#
+#     const currentSecGroup = violations.violating_object[0].object;
+#     if (groupIsActive(currentSecGroup.group_id)) return;
+#     const securityGroupIsNotUsedAlert = {
+#         'display_name': 'EC2 security group is not used',
+#         'description': 'Security group is not used anywhere',
+#         'category': 'Audit',
+#         'suggested_action': 'Remove this security group',
+#         'level': 'Warning',
+#         'region': violations.region
+#     };
+#     const violationKey = 'ec2-not-used-security-groups';
+#     if (!json_input.main_report[key]) json_input.main_report[key] = { violations: {}, tags: [] };
+#     json_input.main_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
+#     json_input.main_report[key].tags.concat(tags);
+# });
+# callback(json_input.main_report);
+#   EOH
+# end
 
 coreo_uni_util_variables "update-advisor-output" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups.return'}
+                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner
+.security-groups.return'}
             ])
 end
 
