@@ -1,7 +1,7 @@
 # NOTE and PLEASE READ
 # changes to resources need to be reflected in the ../config.yaml AUDIT_AWS_EC2_ALERT_LIST property
 #
-coreo_aws_advisor_alert "ec2-inventory" do
+coreo_aws_advisor_alert "ec2-inventory-instances" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
@@ -16,6 +16,56 @@ coreo_aws_advisor_alert "ec2-inventory" do
   operators ["=~"]
   alert_when [//]
 end
+
+coreo_aws_advisor_alert "ec2-inventory-security-groups" do
+  action :define
+  service :ec2
+  # link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
+  include_violations_in_count false
+  display_name "EC2 Security Group Inventory"
+  description "This rule performs an inventory on all EC2 Security Groups in the target AWS account."
+  category "Inventory"
+  suggested_action "None."
+  level "Informational"
+  objectives ["security_groups"]
+  audit_objects ["object.security_group_info.group_name"]
+  operators ["=~"]
+  alert_when [//]
+  id_map "object.security_group_info.group_id"
+end
+
+coreo_aws_advisor_alert "ec2-inventory-auto-scaling-groups" do
+  action :define
+  service :auto_scaling_groups
+  # link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
+  include_violations_in_count false
+  display_name "EC2 Auto-Scaling-Group Inventory"
+  description "This rule performs an inventory on all EC2 Auto Scaling Groups in the target AWS account."
+  category "Inventory"
+  suggested_action "None."
+  level "Informational"
+  objectives ["auto_scaling_groups"]
+  audit_objects ["object.auto_scaling_groups.auto_scaling_group_name"]
+  operators ["=~"]
+  alert_when [//]
+end
+
+coreo_aws_advisor_alert "ec2-inventory-auto-scaling-groups-2" do
+  action :define
+  service :asg
+  # link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
+  include_violations_in_count false
+  display_name "EC2 Auto-Scaling-Group Inventory"
+  description "This rule performs an inventory on all EC2 Auto Scaling Groups in the target AWS account."
+  category "Inventory"
+  suggested_action "None."
+  level "Informational"
+  objectives ["auto_scaling_groups"]
+  audit_objects ["object.auto_scaling_groups.auto_scaling_group_name"]
+  operators ["=~"]
+  alert_when [//]
+end
+
 
 coreo_aws_advisor_alert "ec2-ip-address-whitelisted" do
   action :define
