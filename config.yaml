@@ -6,8 +6,6 @@ variables:
     default:
       - ec2-inventory-instances
       - ec2-inventory-security-groups
-      - ec2-inventory-auto-scaling-groups
-      - ec2-inventory-auto-scaling-groups-2
       - ec2-ip-address-whitelisted
       - ec2-unrestricted-traffic
       - ec2-TCP-1521-0.0.0.0/0
