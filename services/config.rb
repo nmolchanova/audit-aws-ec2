@@ -15,6 +15,7 @@ coreo_aws_advisor_alert "ec2-inventory-instances" do
   audit_objects ["reservation_set.instances_set.instance_id"]
   operators ["=~"]
   alert_when [//]
+  id_map "object.reservation_set.instances_set.instance_id"
 end
 
 coreo_aws_advisor_alert "ec2-inventory-security-groups" do
@@ -47,6 +48,7 @@ coreo_aws_advisor_alert "ec2-ip-address-whitelisted" do
   audit_objects ["security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=~"]
   alert_when [/\/32/]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-unrestricted-traffic" do
@@ -62,6 +64,7 @@ coreo_aws_advisor_alert "ec2-unrestricted-traffic" do
   audit_objects ["security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=="]
   alert_when ["0.0.0.0/0"]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-TCP-1521-0.0.0.0/0" do
@@ -77,6 +80,7 @@ coreo_aws_advisor_alert "ec2-TCP-1521-0.0.0.0/0" do
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   alert_when ["tcp", 1521, "0.0.0.0/0"]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-TCP-3306-0.0.0.0/0" do
@@ -92,6 +96,7 @@ coreo_aws_advisor_alert "ec2-TCP-3306-0.0.0.0/0" do
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   alert_when ["tcp", 3306, "0.0.0.0/0"]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-TCP-5432-0.0.0.0/0" do
@@ -107,6 +112,7 @@ coreo_aws_advisor_alert "ec2-TCP-5432-0.0.0.0/0" do
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   alert_when ["tcp", 5432, "0.0.0.0/0"]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-TCP-27017-0.0.0.0/0" do
@@ -122,6 +128,7 @@ coreo_aws_advisor_alert "ec2-TCP-27017-0.0.0.0/0" do
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   alert_when ["tcp", 27017, "0.0.0.0/0"]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-TCP-1433-0.0.0.0/0" do
@@ -137,6 +144,7 @@ coreo_aws_advisor_alert "ec2-TCP-1433-0.0.0.0/0" do
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   alert_when ["tcp", 1433, "0.0.0.0/0"]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-TCP-3389-0.0.0.0/0" do
@@ -152,6 +160,7 @@ coreo_aws_advisor_alert "ec2-TCP-3389-0.0.0.0/0" do
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   alert_when ["tcp", 3389, "0.0.0.0/0"]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-TCP-22-0.0.0.0/0" do
@@ -167,6 +176,7 @@ coreo_aws_advisor_alert "ec2-TCP-22-0.0.0.0/0" do
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   alert_when ["tcp", 22, "0.0.0.0/0"]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-TCP-5439-0.0.0.0/0" do
@@ -182,6 +192,7 @@ coreo_aws_advisor_alert "ec2-TCP-5439-0.0.0.0/0" do
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   alert_when ["tcp", 5439, "0.0.0.0/0"]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-TCP-23" do
@@ -197,6 +208,7 @@ coreo_aws_advisor_alert "ec2-TCP-23" do
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
   alert_when ["tcp", 23]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-TCP-21" do
@@ -212,6 +224,7 @@ coreo_aws_advisor_alert "ec2-TCP-21" do
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
   alert_when ["tcp", 21]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-TCP-20" do
@@ -227,6 +240,7 @@ coreo_aws_advisor_alert "ec2-TCP-20" do
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
   alert_when ["tcp", 20]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-ports-range" do
@@ -242,6 +256,7 @@ coreo_aws_advisor_alert "ec2-ports-range" do
   audit_objects ["security_group_info.ip_permissions.from_port"]
   operators ["!="]
   alert_when ["object[:to_port]"]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-not-used-security-groups" do
@@ -256,6 +271,7 @@ coreo_aws_advisor_alert "ec2-not-used-security-groups" do
   audit_objects ["security_group_info"]
   operators ["=="]
   alert_when [false]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-security-groups-list" do
@@ -272,6 +288,7 @@ coreo_aws_advisor_alert "ec2-security-groups-list" do
   audit_objects ["security_group_info.group_name"]
   operators ["=~"]
   alert_when [//]
+  id_map "object.security_group_info.group_id"
 end
 
 coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
@@ -288,6 +305,7 @@ coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
   audit_objects ["reservation_set.instances_set.group_set.group_id"]
   operators ["=~"]
   alert_when [//]
+  id_map "object.reservation_set.instances_set.instance_id"
 end
 
 coreo_aws_advisor_ec2 "advise-ec2" do
@@ -316,6 +334,7 @@ coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
   audit_objects ["load_balancer_descriptions.security_groups"]
   operators ["=~"]
   alert_when [//]
+  id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
 coreo_aws_advisor_elb "advise-elb" do
