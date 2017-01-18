@@ -337,6 +337,7 @@ coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
+
 =begin
   START EC2 methods
   JSON send method
@@ -354,6 +355,13 @@ coreo_uni_util_notify "advise-ec2-json" do
   endpoint ({
       :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
   })
+end
+
+
+coreo_aws_advisor_elb "advise-elb" do
+  action :advise
+  alerts ${AUDIT_AWS_EC2_ALERT_LIST}
+  regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
 coreo_uni_util_jsrunner "security-groups" do
@@ -433,7 +441,7 @@ end
 coreo_uni_util_jsrunner "jsrunner-process-suppression" do
   action :run
   provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report}'
+  json_input '{"violations":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
   packages([
                {
                    :name => "js-yaml",
@@ -529,7 +537,7 @@ end
 coreo_uni_util_jsrunner "jsrunner-process-table" do
   action :run
   provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report}'
+  json_input '{"violations":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
   packages([
                {
                    :name => "js-yaml",
