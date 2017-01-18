@@ -337,12 +337,6 @@ coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
-coreo_aws_advisor_elb "advise-elb" do
-  action :advise
-  alerts ${AUDIT_AWS_EC2_ALERT_LIST}
-  regions ${AUDIT_AWS_EC2_REGIONS}
-end
-
 =begin
   START EC2 methods
   JSON send method
