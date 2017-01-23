@@ -1,6 +1,7 @@
-# NOTE and PLEASE READ
-# changes to resources need to be reflected in the ../config.yaml AUDIT_AWS_EC2_ALERT_LIST property
-#
+###########################################
+# User Visible Rule Definitions
+###########################################
+
 coreo_aws_advisor_alert "ec2-inventory-instances" do
   action :define
   service :ec2
@@ -274,6 +275,10 @@ coreo_aws_advisor_alert "ec2-not-used-security-groups" do
   id_map "object.security_group_info.group_id"
 end
 
+###########################################
+# System-Defined (Internal) Rule Definitions
+###########################################
+
 coreo_aws_advisor_alert "ec2-security-groups-list" do
   action :define
   service :ec2
@@ -308,18 +313,6 @@ coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
   id_map "object.reservation_set.instances_set.instance_id"
 end
 
-coreo_aws_advisor_ec2 "advise-ec2" do
-  action :advise
-  alerts ${AUDIT_AWS_EC2_ALERT_LIST}
-  regions ${AUDIT_AWS_EC2_REGIONS}
-end
-
-coreo_aws_advisor_ec2 "advise-unused-security-groups-ec2" do
-  action :advise
-  alerts ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
-  regions ${AUDIT_AWS_EC2_REGIONS}
-end
-
 coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
   action :define
   service :elb
@@ -335,6 +328,23 @@ coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
   operators ["=~"]
   alert_when [//]
   id_map "object.load_balancer_descriptions.load_balancer_name"
+end
+
+###########################################
+# Compsite-Internal Resources follow until end
+#   (Resources used by the system for execution and display processing)
+###########################################
+
+coreo_aws_advisor_ec2 "advise-ec2" do
+  action :advise
+  alerts ${AUDIT_AWS_EC2_ALERT_LIST}
+  regions ${AUDIT_AWS_EC2_REGIONS}
+end
+
+coreo_aws_advisor_ec2 "advise-unused-security-groups-ec2" do
+  action :advise
+  alerts ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
 coreo_aws_advisor_elb "advise-elb" do
