@@ -347,7 +347,7 @@ coreo_aws_advisor_ec2 "advise-unused-security-groups-ec2" do
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_aws_advisor_elb "advise-elb" do
+coreo_aws_advisor_elb "advise-elb-ec2" do
   action :advise
   alerts ['elb-load-balancers-active-security-groups-list']
   regions ${AUDIT_AWS_EC2_REGIONS}
@@ -372,12 +372,12 @@ coreo_uni_util_notify "advise-ec2-json" do
   })
 end
 
-coreo_uni_util_jsrunner "security-groups" do
+coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
       "main_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
       "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report
+      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb-ec2.report
   }'
   function <<-EOH
 
@@ -436,10 +436,10 @@ callback(json_input.main_report);
   EOH
 end
 
-coreo_uni_util_variables "update-advisor-output" do
+coreo_uni_util_variables "ec2-update-advisor-output" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups.return'}
+                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'}
             ])
 end
 
@@ -552,8 +552,7 @@ coreo_uni_util_jsrunner "jsrunner-process-table-ec2" do
   EOH
 end
 
-
-coreo_uni_util_jsrunner "tags-to-notifiers-array" do
+coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   action :run
   data_type "json"
   packages([
@@ -595,10 +594,10 @@ callback(notifiers);
   EOH
 end
 
-coreo_uni_util_jsrunner "tags-rollup" do
+coreo_uni_util_jsrunner "ec2-tags-rollup" do
   action :run
   data_type "text"
-  json_input 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
+  json_input 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.return'
   function <<-EOH
 var rollup_string = "";
 let rollup = '';
@@ -622,7 +621,7 @@ end
 
 coreo_uni_util_notify "advise-ec2-to-tag-values" do
   action :${AUDIT_AWS_EC2_HTML_REPORT}
-  notifiers 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
+  notifiers 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.return'
 end
 
 coreo_uni_util_notify "advise-ec2-rollup" do
@@ -633,7 +632,7 @@ coreo_uni_util_notify "advise-ec2-rollup" do
   payload '
 composite name: PLAN::stack_name
 plan name: PLAN::name
-COMPOSITE::coreo_uni_util_jsrunner.tags-rollup.return
+COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-rollup.return
   '
   payload_type 'text'
   endpoint ({
