@@ -543,7 +543,7 @@ coreo_uni_util_jsrunner "jsrunner-process-table-ec2" do
 end
 
 
-coreo_uni_util_jsrunner "tags-to-notifiers-array" do
+coreo_uni_util_jsrunner "ec2-ec2-tags-to-notifiers-array" do
   action :run
   data_type "json"
   packages([
@@ -588,7 +588,7 @@ end
 coreo_uni_util_jsrunner "tags-rollup" do
   action :run
   data_type "text"
-  json_input 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
+  json_input 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.return'
   function <<-EOH
 var rollup_string = "";
 let rollup = '';
@@ -612,7 +612,7 @@ end
 
 coreo_uni_util_notify "advise-ec2-to-tag-values" do
   action :${AUDIT_AWS_EC2_HTML_REPORT}
-  notifiers 'COMPOSITE::coreo_uni_util_jsrunner.tags-to-notifiers-array.return'
+  notifiers 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.return'
 end
 
 coreo_uni_util_notify "advise-ec2-rollup" do
