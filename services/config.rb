@@ -553,7 +553,7 @@ coreo_uni_util_jsrunner "jsrunner-process-table-ec2" do
 end
 
 
-coreo_uni_util_jsrunner "ec2-ec2-tags-to-notifiers-array" do
+coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   action :run
   data_type "json"
   packages([
