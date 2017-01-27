@@ -562,7 +562,7 @@ callback(notifiers);
   EOH
 end
 
-coreo_uni_util_jsrunner "ec2-ec2-tags-rollup" do
+coreo_uni_util_jsrunner "ec2-tags-rollup" do
   action :run
   data_type "text"
   json_input 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.return'
