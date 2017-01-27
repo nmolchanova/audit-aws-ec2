@@ -335,18 +335,18 @@ coreo_aws_advisor_ec2 "advise-unused-security-groups-ec2" do
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_aws_advisor_elb "advise-elb-for-security-groups-list-in-ec2" do
+coreo_aws_advisor_elb "advise-elb-for-security-group" do
   action :advise
   alerts ['elb-load-balancers-active-security-groups-list']
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_uni_util_jsrunner "security-groups-in-ec2" do
+coreo_uni_util_jsrunner "ec2-security-groups" do
   action :run
   json_input '{
       "main_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
       "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb-for-security-groups-list-in-ec2.report
+      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report
   }'
   function <<-EOH
 
@@ -408,7 +408,7 @@ end
 coreo_uni_util_variables "ec2-update-advisor-output" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-in-ec2.return'}
+                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-security-groups.return'}
             ])
 end
 
@@ -497,6 +497,13 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
   
   callback(result);
   EOH
+end
+
+coreo_uni_util_variables "ec2-for-suppression-update-advisor-output" do
+  action :set
+  variables([
+                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-suppression-ec2.return'}
+            ])
 end
 
 coreo_uni_util_jsrunner "jsrunner-process-table-ec2" do
