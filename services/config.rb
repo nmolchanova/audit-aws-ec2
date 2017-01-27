@@ -1,6 +1,3 @@
-###########################################
-# User Visible Rule Definitions
-###########################################
 
 coreo_aws_advisor_alert "ec2-inventory-instances" do
   action :define
@@ -275,10 +272,6 @@ coreo_aws_advisor_alert "ec2-not-used-security-groups" do
   id_map "object.security_group_info.group_id"
 end
 
-###########################################
-# System-Defined (Internal) Rule Definitions
-###########################################
-
 coreo_aws_advisor_alert "ec2-security-groups-list" do
   action :define
   service :ec2
@@ -330,11 +323,6 @@ coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
-###########################################
-# Compsite-Internal Resources follow until end
-#   (Resources used by the system for execution and display processing)
-###########################################
-
 coreo_aws_advisor_ec2 "advise-ec2" do
   action :advise
   alerts ${AUDIT_AWS_EC2_ALERT_LIST}
@@ -347,37 +335,18 @@ coreo_aws_advisor_ec2 "advise-unused-security-groups-ec2" do
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_aws_advisor_elb "advise-elb" do
+coreo_aws_advisor_elb "advise-elb-for-security-groups-list-in-ec2" do
   action :advise
   alerts ['elb-load-balancers-active-security-groups-list']
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-=begin
-  START EC2 methods
-  JSON send method
-  HTML send method
-=end
-coreo_uni_util_notify "advise-ec2-json" do
-  action :nothing
-  type 'email'
-  allow_empty ${AUDIT_AWS_EC2_ALLOW_EMPTY}
-  send_on '${AUDIT_AWS_EC2_SEND_ON}'
-  payload '{"composite name":"PLAN::stack_name",
-  "plan name":"PLAN::name",
-  "violations": COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report }'
-  payload_type "json"
-  endpoint ({
-      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
-  })
-end
-
-coreo_uni_util_jsrunner "security-groups" do
+coreo_uni_util_jsrunner "security-groups-in-ec2" do
   action :run
   json_input '{
       "main_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
       "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report
+      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb-for-security-groups-list-in-ec2.report
   }'
   function <<-EOH
 
@@ -436,13 +405,12 @@ callback(json_input.main_report);
   EOH
 end
 
-coreo_uni_util_variables "update-advisor-output" do
+coreo_uni_util_variables "ec2-update-advisor-output" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups.return'}
+                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-in-ec2.return'}
             ])
 end
-
 
 coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
   action :run
@@ -552,7 +520,6 @@ coreo_uni_util_jsrunner "jsrunner-process-table-ec2" do
   EOH
 end
 
-
 coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   action :run
   data_type "json"
@@ -595,7 +562,7 @@ callback(notifiers);
   EOH
 end
 
-coreo_uni_util_jsrunner "tags-rollup" do
+coreo_uni_util_jsrunner "ec2-ec2-tags-rollup" do
   action :run
   data_type "text"
   json_input 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.return'
@@ -633,11 +600,10 @@ coreo_uni_util_notify "advise-ec2-rollup" do
   payload '
 composite name: PLAN::stack_name
 plan name: PLAN::name
-COMPOSITE::coreo_uni_util_jsrunner.tags-rollup.return
+COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-rollup.return
   '
   payload_type 'text'
   endpoint ({
       :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
   })
 end
-# END EC2
