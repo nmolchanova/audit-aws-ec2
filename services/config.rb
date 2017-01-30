@@ -429,36 +429,41 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
                    :version => "3.7.0"
                }       ])
   function <<-EOH
-  var fs = require('fs');
-  var yaml = require('js-yaml');
+  const fs = require('fs');
+  const yaml = require('js-yaml');
   let suppression;
   try {
       suppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
   } catch (e) {
   }
   coreoExport('suppression', JSON.stringify(suppression));
-  var violations = json_input.violations;
-  var result = {};
-  var file_date = null;
-    
-  for (var region in violations) {
+  const violations = json_input.violations;
+  const result = {};
+  let file_date = null;
+  const regionKeys = Object.keys(violations);
+  regionKeys.forEach(region => {
       result[region] = {};
-      Object.keys(violations[region]).forEach(violator_id => {
+      const violationKeys = Object.keys(violations[region]);
+      violationKeys.forEach(violator_id => {
           result[region][violator_id] = {};
           result[region][violator_id].tags = violations[region][violator_id].tags;
-          result[region][violator_id].violations = {}
-          for (var rule_id in violations[region][violator_id].violations) {
-              is_violation = true;
+          result[region][violator_id].violations = {};
+          const ruleKeys = Object.keys(violations[region][violator_id].violations);
+          ruleKeys.forEach(rule_id => {
+              let is_violation = true;
               result[region][violator_id].violations[rule_id] = violations[region][violator_id].violations[rule_id];
-              for (var suppress_rule_id in suppression) {
-                  for (var suppress_violator_num in suppression[suppress_rule_id]) {
-                      for (var suppress_violator_id in suppression[suppress_rule_id][suppress_violator_num]) {
+              const suppressionRuleKeys = Object.keys(suppression);
+              suppressionRuleKeys.forEach(suppress_rule_id => {
+                  const suppressionViolatorNum = Object.keys(suppression[suppress_rule_id]);
+                  suppressionViolatorNum.forEach(suppress_violator_num => {
+                      const suppressViolatorIdKeys = Object.keys(suppression[suppress_rule_id][suppress_violator_num]);
+                      suppressViolatorIdKeys.forEach(suppress_violator_id => {
                           file_date = null;
-                          var suppress_obj_id_time = suppression[suppress_rule_id][suppress_violator_num][suppress_violator_id];
+                          let suppress_obj_id_time = suppression[suppress_rule_id][suppress_violator_num][suppress_violator_id];
                           if (rule_id === suppress_rule_id) {
   
                               if (violator_id === suppress_violator_id) {
-                                  var now_date = new Date();
+                                  const now_date = new Date();
   
                                   if (suppress_obj_id_time === "") {
                                       suppress_obj_id_time = new Date();
@@ -466,7 +471,7 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
                                       file_date = suppress_obj_id_time;
                                       suppress_obj_id_time = file_date;
                                   }
-                                  var rule_date = new Date(suppress_obj_id_time);
+                                  let rule_date = new Date(suppress_obj_id_time);
                                   if (isNaN(rule_date.getTime())) {
                                       rule_date = new Date(0);
                                   }
@@ -483,10 +488,9 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
                                   }
                               }
                           }
-                      }
-  
-                  }
-              }
+                      });
+                  });
+              });
               if (is_violation) {
   
                   if (file_date !== null) {
@@ -497,11 +501,9 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
                   }
                   result[region][violator_id].violations[rule_id]["suppressed"] = false;
               }
-          }
+          });
       });
-  }
- 
-  var rtn = result;
+  });
   
   callback(result);
   EOH
