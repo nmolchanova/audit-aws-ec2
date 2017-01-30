@@ -369,7 +369,7 @@ Object.keys(json_input.elb_report).forEach((region) => {
   Object.keys(json_input.elb_report[region]).forEach(key => {
       const violation = json_input.elb_report[region][key].violations['elb-load-balancers-active-security-groups-list'];
       if (!violation) return;
-      violation.violating_object.forEach((obj) => {
+      violation.result_info.forEach((obj) => {
           obj.object.forEach((secGroup) => {
               activeSecurityGroups.push(secGroup);
           })
@@ -381,7 +381,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
   Object.keys(json_input.ec2_report[region]).forEach(key => {
       const violation = json_input.ec2_report[region][key].violations['ec2-instances-active-security-groups-list'];
       if (!violation) return;
-      violation.violating_object.forEach((obj) => {
+      violation.result_info.forEach((obj) => {
           activeSecurityGroups.push(obj.object.group_id);
       });
   });
