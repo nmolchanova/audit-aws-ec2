@@ -441,6 +441,7 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
   var result = {};
   var file_date = null;
     for (var region in violations) {
+        result[region] = {};
       for (var violator_id in region) {
           result[region][violator_id] = {};
           result[region][violator_id].tags = violations[region][violator_id].tags;
