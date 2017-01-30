@@ -335,18 +335,37 @@ coreo_aws_advisor_ec2 "advise-unused-security-groups-ec2" do
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_aws_advisor_elb "advise-elb-for-security-group" do
+coreo_aws_advisor_elb "advise-elb-ec2" do
   action :advise
   alerts ['elb-load-balancers-active-security-groups-list']
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_uni_util_jsrunner "ec2-security-groups" do
+=begin
+  START EC2 methods
+  JSON send method
+  HTML send method
+=end
+coreo_uni_util_notify "advise-ec2-json" do
+  action :nothing
+  type 'email'
+  allow_empty ${AUDIT_AWS_EC2_ALLOW_EMPTY}
+  send_on '${AUDIT_AWS_EC2_SEND_ON}'
+  payload '{"composite name":"PLAN::stack_name",
+  "plan name":"PLAN::name",
+  "violations": COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report }'
+  payload_type "json"
+  endpoint ({
+      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
+  })
+end
+
+coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
       "main_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
       "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb-for-security-group.report
+      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb-ec2.report
   }'
   function <<-EOH
 
@@ -415,7 +434,7 @@ end
 coreo_uni_util_variables "ec2-update-advisor-output" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-security-groups.return'}
+                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'}
             ])
 end
 

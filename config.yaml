@@ -1,7 +1,7 @@
 variables:
   AUDIT_AWS_EC2_ALERT_LIST:
     description: "Which alerts would you like to check for? Default is all EC2 alerts."
-    required: true
+    required: false
     type: array
     default:
       - ec2-inventory-instances
@@ -52,7 +52,7 @@ variables:
     type: string
     default: "nothing"
   AUDIT_AWS_EC2_HTML_REPORT:
-      description: "Would you like to send a full EC2 report? This is an email that details any violations found and includes a list of the violating cloud objects. Options - notify / nothing. Default is notify."
+      description: "Would you like to send a full EC2 report? This is an email that details any violations found and includes a list of the violating cloud objects. Options - notify / nothing. Default is nothing."
       required: true
       type: string
       default: "nothing"
