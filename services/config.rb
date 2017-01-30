@@ -440,15 +440,15 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
   var violations = json_input.violations;
   var result = {};
   var file_date = null;
-    for (var region in violations) {
-        result[region] = {};
-      for (var violator_id in region) {
+    
+  for (var region in violations) {
+      result[region] = {};
+      Object.keys(violations[region]).forEach(violator_id => {
           result[region][violator_id] = {};
           result[region][violator_id].tags = violations[region][violator_id].tags;
           result[region][violator_id].violations = {}
-          for (var rule_id in region[violator_id].violations) {
+          for (var rule_id in violations[region][violator_id].violations) {
               is_violation = true;
-   
               result[region][violator_id].violations[rule_id] = violations[region][violator_id].violations[rule_id];
               for (var suppress_rule_id in suppression) {
                   for (var suppress_violator_num in suppression[suppress_rule_id]) {
@@ -456,10 +456,10 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
                           file_date = null;
                           var suppress_obj_id_time = suppression[suppress_rule_id][suppress_violator_num][suppress_violator_id];
                           if (rule_id === suppress_rule_id) {
-   
+  
                               if (violator_id === suppress_violator_id) {
                                   var now_date = new Date();
-   
+  
                                   if (suppress_obj_id_time === "") {
                                       suppress_obj_id_time = new Date();
                                   } else {
@@ -470,11 +470,11 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
                                   if (isNaN(rule_date.getTime())) {
                                       rule_date = new Date(0);
                                   }
-   
+  
                                   if (now_date <= rule_date) {
-   
+  
                                       is_violation = false;
-   
+  
                                       result[region][violator_id].violations[rule_id]["suppressed"] = true;
                                       if (file_date != null) {
                                           result[region][violator_id].violations[rule_id]["suppressed_until"] = file_date;
@@ -484,11 +484,11 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
                               }
                           }
                       }
-   
+  
                   }
               }
               if (is_violation) {
-   
+  
                   if (file_date !== null) {
                       result[region][violator_id].violations[rule_id]["suppressed_until"] = file_date;
                       result[region][violator_id].violations[rule_id]["suppression_expired"] = true;
@@ -498,8 +498,8 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
                   result[region][violator_id].violations[rule_id]["suppressed"] = false;
               }
           }
-      }
-    }
+      });
+  }
  
   var rtn = result;
   
