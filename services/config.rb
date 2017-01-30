@@ -346,7 +346,7 @@ coreo_uni_util_jsrunner "ec2-security-groups" do
   json_input '{
       "main_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
       "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb.report
+      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb-for-security-group.report
   }'
   function <<-EOH
 
