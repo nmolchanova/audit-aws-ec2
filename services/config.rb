@@ -365,41 +365,48 @@ const groupIsActive = (groupId) => {
     return false;
 };
 
-Object.keys(json_input.elb_report).forEach((key) => {
-    const violation = json_input.elb_report[key].violations['elb-load-balancers-active-security-groups-list'];
-    if (!violation) return;
-    violation.violating_object.forEach((obj) => {
-        obj.object.forEach((secGroup) => {
-            activeSecurityGroups.push(secGroup);
-        })
-    });
+Object.keys(json_input.elb_report).forEach((region) => {
+  Object.keys(json_input.elb_report[region]).forEach(key => {
+      const violation = json_input.elb_report[region][key].violations['elb-load-balancers-active-security-groups-list'];
+      if (!violation) return;
+      violation.violating_object.forEach((obj) => {
+          obj.object.forEach((secGroup) => {
+              activeSecurityGroups.push(secGroup);
+          })
+      });
+  });
 });
-Object.keys(json_input.ec2_report).forEach((key) => {
-    const violation = json_input.ec2_report[key].violations['ec2-instances-active-security-groups-list'];
-    if (!violation) return;
-    violation.violating_object.forEach((obj) => {
-        activeSecurityGroups.push(obj.object.group_id);
-    });
-});
-Object.keys(json_input.ec2_report).forEach((key) => {
-    const tags = json_input.ec2_report[key].tags;
-    const violations = json_input.ec2_report[key].violations["ec2-security-groups-list"];
-    if (!violations) return;
+Object.keys(json_input.ec2_report).forEach((region) => {
 
-    const currentSecGroup = violations.violating_object[0].object;
-    if (groupIsActive(currentSecGroup.group_id)) return;
-    const securityGroupIsNotUsedAlert = {
-        'display_name': 'EC2 security group is not used',
-        'description': 'Security group is not used anywhere',
-        'category': 'Audit',
-        'suggested_action': 'Remove this security group',
-        'level': 'Warning',
-        'region': violations.region
-    };
-    const violationKey = 'ec2-not-used-security-groups';
-    if (!json_input.main_report[key]) json_input.main_report[key] = { violations: {}, tags: [] };
-    json_input.main_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
-    json_input.main_report[key].tags.concat(tags);
+  Object.keys(json_input.ec2_report[region]).forEach(key => {
+      const violation = json_input.ec2_report[region][key].violations['ec2-instances-active-security-groups-list'];
+      if (!violation) return;
+      violation.violating_object.forEach((obj) => {
+          activeSecurityGroups.push(obj.object.group_id);
+      });
+  });
+});
+Object.keys(json_input.ec2_report).forEach((region) => {
+  Object.keys(json_input.ec2_report[region]).forEach(key => {
+      const tags = json_input.ec2_report[region][key].tags;
+      const violations = json_input.ec2_report[region][key].violations["ec2-security-groups-list"];
+      if (!violations) return;
+  
+      const currentSecGroup = violations['result_info'][0].object;
+      if (groupIsActive(currentSecGroup.group_id)) return;
+      const securityGroupIsNotUsedAlert = {
+          'display_name': 'EC2 security group is not used',
+          'description': 'Security group is not used anywhere',
+          'category': 'Audit',
+          'suggested_action': 'Remove this security group',
+          'level': 'Warning',
+          'region': violations.region
+      };
+      const violationKey = 'ec2-not-used-security-groups';
+      if (!json_input.main_report[region][key]) json_input.main_report[region][key] = { violations: {}, tags: [] };
+      json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
+      json_input.main_report[region][key].tags.concat(tags);
+  });
 });
 callback(json_input.main_report);
   EOH
@@ -432,67 +439,67 @@ coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
   coreoExport('suppression', JSON.stringify(suppression));
   var violations = json_input.violations;
   var result = {};
-    var file_date = null;
-    for (var violator_id in violations) {
-        result[violator_id] = {};
-        result[violator_id].tags = violations[violator_id].tags;
-        result[violator_id].violations = {}
-        for (var rule_id in violations[violator_id].violations) {
-            is_violation = true;
- 
-            result[violator_id].violations[rule_id] = violations[violator_id].violations[rule_id];
-            for (var suppress_rule_id in suppression) {
-                for (var suppress_violator_num in suppression[suppress_rule_id]) {
-                    for (var suppress_violator_id in suppression[suppress_rule_id][suppress_violator_num]) {
-                        file_date = null;
-                        var suppress_obj_id_time = suppression[suppress_rule_id][suppress_violator_num][suppress_violator_id];
-                        if (rule_id === suppress_rule_id) {
- 
-                            if (violator_id === suppress_violator_id) {
-                                var now_date = new Date();
- 
-                                if (suppress_obj_id_time === "") {
-                                    suppress_obj_id_time = new Date();
-                                } else {
-                                    file_date = suppress_obj_id_time;
-                                    suppress_obj_id_time = file_date;
-                                }
-                                var rule_date = new Date(suppress_obj_id_time);
-                                if (isNaN(rule_date.getTime())) {
-                                    rule_date = new Date(0);
-                                }
- 
-                                if (now_date <= rule_date) {
- 
-                                    is_violation = false;
- 
-                                    result[violator_id].violations[rule_id]["suppressed"] = true;
-                                    if (file_date != null) {
-                                        result[violator_id].violations[rule_id]["suppressed_until"] = file_date;
-                                        result[violator_id].violations[rule_id]["suppression_expired"] = false;
-                                    }
-                                }
-                            }
-                        }
-                    }
- 
-                }
-            }
-            if (is_violation) {
- 
-                if (file_date !== null) {
-                    result[violator_id].violations[rule_id]["suppressed_until"] = file_date;
-                    result[violator_id].violations[rule_id]["suppression_expired"] = true;
-                } else {
-                    result[violator_id].violations[rule_id]["suppression_expired"] = false;
-                }
-                result[violator_id].violations[rule_id]["suppressed"] = false;
-            }
-        }
+  var file_date = null;
+    for (var region in violations) {
+      for (var violator_id in region) {
+          result[region][violator_id] = {};
+          result[region][violator_id].tags = violations[region][violator_id].tags;
+          result[region][violator_id].violations = {}
+          for (var rule_id in region[violator_id].violations) {
+              is_violation = true;
+   
+              result[region][violator_id].violations[rule_id] = violations[region][violator_id].violations[rule_id];
+              for (var suppress_rule_id in suppression) {
+                  for (var suppress_violator_num in suppression[suppress_rule_id]) {
+                      for (var suppress_violator_id in suppression[suppress_rule_id][suppress_violator_num]) {
+                          file_date = null;
+                          var suppress_obj_id_time = suppression[suppress_rule_id][suppress_violator_num][suppress_violator_id];
+                          if (rule_id === suppress_rule_id) {
+   
+                              if (violator_id === suppress_violator_id) {
+                                  var now_date = new Date();
+   
+                                  if (suppress_obj_id_time === "") {
+                                      suppress_obj_id_time = new Date();
+                                  } else {
+                                      file_date = suppress_obj_id_time;
+                                      suppress_obj_id_time = file_date;
+                                  }
+                                  var rule_date = new Date(suppress_obj_id_time);
+                                  if (isNaN(rule_date.getTime())) {
+                                      rule_date = new Date(0);
+                                  }
+   
+                                  if (now_date <= rule_date) {
+   
+                                      is_violation = false;
+   
+                                      result[region][violator_id].violations[rule_id]["suppressed"] = true;
+                                      if (file_date != null) {
+                                          result[region][violator_id].violations[rule_id]["suppressed_until"] = file_date;
+                                          result[region][violator_id].violations[rule_id]["suppression_expired"] = false;
+                                      }
+                                  }
+                              }
+                          }
+                      }
+   
+                  }
+              }
+              if (is_violation) {
+   
+                  if (file_date !== null) {
+                      result[region][violator_id].violations[rule_id]["suppressed_until"] = file_date;
+                      result[region][violator_id].violations[rule_id]["suppression_expired"] = true;
+                  } else {
+                      result[region][violator_id].violations[rule_id]["suppression_expired"] = false;
+                  }
+                  result[region][violator_id].violations[rule_id]["suppressed"] = false;
+              }
+          }
+      }
     }
  
-    var rtn = result;
-  
   var rtn = result;
   
   callback(result);
@@ -533,7 +540,7 @@ coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.6.8"
+                   :version => "1.7.0"
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
