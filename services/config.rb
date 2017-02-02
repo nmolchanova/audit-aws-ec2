@@ -1,5 +1,5 @@
 
-coreo_aws_advisor_alert "ec2-inventory-instances" do
+coreo_aws_rule "ec2-inventory-instances" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
@@ -12,11 +12,11 @@ coreo_aws_advisor_alert "ec2-inventory-instances" do
   objectives ["instances"]
   audit_objects ["reservation_set.instances_set.instance_id"]
   operators ["=~"]
-  alert_when [//]
+  raise_when [//]
   id_map "object.reservation_set.instances_set.instance_id"
 end
 
-coreo_aws_advisor_alert "ec2-inventory-security-groups" do
+coreo_aws_rule "ec2-inventory-security-groups" do
   action :define
   service :ec2
   # link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
@@ -29,11 +29,11 @@ coreo_aws_advisor_alert "ec2-inventory-security-groups" do
   objectives ["security_groups"]
   audit_objects ["object.security_group_info.group_name"]
   operators ["=~"]
-  alert_when [//]
+  raise_when [//]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-ip-address-whitelisted" do
+coreo_aws_rule "ec2-ip-address-whitelisted" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-ip-address-whitelisted.html"
@@ -45,11 +45,11 @@ coreo_aws_advisor_alert "ec2-ip-address-whitelisted" do
   objectives ["security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=~"]
-  alert_when [/\/32/]
+  raise_when [/\/32/]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-unrestricted-traffic" do
+coreo_aws_rule "ec2-unrestricted-traffic" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-unrestricted-traffic.html"
@@ -61,11 +61,11 @@ coreo_aws_advisor_alert "ec2-unrestricted-traffic" do
   objectives ["security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=="]
-  alert_when ["0.0.0.0/0"]
+  raise_when ["0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-1521-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -77,11 +77,11 @@ coreo_aws_advisor_alert "ec2-TCP-1521-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 1521, "0.0.0.0/0"]
+  raise_when ["tcp", 1521, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-3306-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -93,11 +93,11 @@ coreo_aws_advisor_alert "ec2-TCP-3306-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 3306, "0.0.0.0/0"]
+  raise_when ["tcp", 3306, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-5432-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -109,11 +109,11 @@ coreo_aws_advisor_alert "ec2-TCP-5432-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 5432, "0.0.0.0/0"]
+  raise_when ["tcp", 5432, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-27017-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -125,11 +125,11 @@ coreo_aws_advisor_alert "ec2-TCP-27017-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 27017, "0.0.0.0/0"]
+  raise_when ["tcp", 27017, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-1433-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -141,11 +141,11 @@ coreo_aws_advisor_alert "ec2-TCP-1433-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 1433, "0.0.0.0/0"]
+  raise_when ["tcp", 1433, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-3389-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -157,11 +157,11 @@ coreo_aws_advisor_alert "ec2-TCP-3389-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 3389, "0.0.0.0/0"]
+  raise_when ["tcp", 3389, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-22-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -173,11 +173,11 @@ coreo_aws_advisor_alert "ec2-TCP-22-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 22, "0.0.0.0/0"]
+  raise_when ["tcp", 22, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-5439-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -189,11 +189,11 @@ coreo_aws_advisor_alert "ec2-TCP-5439-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 5439, "0.0.0.0/0"]
+  raise_when ["tcp", 5439, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-23" do
+coreo_aws_rule "ec2-TCP-23" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -205,11 +205,11 @@ coreo_aws_advisor_alert "ec2-TCP-23" do
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
-  alert_when ["tcp", 23]
+  raise_when ["tcp", 23]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-21" do
+coreo_aws_rule "ec2-TCP-21" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -221,11 +221,11 @@ coreo_aws_advisor_alert "ec2-TCP-21" do
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
-  alert_when ["tcp", 21]
+  raise_when ["tcp", 21]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-20" do
+coreo_aws_rule "ec2-TCP-20" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -237,11 +237,11 @@ coreo_aws_advisor_alert "ec2-TCP-20" do
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
-  alert_when ["tcp", 20]
+  raise_when ["tcp", 20]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-ports-range" do
+coreo_aws_rule "ec2-ports-range" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-ports-range.html"
@@ -253,11 +253,11 @@ coreo_aws_advisor_alert "ec2-ports-range" do
   objectives ["security_groups"]
   audit_objects ["security_group_info.ip_permissions.from_port"]
   operators ["!="]
-  alert_when ["object[:to_port]"]
+  raise_when ["object[:to_port]"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-not-used-security-groups" do
+coreo_aws_rule "ec2-not-used-security-groups" do
   action :define
   service :ec2
   display_name "EC2 security group is not used"
@@ -268,11 +268,11 @@ coreo_aws_advisor_alert "ec2-not-used-security-groups" do
   objectives ["security_groups"]
   audit_objects ["security_group_info"]
   operators ["=="]
-  alert_when [false]
+  raise_when [false]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-security-groups-list" do
+coreo_aws_rule "ec2-security-groups-list" do
   action :define
   service :ec2
   include_violations_in_count false
@@ -285,11 +285,11 @@ coreo_aws_advisor_alert "ec2-security-groups-list" do
   objectives ["security_groups"]
   audit_objects ["security_group_info.group_name"]
   operators ["=~"]
-  alert_when [//]
+  raise_when [//]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
+coreo_aws_rule "ec2-instances-active-security-groups-list" do
   action :define
   service :ec2
   include_violations_in_count false
@@ -302,11 +302,11 @@ coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
   objectives ["instances"]
   audit_objects ["reservation_set.instances_set.group_set.group_id"]
   operators ["=~"]
-  alert_when [//]
+  raise_when [//]
   id_map "object.reservation_set.instances_set.instance_id"
 end
 
-coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
+coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   action :define
   service :elb
   include_violations_in_count false
@@ -319,25 +319,25 @@ coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
   objectives ["load_balancers"]
   audit_objects ["load_balancer_descriptions.security_groups"]
   operators ["=~"]
-  alert_when [//]
+  raise_when [//]
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
-coreo_aws_advisor_ec2 "advise-ec2" do
-  action :advise
-  alerts ${AUDIT_AWS_EC2_ALERT_LIST}
+coreo_aws_rule_runner_ec2 "advise-ec2" do
+  action :run
+  rules ${AUDIT_AWS_EC2_ALERT_LIST}
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_aws_advisor_ec2 "advise-unused-security-groups-ec2" do
-  action :advise
-  alerts ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
+coreo_aws_rule_runner_ec2 "advise-unused-security-groups-ec2" do
+  action :run
+  rules ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_aws_advisor_elb "advise-elb-ec2" do
-  action :advise
-  alerts ['elb-load-balancers-active-security-groups-list']
+coreo_aws_rule_runner_elb "advise-elb-ec2" do
+  action :run
+  rules ['elb-load-balancers-active-security-groups-list']
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
@@ -353,19 +353,19 @@ coreo_uni_util_notify "advise-ec2-json" do
   send_on '${AUDIT_AWS_EC2_SEND_ON}'
   payload '{"composite name":"PLAN::stack_name",
   "plan name":"PLAN::name",
-  "violations": COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report }'
+  "violations": COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report }'
   payload_type "json"
   endpoint ({
-      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
+      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 rule results on PLAN::stack_name :: PLAN::name'
   })
 end
 
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
-      "main_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
-      "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb-ec2.report
+      "main_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report,
+      "ec2_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-unused-security-groups-ec2.report,
+      "elb_report":COMPOSITE::coreo_aws_rule_runner_elb.advise-elb-ec2.report
   }'
   function <<-EOH
 
@@ -434,14 +434,14 @@ end
 coreo_uni_util_variables "ec2-update-advisor-output" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'}
+                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'}
             ])
 end
 
 coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
   action :run
   provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
+  json_input '{"violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
   packages([
                {
                    :name => "js-yaml",
@@ -531,14 +531,14 @@ end
 coreo_uni_util_variables "ec2-for-suppression-update-advisor-output" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-suppression-ec2.return'}
+                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-suppression-ec2.return'}
             ])
 end
 
 coreo_uni_util_jsrunner "jsrunner-process-table-ec2" do
   action :run
   provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
+  json_input '{"violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
   packages([
                {
                    :name => "js-yaml",
@@ -629,6 +629,6 @@ COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-rollup.return
   '
   payload_type 'text'
   endpoint ({
-      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
+      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 rule results on PLAN::stack_name :: PLAN::name'
   })
 end
