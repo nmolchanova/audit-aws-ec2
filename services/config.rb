@@ -590,7 +590,7 @@ end
 coreo_uni_util_jsrunner "jsrunner-process-alert-list-ec2" do
   action :run
   provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
+  json_input '{"violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
   packages([
                {
                    :name => "js-yaml",
