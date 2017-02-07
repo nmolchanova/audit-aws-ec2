@@ -1,8 +1,5 @@
-###########################################
-# User Visible Rule Definitions
-###########################################
 
-coreo_aws_advisor_alert "ec2-inventory-instances" do
+coreo_aws_rule "ec2-inventory-instances" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
@@ -15,11 +12,11 @@ coreo_aws_advisor_alert "ec2-inventory-instances" do
   objectives ["instances"]
   audit_objects ["reservation_set.instances_set.instance_id"]
   operators ["=~"]
-  alert_when [//]
+  raise_when [//]
   id_map "object.reservation_set.instances_set.instance_id"
 end
 
-coreo_aws_advisor_alert "ec2-inventory-security-groups" do
+coreo_aws_rule "ec2-inventory-security-groups" do
   action :define
   service :ec2
   # link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
@@ -32,11 +29,11 @@ coreo_aws_advisor_alert "ec2-inventory-security-groups" do
   objectives ["security_groups"]
   audit_objects ["object.security_group_info.group_name"]
   operators ["=~"]
-  alert_when [//]
+  raise_when [//]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-ip-address-whitelisted" do
+coreo_aws_rule "ec2-ip-address-whitelisted" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-ip-address-whitelisted.html"
@@ -48,11 +45,11 @@ coreo_aws_advisor_alert "ec2-ip-address-whitelisted" do
   objectives ["security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=~"]
-  alert_when [/\/32/]
+  raise_when [/\/32/]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-unrestricted-traffic" do
+coreo_aws_rule "ec2-unrestricted-traffic" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-unrestricted-traffic.html"
@@ -64,11 +61,11 @@ coreo_aws_advisor_alert "ec2-unrestricted-traffic" do
   objectives ["security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=="]
-  alert_when ["0.0.0.0/0"]
+  raise_when ["0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-1521-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -80,11 +77,11 @@ coreo_aws_advisor_alert "ec2-TCP-1521-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 1521, "0.0.0.0/0"]
+  raise_when ["tcp", 1521, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-3306-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -96,11 +93,11 @@ coreo_aws_advisor_alert "ec2-TCP-3306-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 3306, "0.0.0.0/0"]
+  raise_when ["tcp", 3306, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-5432-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -112,11 +109,11 @@ coreo_aws_advisor_alert "ec2-TCP-5432-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 5432, "0.0.0.0/0"]
+  raise_when ["tcp", 5432, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-27017-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -128,11 +125,11 @@ coreo_aws_advisor_alert "ec2-TCP-27017-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 27017, "0.0.0.0/0"]
+  raise_when ["tcp", 27017, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-1433-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -144,11 +141,11 @@ coreo_aws_advisor_alert "ec2-TCP-1433-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 1433, "0.0.0.0/0"]
+  raise_when ["tcp", 1433, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-3389-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -160,11 +157,11 @@ coreo_aws_advisor_alert "ec2-TCP-3389-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 3389, "0.0.0.0/0"]
+  raise_when ["tcp", 3389, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-22-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -176,11 +173,11 @@ coreo_aws_advisor_alert "ec2-TCP-22-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 22, "0.0.0.0/0"]
+  raise_when ["tcp", 22, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-5439-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -192,11 +189,11 @@ coreo_aws_advisor_alert "ec2-TCP-5439-0.0.0.0/0" do
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
-  alert_when ["tcp", 5439, "0.0.0.0/0"]
+  raise_when ["tcp", 5439, "0.0.0.0/0"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-23" do
+coreo_aws_rule "ec2-TCP-23" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -208,11 +205,11 @@ coreo_aws_advisor_alert "ec2-TCP-23" do
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
-  alert_when ["tcp", 23]
+  raise_when ["tcp", 23]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-21" do
+coreo_aws_rule "ec2-TCP-21" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -224,11 +221,11 @@ coreo_aws_advisor_alert "ec2-TCP-21" do
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
-  alert_when ["tcp", 21]
+  raise_when ["tcp", 21]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-TCP-20" do
+coreo_aws_rule "ec2-TCP-20" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
@@ -240,11 +237,11 @@ coreo_aws_advisor_alert "ec2-TCP-20" do
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
-  alert_when ["tcp", 20]
+  raise_when ["tcp", 20]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-ports-range" do
+coreo_aws_rule "ec2-ports-range" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_ec2-ports-range.html"
@@ -256,11 +253,11 @@ coreo_aws_advisor_alert "ec2-ports-range" do
   objectives ["security_groups"]
   audit_objects ["security_group_info.ip_permissions.from_port"]
   operators ["!="]
-  alert_when ["object[:to_port]"]
+  raise_when ["object[:to_port]"]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-not-used-security-groups" do
+coreo_aws_rule "ec2-not-used-security-groups" do
   action :define
   service :ec2
   display_name "EC2 security group is not used"
@@ -271,15 +268,11 @@ coreo_aws_advisor_alert "ec2-not-used-security-groups" do
   objectives ["security_groups"]
   audit_objects ["security_group_info"]
   operators ["=="]
-  alert_when [false]
+  raise_when [false]
   id_map "object.security_group_info.group_id"
 end
 
-###########################################
-# System-Defined (Internal) Rule Definitions
-###########################################
-
-coreo_aws_advisor_alert "ec2-security-groups-list" do
+coreo_aws_rule "ec2-security-groups-list" do
   action :define
   service :ec2
   include_violations_in_count false
@@ -292,11 +285,11 @@ coreo_aws_advisor_alert "ec2-security-groups-list" do
   objectives ["security_groups"]
   audit_objects ["security_group_info.group_name"]
   operators ["=~"]
-  alert_when [//]
+  raise_when [//]
   id_map "object.security_group_info.group_id"
 end
 
-coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
+coreo_aws_rule "ec2-instances-active-security-groups-list" do
   action :define
   service :ec2
   include_violations_in_count false
@@ -309,11 +302,11 @@ coreo_aws_advisor_alert "ec2-instances-active-security-groups-list" do
   objectives ["instances"]
   audit_objects ["reservation_set.instances_set.group_set.group_id"]
   operators ["=~"]
-  alert_when [//]
+  raise_when [//]
   id_map "object.reservation_set.instances_set.instance_id"
 end
 
-coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
+coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   action :define
   service :elb
   include_violations_in_count false
@@ -326,30 +319,25 @@ coreo_aws_advisor_alert "elb-load-balancers-active-security-groups-list" do
   objectives ["load_balancers"]
   audit_objects ["load_balancer_descriptions.security_groups"]
   operators ["=~"]
-  alert_when [//]
+  raise_when [//]
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
-###########################################
-# Compsite-Internal Resources follow until end
-#   (Resources used by the system for execution and display processing)
-###########################################
-
-coreo_aws_advisor_ec2 "advise-ec2" do
-  action :advise
-  alerts ${AUDIT_AWS_EC2_ALERT_LIST}
+coreo_aws_rule_runner_ec2 "advise-ec2" do
+  action :run
+  rules ${AUDIT_AWS_EC2_ALERT_LIST}
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_aws_advisor_ec2 "advise-unused-security-groups-ec2" do
-  action :advise
-  alerts ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
+coreo_aws_rule_runner_ec2 "advise-unused-security-groups-ec2" do
+  action :run
+  rules ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_aws_advisor_elb "advise-elb-ec2" do
-  action :advise
-  alerts ['elb-load-balancers-active-security-groups-list']
+coreo_aws_rule_runner_elb "advise-elb-ec2" do
+  action :run
+  rules ['elb-load-balancers-active-security-groups-list']
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
@@ -365,19 +353,19 @@ coreo_uni_util_notify "advise-ec2-json" do
   send_on '${AUDIT_AWS_EC2_SEND_ON}'
   payload '{"composite name":"PLAN::stack_name",
   "plan name":"PLAN::name",
-  "violations": COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report }'
+  "violations": COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report }'
   payload_type "json"
   endpoint ({
-      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
+      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 rule results on PLAN::stack_name :: PLAN::name'
   })
 end
 
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
-      "main_report":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report,
-      "ec2_report":COMPOSITE::coreo_aws_advisor_ec2.advise-unused-security-groups-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_advisor_elb.advise-elb-ec2.report
+      "main_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report,
+      "ec2_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-unused-security-groups-ec2.report,
+      "elb_report":COMPOSITE::coreo_aws_rule_runner_elb.advise-elb-ec2.report
   }'
   function <<-EOH
 
@@ -396,41 +384,48 @@ const groupIsActive = (groupId) => {
     return false;
 };
 
-Object.keys(json_input.elb_report).forEach((key) => {
-    const violation = json_input.elb_report[key].violations['elb-load-balancers-active-security-groups-list'];
-    if (!violation) return;
-    violation.violating_object.forEach((obj) => {
-        obj.object.forEach((secGroup) => {
-            activeSecurityGroups.push(secGroup);
-        })
-    });
+Object.keys(json_input.elb_report).forEach((region) => {
+  Object.keys(json_input.elb_report[region]).forEach(key => {
+      const violation = json_input.elb_report[region][key].violations['elb-load-balancers-active-security-groups-list'];
+      if (!violation) return;
+      violation.result_info.forEach((obj) => {
+          obj.object.forEach((secGroup) => {
+              activeSecurityGroups.push(secGroup);
+          })
+      });
+  });
 });
-Object.keys(json_input.ec2_report).forEach((key) => {
-    const violation = json_input.ec2_report[key].violations['ec2-instances-active-security-groups-list'];
-    if (!violation) return;
-    violation.violating_object.forEach((obj) => {
-        activeSecurityGroups.push(obj.object.group_id);
-    });
-});
-Object.keys(json_input.ec2_report).forEach((key) => {
-    const tags = json_input.ec2_report[key].tags;
-    const violations = json_input.ec2_report[key].violations["ec2-security-groups-list"];
-    if (!violations) return;
+Object.keys(json_input.ec2_report).forEach((region) => {
 
-    const currentSecGroup = violations.violating_object[0].object;
-    if (groupIsActive(currentSecGroup.group_id)) return;
-    const securityGroupIsNotUsedAlert = {
-        'display_name': 'EC2 security group is not used',
-        'description': 'Security group is not used anywhere',
-        'category': 'Audit',
-        'suggested_action': 'Remove this security group',
-        'level': 'Warning',
-        'region': violations.region
-    };
-    const violationKey = 'ec2-not-used-security-groups';
-    if (!json_input.main_report[key]) json_input.main_report[key] = { violations: {}, tags: [] };
-    json_input.main_report[key].violations[violationKey] = securityGroupIsNotUsedAlert;
-    json_input.main_report[key].tags.concat(tags);
+  Object.keys(json_input.ec2_report[region]).forEach(key => {
+      const violation = json_input.ec2_report[region][key].violations['ec2-instances-active-security-groups-list'];
+      if (!violation) return;
+      violation.result_info.forEach((obj) => {
+          activeSecurityGroups.push(obj.object.group_id);
+      });
+  });
+});
+Object.keys(json_input.ec2_report).forEach((region) => {
+  Object.keys(json_input.ec2_report[region]).forEach(key => {
+      const tags = json_input.ec2_report[region][key].tags;
+      const violations = json_input.ec2_report[region][key].violations["ec2-security-groups-list"];
+      if (!violations) return;
+  
+      const currentSecGroup = violations['result_info'][0].object;
+      if (groupIsActive(currentSecGroup.group_id)) return;
+      const securityGroupIsNotUsedAlert = {
+          'display_name': 'EC2 security group is not used',
+          'description': 'Security group is not used anywhere',
+          'category': 'Audit',
+          'suggested_action': 'Remove this security group',
+          'level': 'Warning',
+          'region': violations.region
+      };
+      const violationKey = 'ec2-not-used-security-groups';
+      if (!json_input.main_report[region][key]) json_input.main_report[region][key] = { violations: {}, tags: [] };
+      json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
+      json_input.main_report[region][key].tags.concat(tags);
+  });
 });
 callback(json_input.main_report);
   EOH
@@ -439,102 +434,141 @@ end
 coreo_uni_util_variables "ec2-update-advisor-output" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'}
+                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'}
             ])
 end
-
 
 coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
   action :run
   provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
+  json_input '{"violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
   packages([
                {
                    :name => "js-yaml",
                    :version => "3.7.0"
                }       ])
   function <<-EOH
-  var fs = require('fs');
-  var yaml = require('js-yaml');
+  const fs = require('fs');
+  const yaml = require('js-yaml');
   let suppression;
   try {
       suppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
   } catch (e) {
   }
   coreoExport('suppression', JSON.stringify(suppression));
-  var violations = json_input.violations;
-  var result = {};
-    var file_date = null;
-    for (var violator_id in violations) {
-        result[violator_id] = {};
-        result[violator_id].tags = violations[violator_id].tags;
-        result[violator_id].violations = {}
-        for (var rule_id in violations[violator_id].violations) {
-            is_violation = true;
- 
-            result[violator_id].violations[rule_id] = violations[violator_id].violations[rule_id];
-            for (var suppress_rule_id in suppression) {
-                for (var suppress_violator_num in suppression[suppress_rule_id]) {
-                    for (var suppress_violator_id in suppression[suppress_rule_id][suppress_violator_num]) {
-                        file_date = null;
-                        var suppress_obj_id_time = suppression[suppress_rule_id][suppress_violator_num][suppress_violator_id];
-                        if (rule_id === suppress_rule_id) {
- 
-                            if (violator_id === suppress_violator_id) {
-                                var now_date = new Date();
- 
-                                if (suppress_obj_id_time === "") {
-                                    suppress_obj_id_time = new Date();
-                                } else {
-                                    file_date = suppress_obj_id_time;
-                                    suppress_obj_id_time = file_date;
-                                }
-                                var rule_date = new Date(suppress_obj_id_time);
-                                if (isNaN(rule_date.getTime())) {
-                                    rule_date = new Date(0);
-                                }
- 
-                                if (now_date <= rule_date) {
- 
-                                    is_violation = false;
- 
-                                    result[violator_id].violations[rule_id]["suppressed"] = true;
-                                    if (file_date != null) {
-                                        result[violator_id].violations[rule_id]["suppressed_until"] = file_date;
-                                        result[violator_id].violations[rule_id]["suppression_expired"] = false;
-                                    }
-                                }
-                            }
-                        }
-                    }
- 
-                }
-            }
-            if (is_violation) {
- 
-                if (file_date !== null) {
-                    result[violator_id].violations[rule_id]["suppressed_until"] = file_date;
-                    result[violator_id].violations[rule_id]["suppression_expired"] = true;
-                } else {
-                    result[violator_id].violations[rule_id]["suppression_expired"] = false;
-                }
-                result[violator_id].violations[rule_id]["suppressed"] = false;
-            }
-        }
-    }
- 
-    var rtn = result;
+  function createViolationWithSuppression(result) {
+      const regionKeys = Object.keys(violations);
+      regionKeys.forEach(regionKey => {
+          result[regionKey] = {};
+          const objectIdKeys = Object.keys(violations[regionKey]);
+          objectIdKeys.forEach(objectIdKey => {
+              createObjectId(regionKey, objectIdKey);
+          });
+      });
+  }
   
-  var rtn = result;
+  function createObjectId(regionKey, objectIdKey) {
+      const wayToResultObjectId = result[regionKey][objectIdKey] = {};
+      const wayToViolationObjectId = violations[regionKey][objectIdKey];
+      wayToResultObjectId.tags = wayToViolationObjectId.tags;
+      wayToResultObjectId.violations = {};
+      createSuppression(wayToViolationObjectId, regionKey, objectIdKey);
+  }
+  
+  
+  function createSuppression(wayToViolationObjectId, regionKey, violationObjectIdKey) {
+      const ruleKeys = Object.keys(wayToViolationObjectId['violations']);
+      ruleKeys.forEach(violationRuleKey => {
+          result[regionKey][violationObjectIdKey].violations[violationRuleKey] = wayToViolationObjectId['violations'][violationRuleKey];
+          Object.keys(suppression).forEach(suppressRuleKey => {
+              suppression[suppressRuleKey].forEach(suppressionObject => {
+                  Object.keys(suppressionObject).forEach(suppressObjectIdKey => {
+                      setDateForSuppression(
+                          suppressionObject, suppressObjectIdKey,
+                          violationRuleKey, suppressRuleKey,
+                          violationObjectIdKey, regionKey
+                      );
+                  });
+              });
+          });
+      });
+  }
+  
+  
+  function setDateForSuppression(
+      suppressionObject, suppressObjectIdKey,
+      violationRuleKey, suppressRuleKey,
+      violationObjectIdKey, regionKey
+  ) {
+      file_date = null;
+      let suppressDate = suppressionObject[suppressObjectIdKey];
+      const areViolationsEqual = violationRuleKey === suppressRuleKey && violationObjectIdKey === suppressObjectIdKey;
+      if (areViolationsEqual) {
+          const nowDate = new Date();
+          const correctDateSuppress = getCorrectSuppressDate(suppressDate);
+          const isSuppressionDate = nowDate <= correctDateSuppress;
+          if (isSuppressionDate) {
+              setSuppressionProp(regionKey, violationObjectIdKey, violationRuleKey, file_date);
+          } else {
+              setSuppressionExpired(regionKey, violationObjectIdKey, violationRuleKey, file_date);
+          }
+      }
+  }
+  
+  
+  function getCorrectSuppressDate(suppressDate) {
+      const hasSuppressionDate = suppressDate !== '';
+      if (hasSuppressionDate) {
+          file_date = suppressDate;
+      } else {
+          suppressDate = new Date();
+      }
+      let correctDateSuppress = new Date(suppressDate);
+      if (isNaN(correctDateSuppress.getTime())) {
+          correctDateSuppress = new Date(0);
+      }
+      return correctDateSuppress;
+  }
+  
+  
+  function setSuppressionProp(regionKey, objectIdKey, violationRuleKey, file_date) {
+      const wayToViolationObject = result[regionKey][objectIdKey].violations[violationRuleKey];
+      wayToViolationObject["suppressed"] = true;
+      if (file_date != null) {
+          wayToViolationObject["suppression_until"] = file_date;
+          wayToViolationObject["suppression_expired"] = false;
+      }
+  }
+  
+  function setSuppressionExpired(regionKey, objectIdKey, violationRuleKey, file_date) {
+      if (file_date !== null) {
+          result[regionKey][objectIdKey].violations[violationRuleKey]["suppression_until"] = file_date;
+          result[regionKey][objectIdKey].violations[violationRuleKey]["suppression_expired"] = true;
+      } else {
+          result[regionKey][objectIdKey].violations[violationRuleKey]["suppression_expired"] = false;
+      }
+      result[regionKey][objectIdKey].violations[violationRuleKey]["suppressed"] = false;
+  }
+  
+  const violations = json_input['violations'];
+  const result = {};
+  createViolationWithSuppression(result, json_input);
   
   callback(result);
   EOH
 end
 
+coreo_uni_util_variables "ec2-for-suppression-update-advisor-output" do
+  action :set
+  variables([
+                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-suppression-ec2.return'}
+            ])
+end
+
 coreo_uni_util_jsrunner "jsrunner-process-table-ec2" do
   action :run
   provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_advisor_ec2.advise-ec2.report}'
+  json_input '{"violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
   packages([
                {
                    :name => "js-yaml",
@@ -552,16 +586,34 @@ coreo_uni_util_jsrunner "jsrunner-process-table-ec2" do
   EOH
 end
 
+
+coreo_uni_util_jsrunner "jsrunner-process-alert-list-ec2" do
+  action :run
+  provide_composite_access true
+  json_input '{"violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
+  packages([
+               {
+                   :name => "js-yaml",
+                   :version => "3.7.0"
+               }       ])
+  function <<-EOH
+    let alertListToJSON = "${AUDIT_AWS_EC2_ALERT_LIST}";
+    let alertListArray = alertListToJSON.replace(/'/g, '"');
+    callback(alertListArray);
+  EOH
+end
+
 coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   action :run
   data_type "json"
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.6.0"
+                   :version => "1.7.8"
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
+                "alert list": COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-alert-list-ec2.return,
                 "table": COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-table-ec2.return,
                 "violations": COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-suppression-ec2.return}'
   function <<-EOH
@@ -570,25 +622,14 @@ const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT}";
 const OWNER_TAG = "${AUDIT_AWS_EC2_OWNER_TAG}";
 const ALLOW_EMPTY = "${AUDIT_AWS_EC2_ALLOW_EMPTY}";
 const SEND_ON = "${AUDIT_AWS_EC2_SEND_ON}";
-const AUDIT_NAME = 'ec2';
-const TABLES = json_input['table'];
 const SHOWN_NOT_SORTED_VIOLATIONS_COUNTER = false;
 
-const WHAT_NEED_TO_SHOWN_ON_TABLE = {
-    OBJECT_ID: { headerName: 'AWS Object ID', isShown: true},
-    REGION: { headerName: 'Region', isShown: true },
-    AWS_CONSOLE: { headerName: 'AWS Console', isShown: true },
-    TAGS: { headerName: 'Tags', isShown: true },
-    AMI: { headerName: 'AMI', isShown: false },
-    KILL_SCRIPTS: { headerName: 'Kill Cmd', isShown: false }
-};
 
-const VARIABLES = { NO_OWNER_EMAIL, OWNER_TAG, AUDIT_NAME,
-    WHAT_NEED_TO_SHOWN_ON_TABLE, ALLOW_EMPTY, SEND_ON,
-    undefined, undefined, SHOWN_NOT_SORTED_VIOLATIONS_COUNTER};
+const VARIABLES = { NO_OWNER_EMAIL, OWNER_TAG, 
+    ALLOW_EMPTY, SEND_ON, SHOWN_NOT_SORTED_VIOLATIONS_COUNTER};
 
 const CloudCoreoJSRunner = require('cloudcoreo-jsrunner-commons');
-const AuditEC2 = new CloudCoreoJSRunner(JSON_INPUT, VARIABLES, TABLES);
+const AuditEC2 = new CloudCoreoJSRunner(JSON_INPUT, VARIABLES);
 const notifiers = AuditEC2.getNotifiers();
 callback(notifiers);
   EOH
@@ -636,7 +677,6 @@ COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-rollup.return
   '
   payload_type 'text'
   endpoint ({
-      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 advisor alerts on PLAN::stack_name :: PLAN::name'
+      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 rule results on PLAN::stack_name :: PLAN::name'
   })
 end
-# END EC2
