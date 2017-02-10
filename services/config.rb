@@ -502,23 +502,29 @@ coreo_uni_util_jsrunner "ec2-tags-rollup" do
   data_type "text"
   json_input 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.return'
   function <<-EOH
-var rollup_string = "";
-let rollup = '';
-let emailText = '';
-let numberOfViolations = 0;
-for (var entry=0; entry < json_input.length; entry++) {
-    if (json_input[entry]['endpoint']['to'].length) {
-        numberOfViolations += parseInt(json_input[entry]['num_violations']);
-        emailText += "recipient: " + json_input[entry]['endpoint']['to'] + " - " + "Violations: " + json_input[entry]['num_violations'] + "\\n";
-    }
+const notifiers = json_input;
+
+function setTextRollup() {
+    let emailText = '';
+    let numberOfViolations = 0;
+    notifiers.forEach(notifier => {
+        const hasEmail = notifier['endpoint']['to'].length;
+        if(hasEmail) {
+            numberOfViolations += parseInt(notifier['num_violations']);
+            emailText += "recipient: " + notifier['endpoint']['to'] + " - " + "Violations: " + notifier['num_violations'] + "\\n";
+        }
+    });
+
+    textRollup += 'Number of Violating Cloud Objects: ' + numberOfViolations + "\\n";
+    textRollup += 'Rollup' + "\\n";
+    textRollup += emailText;
 }
 
-rollup += 'number of Violations: ' + numberOfViolations + "\\n";
-rollup += 'Rollup' + "\\n";
-rollup += emailText;
 
-rollup_string = rollup;
-callback(rollup_string);
+let textRollup = '';
+setTextRollup();
+
+callback(textRollup);
   EOH
 end
 
