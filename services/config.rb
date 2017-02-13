@@ -443,58 +443,6 @@ coreo_uni_util_variables "update-planwide-2" do
             ])
 end
 
-coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array1" do
-  action :run
-  data_type "json"
-  provide_composite_access true
-  packages([
-               {
-                   :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.8.2"
-               },
-               {
-                   :name => "js-yaml",
-                   :version => "3.7.0"
-               }       ])
-  json_input '{ "composite name":"PLAN::stack_name",
-                "plan name":"PLAN::name",
-                "violations": COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
-  function <<-EOH
-  
-    
-function setTableAndSuppression() {
-  let table;
-  let suppression;
-
-  const fs = require('fs');
-  const yaml = require('js-yaml');
-  try {
-      suppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
-  } catch (e) {
-      console.log(`Error reading suppression.yaml file: ${e}`);
-      suppression = {};
-  }
-  try {
-      table = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
-  } catch (e) {
-      console.log(`Error reading table.yaml file: ${e}`);
-      table = {};
-  }
-  coreoExport('table', JSON.stringify(table));
-  coreoExport('suppression', JSON.stringify(suppression));
-
-  let alertListToJSON = "${AUDIT_AWS_EC2_ALERT_LIST}";
-  let alertListArray = alertListToJSON.replace(/'/g, '"');
-  json_input['alert list'] = alertListArray || [];
-  json_input['suppression'] = suppression || [];
-  json_input['table'] = table || {};
-}
-
-
-setTableAndSuppression();
-callback(json_input);
-  EOH
-end
 coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   action :run
   data_type "json"
