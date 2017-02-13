@@ -357,6 +357,7 @@ coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
       "main_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report,
+      "number_violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.number_violations,
       "ec2_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-unused-security-groups-ec2.report,
       "elb_report":COMPOSITE::coreo_aws_rule_runner_elb.advise-elb-ec2.report
   }'
@@ -398,6 +399,10 @@ Object.keys(json_input.ec2_report).forEach((region) => {
       });
   });
 });
+let number_violations = 0;
+if(json_input['number_violations']) {
+  number_violations = parseInt(json_input['number_violations']);
+}
 Object.keys(json_input.ec2_report).forEach((region) => {
   Object.keys(json_input.ec2_report[region]).forEach(key => {
       const tags = json_input.ec2_report[region][key].tags;
@@ -414,22 +419,27 @@ Object.keys(json_input.ec2_report).forEach((region) => {
           'level': 'Warning',
           'region': violations.region
       };
+      number_violations++
       const violationKey = 'ec2-not-used-security-groups';
       if (!json_input.main_report[region][key]) json_input.main_report[region][key] = { violations: {}, tags: [] };
       json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
       json_input.main_report[region][key].tags.concat(tags);
   });
 });
-callback(json_input.main_report);
+const ec2Object = {
+  "report": json_input.main_report,
+  "number_violations": JSON.stringify(number_violations)
+}
+callback(JSON.stringify(ec2Object));
   EOH
 end
 
 coreo_uni_util_variables "update-planwide-2" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
+                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return.report'},
                 {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'COMPOSITE::coreo_uni_util_variables.planwide.number_of_violations'}
+                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'COMPOSITE::coreo_uni_util_variables.planwide.results.number_violations'}
             ])
 end
 
