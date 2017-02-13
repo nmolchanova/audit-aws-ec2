@@ -323,6 +323,17 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
+
+coreo_uni_util_variables "planwide" do
+  action :set
+  variables([
+                {'COMPOSITE::coreo_uni_util_variables.planwide.composite_name' => 'PLAN::stack_name'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.plan_name' => 'PLAN::name'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'unset'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'unset'}
+            ])
+end
+
 coreo_aws_rule_runner_ec2 "advise-ec2" do
   action :run
   rules ${AUDIT_AWS_EC2_ALERT_LIST}
@@ -341,24 +352,6 @@ coreo_aws_rule_runner_elb "advise-elb-ec2" do
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-=begin
-  START EC2 methods
-  JSON send method
-  HTML send method
-=end
-coreo_uni_util_notify "advise-ec2-json" do
-  action :nothing
-  type 'email'
-  allow_empty ${AUDIT_AWS_EC2_ALLOW_EMPTY}
-  send_on '${AUDIT_AWS_EC2_SEND_ON}'
-  payload '{"composite name":"PLAN::stack_name",
-  "plan name":"PLAN::name",
-  "violations": COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report }'
-  payload_type "json"
-  endpoint ({
-      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 rule results on PLAN::stack_name :: PLAN::name'
-  })
-end
 
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
@@ -431,6 +424,15 @@ callback(json_input.main_report);
   EOH
 end
 
+coreo_uni_util_variables "update-planwide-2" do
+  action :set
+  variables([
+                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'COMPOSITE::coreo_uni_util_variables.planwide.number_of_violations'}
+            ])
+end
+
 coreo_uni_util_variables "ec2-update-advisor-output" do
   action :set
   variables([
@@ -462,13 +464,20 @@ function setTableAndSuppression() {
   const fs = require('fs');
   const yaml = require('js-yaml');
   try {
-      table = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
-      suppression = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
+      suppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
   } catch (e) {
+      console.log(`Error reading suppression.yaml file: ${e}`);
+      suppression = {};
+  }
+  try {
+      table = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
+  } catch (e) {
+      console.log(`Error reading table.yaml file: ${e}`);
+      table = {};
   }
   coreoExport('table', JSON.stringify(table));
-  coreoExport('suppression', JSON.stringify(table));
-  
+  coreoExport('suppression', JSON.stringify(suppression));
+
   let alertListToJSON = "${AUDIT_AWS_EC2_ALERT_LIST}";
   let alertListArray = alertListToJSON.replace(/'/g, '"');
   json_input['alert list'] = alertListArray || [];
