@@ -430,7 +430,7 @@ const ec2Object = {
   "report": json_input.main_report,
   "number_violations": JSON.stringify(number_violations)
 }
-callback(JSON.stringify(ec2Object));
+callback(ec2Object);
   EOH
 end
 
