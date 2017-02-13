@@ -542,12 +542,12 @@ callback(textRollup);
 end
 
 coreo_uni_util_notify "advise-ec2-to-tag-values" do
-  action :${AUDIT_AWS_EC2_HTML_REPORT}
+  action((("${AUDIT_AWS_EC2_ALERT_RECIPIENT}".length > 0)) ? :notify : :nothing)
   notifiers 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.return'
 end
 
 coreo_uni_util_notify "advise-ec2-rollup" do
-  action :${AUDIT_AWS_EC2_ROLLUP_REPORT}
+  action((("${AUDIT_AWS_EC2_ALERT_RECIPIENT}".length > 0) and (! "${AUDIT_AWS_EC2_OWNER_TAG}".eql?("NOT_A_TAG"))) ? :notify : :nothing)
   type 'email'
   allow_empty true
   send_on '${AUDIT_AWS_EC2_SEND_ON}'
