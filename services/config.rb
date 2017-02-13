@@ -443,16 +443,10 @@ coreo_uni_util_variables "update-planwide-2" do
             ])
 end
 
-coreo_uni_util_variables "ec2-update-advisor-output" do
-  action :set
-  variables([
-                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'}
-            ])
-end
-
 coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   action :run
   data_type "json"
+  provide_composite_access true
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
