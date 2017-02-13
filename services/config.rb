@@ -443,7 +443,7 @@ coreo_uni_util_variables "update-planwide-2" do
             ])
 end
 
-coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
+coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array1" do
   action :run
   data_type "json"
   provide_composite_access true
