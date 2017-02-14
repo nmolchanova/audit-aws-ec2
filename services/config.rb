@@ -421,7 +421,13 @@ Object.keys(json_input.ec2_report).forEach((region) => {
       };
       number_violations++
       const violationKey = 'ec2-not-used-security-groups';
-      if (!json_input.main_report[region][key]) json_input.main_report[region][key] = { violations: {}, tags: [] };
+      //console.log("working on key: " + key + " in region: " + region);
+      if (!json_input.main_report[region]) {
+          json_input.main_report[region] = {};
+      }
+      if (!json_input.main_report[region][key]) {
+          json_input.main_report[region][key] = { violations: {}, tags: [] };
+      }
       json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
       json_input.main_report[region][key].tags.concat(tags);
   });
@@ -470,13 +476,13 @@ function setTableAndSuppression() {
   try {
       suppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
   } catch (e) {
-      console.log(`Error reading suppression.yaml file: ${e}`);
+      console.log(`Error reading suppression.yaml file`);
       suppression = {};
   }
   try {
       table = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
   } catch (e) {
-      console.log(`Error reading table.yaml file: ${e}`);
+      console.log(`Error reading table.yaml file`);
       table = {};
   }
   coreoExport('table', JSON.stringify(table));
