@@ -262,7 +262,7 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   service :ec2
   display_name "EC2 security group is not used"
   description "Security group is not used anywhere"
-  category "Audit"
+  category "Security"
   suggested_action "Remove this security group"
   level "Warning"
   objectives ["security_groups"]
