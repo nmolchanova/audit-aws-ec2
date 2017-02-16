@@ -324,13 +324,13 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
 end
 
 
-coreo_uni_util_variables "planwide" do
+coreo_uni_util_variables "ec2-planwide" do
   action :set
   variables([
-                {'COMPOSITE::coreo_uni_util_variables.planwide.composite_name' => 'PLAN::stack_name'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.plan_name' => 'PLAN::name'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'unset'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'unset'}
+                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.composite_name' => 'PLAN::stack_name'},
+                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.plan_name' => 'PLAN::name'},
+                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'unset'},
+                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.number_violations' => 'unset'}
             ])
 end
 
@@ -440,12 +440,12 @@ callback(json_input.main_report);
   EOH
 end
 
-coreo_uni_util_variables "update-planwide-2" do
+coreo_uni_util_variables "ec2-update-planwide-2" do
   action :set
   variables([
                 {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.number_violations'}
+                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
+                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.number_violations' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.number_violations'}
             ])
 end
 
@@ -522,11 +522,11 @@ end
 
 
 
-coreo_uni_util_variables "update-planwide-3" do
+coreo_uni_util_variables "ec2-update-planwide-3" do
   action :set
   variables([
-                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.JSONReport'},
-                {'COMPOSITE::coreo_uni_util_variables.planwide.table' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.table'}
+                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.JSONReport'},
+                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.table' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.table'}
             ])
 end
 
