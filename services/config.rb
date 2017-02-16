@@ -323,6 +323,17 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
+
+coreo_uni_util_variables "planwide" do
+  action :set
+  variables([
+                {'COMPOSITE::coreo_uni_util_variables.planwide.composite_name' => 'PLAN::stack_name'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.plan_name' => 'PLAN::name'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'unset'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'unset'}
+            ])
+end
+
 coreo_aws_rule_runner_ec2 "advise-ec2" do
   action :run
   rules ${AUDIT_AWS_EC2_ALERT_LIST}
@@ -341,29 +352,12 @@ coreo_aws_rule_runner_elb "advise-elb-ec2" do
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-=begin
-  START EC2 methods
-  JSON send method
-  HTML send method
-=end
-coreo_uni_util_notify "advise-ec2-json" do
-  action :nothing
-  type 'email'
-  allow_empty ${AUDIT_AWS_EC2_ALLOW_EMPTY}
-  send_on '${AUDIT_AWS_EC2_SEND_ON}'
-  payload '{"composite name":"PLAN::stack_name",
-  "plan name":"PLAN::name",
-  "violations": COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report }'
-  payload_type "json"
-  endpoint ({
-      :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 rule results on PLAN::stack_name :: PLAN::name'
-  })
-end
 
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
       "main_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report,
+      "number_violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.number_violations,
       "ec2_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-unused-security-groups-ec2.report,
       "elb_report":COMPOSITE::coreo_aws_rule_runner_elb.advise-elb-ec2.report
   }'
@@ -405,6 +399,10 @@ Object.keys(json_input.ec2_report).forEach((region) => {
       });
   });
 });
+let number_violations = 0;
+if(json_input['number_violations']) {
+  number_violations = parseInt(json_input['number_violations']);
+}
 Object.keys(json_input.ec2_report).forEach((region) => {
   Object.keys(json_input.ec2_report[region]).forEach(key => {
       const tags = json_input.ec2_report[region][key].tags;
@@ -421,202 +419,85 @@ Object.keys(json_input.ec2_report).forEach((region) => {
           'level': 'Warning',
           'region': violations.region
       };
+      number_violations++
       const violationKey = 'ec2-not-used-security-groups';
-      if (!json_input.main_report[region][key]) json_input.main_report[region][key] = { violations: {}, tags: [] };
+      //console.log("working on key: " + key + " in region: " + region);
+      if (!json_input.main_report[region]) {
+          json_input.main_report[region] = {};
+      }
+      if (!json_input.main_report[region][key]) {
+          json_input.main_report[region][key] = { violations: {}, tags: [] };
+      }
       json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
       json_input.main_report[region][key].tags.concat(tags);
   });
 });
+
+
+coreoExport('number_violations', JSON.stringify(number_violations));
+
 callback(json_input.main_report);
   EOH
 end
 
-coreo_uni_util_variables "ec2-update-advisor-output" do
+coreo_uni_util_variables "update-planwide-2" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'}
+                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.number_violations' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.number_violations'}
             ])
-end
-
-coreo_uni_util_jsrunner "jsrunner-process-suppression-ec2" do
-  action :run
-  provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
-  packages([
-               {
-                   :name => "js-yaml",
-                   :version => "3.7.0"
-               }       ])
-  function <<-EOH
-  const fs = require('fs');
-  const yaml = require('js-yaml');
-  let suppression;
-  try {
-      suppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
-  } catch (e) {
-  }
-  coreoExport('suppression', JSON.stringify(suppression));
-  function createViolationWithSuppression(result) {
-      const regionKeys = Object.keys(violations);
-      regionKeys.forEach(regionKey => {
-          result[regionKey] = {};
-          const objectIdKeys = Object.keys(violations[regionKey]);
-          objectIdKeys.forEach(objectIdKey => {
-              createObjectId(regionKey, objectIdKey);
-          });
-      });
-  }
-  
-  function createObjectId(regionKey, objectIdKey) {
-      const wayToResultObjectId = result[regionKey][objectIdKey] = {};
-      const wayToViolationObjectId = violations[regionKey][objectIdKey];
-      wayToResultObjectId.tags = wayToViolationObjectId.tags;
-      wayToResultObjectId.violations = {};
-      createSuppression(wayToViolationObjectId, regionKey, objectIdKey);
-  }
-  
-  
-  function createSuppression(wayToViolationObjectId, regionKey, violationObjectIdKey) {
-      const ruleKeys = Object.keys(wayToViolationObjectId['violations']);
-      ruleKeys.forEach(violationRuleKey => {
-          result[regionKey][violationObjectIdKey].violations[violationRuleKey] = wayToViolationObjectId['violations'][violationRuleKey];
-          Object.keys(suppression).forEach(suppressRuleKey => {
-              suppression[suppressRuleKey].forEach(suppressionObject => {
-                  Object.keys(suppressionObject).forEach(suppressObjectIdKey => {
-                      setDateForSuppression(
-                          suppressionObject, suppressObjectIdKey,
-                          violationRuleKey, suppressRuleKey,
-                          violationObjectIdKey, regionKey
-                      );
-                  });
-              });
-          });
-      });
-  }
-  
-  
-  function setDateForSuppression(
-      suppressionObject, suppressObjectIdKey,
-      violationRuleKey, suppressRuleKey,
-      violationObjectIdKey, regionKey
-  ) {
-      file_date = null;
-      let suppressDate = suppressionObject[suppressObjectIdKey];
-      const areViolationsEqual = violationRuleKey === suppressRuleKey && violationObjectIdKey === suppressObjectIdKey;
-      if (areViolationsEqual) {
-          const nowDate = new Date();
-          const correctDateSuppress = getCorrectSuppressDate(suppressDate);
-          const isSuppressionDate = nowDate <= correctDateSuppress;
-          if (isSuppressionDate) {
-              setSuppressionProp(regionKey, violationObjectIdKey, violationRuleKey, file_date);
-          } else {
-              setSuppressionExpired(regionKey, violationObjectIdKey, violationRuleKey, file_date);
-          }
-      }
-  }
-  
-  
-  function getCorrectSuppressDate(suppressDate) {
-      const hasSuppressionDate = suppressDate !== '';
-      if (hasSuppressionDate) {
-          file_date = suppressDate;
-      } else {
-          suppressDate = new Date();
-      }
-      let correctDateSuppress = new Date(suppressDate);
-      if (isNaN(correctDateSuppress.getTime())) {
-          correctDateSuppress = new Date(0);
-      }
-      return correctDateSuppress;
-  }
-  
-  
-  function setSuppressionProp(regionKey, objectIdKey, violationRuleKey, file_date) {
-      const wayToViolationObject = result[regionKey][objectIdKey].violations[violationRuleKey];
-      wayToViolationObject["suppressed"] = true;
-      if (file_date != null) {
-          wayToViolationObject["suppression_until"] = file_date;
-          wayToViolationObject["suppression_expired"] = false;
-      }
-  }
-  
-  function setSuppressionExpired(regionKey, objectIdKey, violationRuleKey, file_date) {
-      if (file_date !== null) {
-          result[regionKey][objectIdKey].violations[violationRuleKey]["suppression_until"] = file_date;
-          result[regionKey][objectIdKey].violations[violationRuleKey]["suppression_expired"] = true;
-      } else {
-          result[regionKey][objectIdKey].violations[violationRuleKey]["suppression_expired"] = false;
-      }
-      result[regionKey][objectIdKey].violations[violationRuleKey]["suppressed"] = false;
-  }
-  
-  const violations = json_input['violations'];
-  const result = {};
-  createViolationWithSuppression(result, json_input);
-  
-  callback(result);
-  EOH
-end
-
-coreo_uni_util_variables "ec2-for-suppression-update-advisor-output" do
-  action :set
-  variables([
-                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-suppression-ec2.return'}
-            ])
-end
-
-coreo_uni_util_jsrunner "jsrunner-process-table-ec2" do
-  action :run
-  provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
-  packages([
-               {
-                   :name => "js-yaml",
-                   :version => "3.7.0"
-               }       ])
-  function <<-EOH
-    var fs = require('fs');
-    var yaml = require('js-yaml');
-    try {
-        var table = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
-    } catch (e) {
-    }
-    coreoExport('table', JSON.stringify(table));
-    callback(table);
-  EOH
-end
-
-
-coreo_uni_util_jsrunner "jsrunner-process-alert-list-ec2" do
-  action :run
-  provide_composite_access true
-  json_input '{"violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
-  packages([
-               {
-                   :name => "js-yaml",
-                   :version => "3.7.0"
-               }       ])
-  function <<-EOH
-    let alertListToJSON = "${AUDIT_AWS_EC2_ALERT_LIST}";
-    let alertListArray = alertListToJSON.replace(/'/g, '"');
-    callback(alertListArray);
-  EOH
 end
 
 coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   action :run
   data_type "json"
+  provide_composite_access true
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.7.8"
+                   :version => "1.8.3"
+               },
+               {
+                   :name => "js-yaml",
+                   :version => "3.7.0"
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
-                "alert list": COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-alert-list-ec2.return,
-                "table": COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-table-ec2.return,
-                "violations": COMPOSITE::coreo_uni_util_jsrunner.jsrunner-process-suppression-ec2.return}'
+                "violations": COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
   function <<-EOH
+  
+function setTableAndSuppression() {
+  let table;
+  let suppression;
+
+  const fs = require('fs');
+  const yaml = require('js-yaml');
+  try {
+      suppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
+  } catch (e) {
+      console.log(`Error reading suppression.yaml file`);
+      suppression = {};
+  }
+  try {
+      table = yaml.safeLoad(fs.readFileSync('./table.yaml', 'utf8'));
+  } catch (e) {
+      console.log(`Error reading table.yaml file`);
+      table = {};
+  }
+  coreoExport('table', JSON.stringify(table));
+  coreoExport('suppression', JSON.stringify(suppression));
+
+  let alertListToJSON = "${AUDIT_AWS_EC2_ALERT_LIST}";
+  let alertListArray = alertListToJSON.replace(/'/g, '"');
+  json_input['alert list'] = alertListArray || [];
+  json_input['suppression'] = suppression || [];
+  json_input['table'] = table || {};
+}
+
+
+setTableAndSuppression();
+
 const JSON_INPUT = json_input;
 const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT}";
 const OWNER_TAG = "${AUDIT_AWS_EC2_OWNER_TAG}";
@@ -630,43 +511,64 @@ const VARIABLES = { NO_OWNER_EMAIL, OWNER_TAG,
 
 const CloudCoreoJSRunner = require('cloudcoreo-jsrunner-commons');
 const AuditEC2 = new CloudCoreoJSRunner(JSON_INPUT, VARIABLES);
+
+const JSONReportAfterGeneratingSuppression = AuditEC2.getJSONForAuditPanel();
+coreoExport('JSONReport', JSON.stringify(JSONReportAfterGeneratingSuppression));
+
 const notifiers = AuditEC2.getNotifiers();
 callback(notifiers);
   EOH
 end
+
+
+
+coreo_uni_util_variables "update-planwide-3" do
+  action :set
+  variables([
+                {'COMPOSITE::coreo_uni_util_variables.planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.JSONReport'},
+                {'COMPOSITE::coreo_uni_util_variables.planwide.table' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.table'}
+            ])
+end
+
 
 coreo_uni_util_jsrunner "ec2-tags-rollup" do
   action :run
   data_type "text"
   json_input 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.return'
   function <<-EOH
-var rollup_string = "";
-let rollup = '';
-let emailText = '';
-let numberOfViolations = 0;
-for (var entry=0; entry < json_input.length; entry++) {
-    if (json_input[entry]['endpoint']['to'].length) {
-        numberOfViolations += parseInt(json_input[entry]['num_violations']);
-        emailText += "recipient: " + json_input[entry]['endpoint']['to'] + " - " + "Violations: " + json_input[entry]['num_violations'] + "\\n";
-    }
+const notifiers = json_input;
+
+function setTextRollup() {
+    let emailText = '';
+    let numberOfViolations = 0;
+    notifiers.forEach(notifier => {
+        const hasEmail = notifier['endpoint']['to'].length;
+        if(hasEmail) {
+            numberOfViolations += parseInt(notifier['num_violations']);
+            emailText += "recipient: " + notifier['endpoint']['to'] + " - " + "Violations: " + notifier['num_violations'] + "\\n";
+        }
+    });
+
+    textRollup += 'Number of Violating Cloud Objects: ' + numberOfViolations + "\\n";
+    textRollup += 'Rollup' + "\\n";
+    textRollup += emailText;
 }
 
-rollup += 'number of Violations: ' + numberOfViolations + "\\n";
-rollup += 'Rollup' + "\\n";
-rollup += emailText;
 
-rollup_string = rollup;
-callback(rollup_string);
+let textRollup = '';
+setTextRollup();
+
+callback(textRollup);
   EOH
 end
 
 coreo_uni_util_notify "advise-ec2-to-tag-values" do
-  action :${AUDIT_AWS_EC2_HTML_REPORT}
+  action((("${AUDIT_AWS_EC2_ALERT_RECIPIENT}".length > 0)) ? :notify : :nothing)
   notifiers 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.return'
 end
 
 coreo_uni_util_notify "advise-ec2-rollup" do
-  action :${AUDIT_AWS_EC2_ROLLUP_REPORT}
+  action((("${AUDIT_AWS_EC2_ALERT_RECIPIENT}".length > 0) and (! "${AUDIT_AWS_EC2_OWNER_TAG}".eql?("NOT_A_TAG"))) ? :notify : :nothing)
   type 'email'
   allow_empty true
   send_on '${AUDIT_AWS_EC2_SEND_ON}'
