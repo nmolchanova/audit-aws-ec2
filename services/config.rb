@@ -365,6 +365,7 @@ coreo_uni_util_jsrunner "security-groups-ec2" do
 
 const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
 if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
+  coreoExport('number_violations', JSON.stringify(COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.number_violations));
   callback(json_input.main_report);
   return;
 }
