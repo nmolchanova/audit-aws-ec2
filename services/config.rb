@@ -153,6 +153,9 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
   description "Important TCP port is open and/or open to the world."
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
+  meta_cis_id "4.2"
+  meta_cis_scored "true"
+  meta_cis_level "1"
   level "Warning"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
@@ -169,6 +172,9 @@ coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
   description "Important TCP port is open and/or open to the world."
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
+  meta_cis_id "4.1"
+  meta_cis_scored "true"
+  meta_cis_level "1"
   level "Warning"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
