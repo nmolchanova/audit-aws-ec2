@@ -340,10 +340,10 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   suggested_action "Ensure default security groups are set to restrict all traffic"
   level "Warning"
   objectives ["","security_groups"]
-  call_modifiers [{},{:filters => [{name: "description", values: ["default VPC security group"]}]}]
-  audit_objects ["", "object.security_groups.ip_permissions"]
-  operators ["","!="]
-  raise_when ["",nil]
+  # call_modifiers [{},{:filters => [{name: "description", values: ["default VPC security group"]}]}]
+  audit_objects ["object.security_groups.description", "object.security_groups.ip_permissions"]
+  operators ["==","!="]
+  raise_when ["default VPC security group", nil]
   id_map "object.security_groups.group_name"
 end
 
