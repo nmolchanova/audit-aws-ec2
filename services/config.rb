@@ -329,6 +329,23 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
+#Raise when an SG with description "default VPC security group" does NOT have an empty array for ip_permissions
+coreo_aws_rule "ec2-default-security-group-traffic" do
+  action :define
+  service :ec2
+  link ""
+  display_name "Default Security Group Unrestricted"
+  description "The default security group settings should maximally restrict traffic"
+  category "Security"
+  suggested_action "Ensure default security groups are set to restrict all traffic"
+  level "Warning"
+  objectives ["security_groups"]
+  call_modifiers [{:filters => [{name: "description", values: ["default VPC security group"]}]}]
+  audit_objects ["object.security_groups.ip_permissions"]
+  operators ["!="]
+  raise_when [nil]
+  id_map "object.security_groups.group_name"
+end
 
 coreo_uni_util_variables "ec2-planwide" do
   action :set
