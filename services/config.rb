@@ -294,7 +294,7 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   audit_objects ["object.security_groups.description", "object.security_groups.ip_permissions"]
   operators ["==","!="]
   raise_when ["default VPC security group", nil]
-  id_map "object.security_groups.group_name"
+  id_map "object.security_groups.group_id"
 end
 
 coreo_aws_rule "ec2-security-groups-list" do
