@@ -359,6 +359,12 @@ end
 
 coreo_aws_rule_runner_ec2 "advise-ec2" do
   action :run
+  service :ec2
+  rules ["ec2-default-security-group-traffic"]
+end
+
+coreo_aws_rule_runner_ec2 "advise-ec2" do
+  action :run
   rules ${AUDIT_AWS_EC2_ALERT_LIST}
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
