@@ -361,8 +361,8 @@ end
 coreo_aws_rule_runner "ec2" do
   service :ec2
   action :run
-  rules ["ec2-default-security-group-traffic"] if ${AUDIT_AWS_CLOUDTRAIL_ALERT_LIST}.include?("ec2-default-security-group-traffic")
-  rules [""] if !(${AUDIT_AWS_CLOUDTRAIL_ALERT_LIST}.include?("ec2-default-security-group-traffic"))
+  rules ["ec2-default-security-group-traffic"] if ${AUDIT_AWS_EC2_ALERT_LIST}.include?("ec2-default-security-group-traffic")
+  rules [""] if !(${AUDIT_AWS_EC2_ALERT_LIST}.include?("ec2-default-security-group-traffic"))
 end
 
 coreo_aws_rule_runner_ec2 "advise-ec2" do
