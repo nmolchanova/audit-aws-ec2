@@ -278,6 +278,25 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   id_map "object.security_group_info.group_id"
 end
 
+coreo_aws_rule "ec2-default-security-group-traffic" do
+  action :define
+  service :ec2
+  link ""
+  display_name "Default Security Group Unrestricted"
+  description "The default security group settings should maximally restrict traffic"
+  category "Security"
+  suggested_action "Ensure default security groups are set to restrict all traffic"
+  meta_cis_id "4.2"
+  meta_cis_scored "true"
+  meta_cis_level "2"
+  level "Warning"
+  objectives ["","security_groups"]
+  audit_objects ["object.security_groups.description", "object.security_groups.ip_permissions"]
+  operators ["==","!="]
+  raise_when ["default VPC security group", nil]
+  id_map "object.security_groups.group_name"
+end
+
 coreo_aws_rule "ec2-security-groups-list" do
   action :define
   service :ec2
@@ -329,24 +348,6 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
-#Raise when an SG with description "default VPC security group" does NOT have an empty array for ip_permissions
-coreo_aws_rule "ec2-default-security-group-traffic" do
-  action :define
-  service :ec2
-  link ""
-  display_name "Default Security Group Unrestricted"
-  description "The default security group settings should maximally restrict traffic"
-  category "Security"
-  suggested_action "Ensure default security groups are set to restrict all traffic"
-  level "Warning"
-  objectives ["","security_groups"]
-  # call_modifiers [{},{:filters => [{name: "description", values: ["default VPC security group"]}]}]
-  audit_objects ["object.security_groups.description", "object.security_groups.ip_permissions"]
-  operators ["==","!="]
-  raise_when ["default VPC security group", nil]
-  id_map "object.security_groups.group_name"
-end
-
 coreo_uni_util_variables "ec2-planwide" do
   action :set
   variables([
@@ -357,10 +358,11 @@ coreo_uni_util_variables "ec2-planwide" do
             ])
 end
 
-coreo_aws_rule_runner_ec2 "advise-ec2-u" do
-  action :run
+coreo_aws_rule_runner "ec2" do
   service :ec2
-  rules ["ec2-default-security-group-traffic"]
+  action :run
+  rules ["ec2-default-security-group-traffic"] if ${AUDIT_AWS_CLOUDTRAIL_ALERT_LIST}.include?("ec2-default-security-group-traffic")
+  rules [""] if !(${AUDIT_AWS_CLOUDTRAIL_ALERT_LIST}.include?("ec2-default-security-group-traffic"))
 end
 
 coreo_aws_rule_runner_ec2 "advise-ec2" do
