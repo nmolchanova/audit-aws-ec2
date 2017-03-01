@@ -357,7 +357,7 @@ coreo_uni_util_variables "ec2-planwide" do
             ])
 end
 
-coreo_aws_rule_runner_ec2 "advise-ec2" do
+coreo_aws_rule_runner_ec2 "advise-ec2-u" do
   action :run
   service :ec2
   rules ["ec2-default-security-group-traffic"]
