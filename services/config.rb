@@ -463,7 +463,7 @@ coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.8.3"
+                   :version => "*"
                },
                {
                    :name => "js-yaml",
@@ -471,6 +471,7 @@ coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
                }       ])
   json_input '{ "composite name":"PLAN::stack_name",
                 "plan name":"PLAN::name",
+                "cloud account name": "PLAN::cloud_account_name",
                 "violations": COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
   function <<-EOH
   
@@ -513,17 +514,18 @@ const SEND_ON = "${AUDIT_AWS_EC2_SEND_ON}";
 const SHOWN_NOT_SORTED_VIOLATIONS_COUNTER = false;
 
 
-const VARIABLES = { NO_OWNER_EMAIL, OWNER_TAG, 
+const SETTINGS = { NO_OWNER_EMAIL, OWNER_TAG, 
     ALLOW_EMPTY, SEND_ON, SHOWN_NOT_SORTED_VIOLATIONS_COUNTER};
 
 const CloudCoreoJSRunner = require('cloudcoreo-jsrunner-commons');
-const AuditEC2 = new CloudCoreoJSRunner(JSON_INPUT, VARIABLES);
+const AuditEC2 = new CloudCoreoJSRunner(JSON_INPUT, SETTINGS);
 
-const JSONReportAfterGeneratingSuppression = AuditEC2.getJSONForAuditPanel();
-coreoExport('JSONReport', JSON.stringify(JSONReportAfterGeneratingSuppression));
+const newJsonInput = AuditEC2.getSortedJSONForAuditPanel();
+coreoExport('JSONReport', JSON.stringify(newJsonInput));
+coreoExport('report', JSON.stringify(newJsonInput['violations']));
 
-const notifiers = AuditEC2.getNotifiers();
-callback(notifiers);
+const letters = AuditEC2.getLetters();
+callback(letters);
   EOH
 end
 
@@ -532,6 +534,7 @@ end
 coreo_uni_util_variables "ec2-update-planwide-3" do
   action :set
   variables([
+                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.report'},
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.JSONReport'},
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.table' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.table'}
             ])
