@@ -271,10 +271,10 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   category "Security"
   suggested_action "Remove this security group"
   level "Warning"
-  objectives ["security_groups"]
-  audit_objects ["security_group_info"]
-  operators ["=="]
-  raise_when [false]
+  objectives ["security_groups", "security_groups"]
+  audit_objects ["security_group_info", "group_name"]
+  operators ["==", "!~"]
+  raise_when [false, /^default$/]
   id_map "object.security_group_info.group_id"
 end
 
