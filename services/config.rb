@@ -290,10 +290,10 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   meta_cis_scored "true"
   meta_cis_level "2"
   level "Warning"
-  objectives ["","security_groups"]
-  audit_objects ["object.security_groups.description", "object.security_groups.ip_permissions"]
+  objectives ["security_groups", "security_groups"]
+  audit_objects ["object.security_groups.group_name", "object.security_groups.ip_permissions"]
   operators ["==","!="]
-  raise_when ["default VPC security group", nil]
+  raise_when ["default", nil]
   id_map "object.security_groups.group_id"
 end
 
