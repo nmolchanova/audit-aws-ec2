@@ -271,10 +271,10 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   category "Security"
   suggested_action "Remove this security group"
   level "Warning"
-  objectives ["security_groups"]
-  audit_objects ["security_group_info"]
-  operators ["=="]
-  raise_when [false]
+  objectives ["security_groups", "security_groups"]
+  audit_objects ["security_group_info", "group_name"]
+  operators ["==", "!~"]
+  raise_when [false, /^default$/]
   id_map "object.security_group_info.group_id"
 end
 
@@ -290,10 +290,10 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   meta_cis_scored "true"
   meta_cis_level "2"
   level "Warning"
-  objectives ["","security_groups"]
-  audit_objects ["object.security_groups.description", "object.security_groups.ip_permissions"]
+  objectives ["security_groups", "security_groups"]
+  audit_objects ["object.security_groups.group_name", "object.security_groups.ip_permissions"]
   operators ["==","!="]
-  raise_when ["default VPC security group", nil]
+  raise_when ["default", nil]
   id_map "object.security_groups.group_id"
 end
 
@@ -346,6 +346,70 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   operators ["=~"]
   raise_when [//]
   id_map "object.load_balancer_descriptions.load_balancer_name"
+end
+
+coreo_aws_rule "ec2-vpc-flow-logs" do
+  action :define
+  service :user
+  category "Audit"
+  link "https://benchmarks.cisecurity.org/tools2/amazon/CIS_Amazon_Web_Services_Foundations_Benchmark_v1.1.0.pdf#page=136"
+  display_name "Ensure VPC flow logging is enabled in all VPCs (Scored)"
+  suggested_action "VPC Flow Logs be enabled for packet 'Rejects' for VPCs."
+  description "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs."
+  level "Warning"
+  meta_cis_id "4.3"
+  meta_cis_scored "true"
+  meta_cis_level "1"
+  objectives [""]
+  audit_objects [""]
+  operators [""]
+  raise_when [true]
+  id_map "static.no_op"
+end
+
+coreo_aws_rule "vpc-inventory" do
+  action :define
+  service :ec2
+  link "http://kb.cloudcoreo.com/"
+  include_violations_in_count false
+  display_name "Ensure VPC flow logging is enabled in all VPCs (Scored)"
+  suggested_action "VPC Flow Logs be enabled for packet 'Rejects' for VPCs."
+  description "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs."
+  category "Audit"
+  level "Internal"
+  meta_cis_id "4.3"
+  meta_cis_scored "true"
+  meta_cis_level "1"
+  objectives    ["vpcs"]
+  audit_objects ["vpcs.vpc_id"]
+  operators     ["=~"]
+  raise_when    [//]
+  id_map        "object.vpcs.vpc_id"
+end
+
+coreo_aws_rule "flow-logs-inventory" do
+  action :define
+  service :ec2
+  link "http://kb.cloudcoreo.com/"
+  include_violations_in_count false
+  display_name "VPC for checking Flow logs"
+  description "VPC flow logs rules"
+  category "Audit"
+  suggested_action "Enable Flow Logs"
+  level "Internal"
+  objectives    ["vpcs"]
+  objectives    ["flow_logs"]
+  audit_objects ["flow_logs.resource_id"]
+  operators     ["=~"]
+  raise_when    [//]
+  id_map        "object.flow_logs.resource_id"
+end
+
+coreo_aws_rule_runner "vpcs-flow-logs-inventory" do
+  action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :run : :nothing)
+  service :ec2
+  regions ${AUDIT_AWS_EC2_REGIONS}
+  rules ["vpc-inventory", "flow-logs-inventory"]
 end
 
 coreo_uni_util_variables "ec2-planwide" do
@@ -440,7 +504,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
       const tags = json_input.ec2_report[region][key].tags;
       const violations = json_input.ec2_report[region][key].violations["ec2-security-groups-list"];
       if (!violations) return;
-  
+
       const currentSecGroup = violations['result_info'][0].object;
       if (groupIsActive(currentSecGroup.group_id)) return;
       const securityGroupIsNotUsedAlert = {
@@ -481,6 +545,97 @@ coreo_uni_util_variables "ec2-update-planwide-2" do
             ])
 end
 
+coreo_uni_util_jsrunner "cis43-processor" do
+  action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :run : :nothing)
+  json_input (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? '[COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report, COMPOSITE::coreo_aws_rule_runner.vpcs-flow-logs-inventory.report]' : '[]')
+  function <<-'EOH'
+  const ruleMetaJSON = {
+      'ec2-vpc-flow-logs': COMPOSITE::coreo_aws_rule.ec2-vpc-flow-logs.inputs
+  };
+  const ruleInputsToKeep = ['service', 'category', 'link', 'display_name', 'suggested_action', 'description', 'level', 'meta_cis_id', 'meta_cis_scored', 'meta_cis_level', 'include_violations_in_count'];
+  const ruleMeta = {};
+
+  Object.keys(ruleMetaJSON).forEach(rule => {
+      const flattenedRule = {};
+      ruleMetaJSON[rule].forEach(input => {
+          if (ruleInputsToKeep.includes(input.name))
+              flattenedRule[input.name] = input.value;
+      })
+      ruleMeta[rule] = flattenedRule;
+  })
+
+  const VPC_FLOW_LOGS_RULE = 'ec2-vpc-flow-logs'
+  const FLOW_LOGS_INVENTORY_RULE = 'flow-logs-inventory';
+  const VPC_INVENTORY_RULE = 'vpc-inventory';
+
+  const regionArrayJSON = "${AUDIT_AWS_EC2_REGIONS}";
+  const regionArray = JSON.parse(regionArrayJSON.replace(/'/g, '"'))
+
+  const vpcFlowLogsInventory = json_input[1];
+  var json_output = json_input[0]
+
+  const violations = copyViolationInNewJsonInput(regionArray, json_output);
+
+  regionArray.forEach(region => {
+      if (!vpcFlowLogsInventory[region]) return;
+
+      const vpcs = Object.keys(vpcFlowLogsInventory[region]);
+
+      vpcs.forEach(vpc => {
+          if (!vpcFlowLogsInventory[region][vpc]['violations'][FLOW_LOGS_INVENTORY_RULE] || !verifyActiveFlowLogs(vpcFlowLogsInventory[region][vpc]['violations'][FLOW_LOGS_INVENTORY_RULE]['result_info'])) {
+                updateOutputWithResults(region, vpc, vpcFlowLogsInventory[region][vpc]['violations'][VPC_INVENTORY_RULE], VPC_FLOW_LOGS_RULE);
+          }
+      })
+  })
+
+  function copyViolationInNewJsonInput(regions, input) {
+      const output = {};
+      regions.forEach(regionKey => {
+          if (!input[regionKey]) {
+            output[regionKey] = {};
+          } else {
+            output[regionKey] = input[regionKey]
+          }
+      });
+      return output;
+  }
+
+  function updateOutputWithResults(region, vpcID, vpcDetails, rule) {
+      if (!violations[region][vpcID]) {
+          violations[region][vpcID] = {};
+          violations[region][vpcID]['violator_info'] = vpcDetails;
+      }
+      if (!violations[region][vpcID]['violations']) {
+          violations[region][vpcID]['violations'] = {};
+      }
+
+      violations[region][vpcID]['violations'][rule] = Object.assign(ruleMeta[rule]);
+  }
+
+  function verifyActiveFlowLogs(results) {
+      let flowLogsActive = false
+      results.forEach(result => {
+          const flow_log_status = result['object']['flow_log_status'];
+
+          if (flow_log_status === 'ACTIVE') {
+              flowLogsActive = true;
+          }
+      })
+
+      return flowLogsActive;
+  }
+
+  callback(violations);
+EOH
+end
+
+coreo_uni_util_variables "ec2-update-planwide-3" do
+  action   action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :set : :nothing)
+  variables([
+                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.cis43-processor.return'}
+            ])
+end
+
 coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   action :run
   data_type "json"
@@ -499,7 +654,7 @@ coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
                 "cloud account name": "PLAN::cloud_account_name",
                 "violations": COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
   function <<-EOH
-  
+
 function setTableAndSuppression() {
   let table;
   let suppression;
@@ -539,7 +694,7 @@ const SEND_ON = "${AUDIT_AWS_EC2_SEND_ON}";
 const SHOWN_NOT_SORTED_VIOLATIONS_COUNTER = false;
 
 
-const SETTINGS = { NO_OWNER_EMAIL, OWNER_TAG, 
+const SETTINGS = { NO_OWNER_EMAIL, OWNER_TAG,
     ALLOW_EMPTY, SEND_ON, SHOWN_NOT_SORTED_VIOLATIONS_COUNTER};
 
 const CloudCoreoJSRunner = require('cloudcoreo-jsrunner-commons');
@@ -554,9 +709,7 @@ callback(letters);
   EOH
 end
 
-
-
-coreo_uni_util_variables "ec2-update-planwide-3" do
+coreo_uni_util_variables "ec2-update-planwide-4" do
   action :set
   variables([
                 {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.report'},
