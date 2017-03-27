@@ -278,6 +278,25 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   id_map "object.security_group_info.group_id"
 end
 
+coreo_aws_rule "ec2-default-security-group-traffic" do
+  action :define
+  service :ec2
+  link ""
+  display_name "Default Security Group Unrestricted"
+  description "The default security group settings should maximally restrict traffic"
+  category "Security"
+  suggested_action "Ensure default security groups are set to restrict all traffic"
+  meta_cis_id "4.2"
+  meta_cis_scored "true"
+  meta_cis_level "2"
+  level "Warning"
+  objectives ["security_groups", "security_groups"]
+  audit_objects ["object.security_groups.group_name", "object.security_groups.ip_permissions"]
+  operators ["==","!="]
+  raise_when ["default", nil]
+  id_map "object.security_groups.group_id"
+end
+
 coreo_aws_rule "ec2-security-groups-list" do
   action :define
   service :ec2
@@ -401,6 +420,13 @@ coreo_uni_util_variables "ec2-planwide" do
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'unset'},
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.number_violations' => 'unset'}
             ])
+end
+
+coreo_aws_rule_runner "ec2" do
+  service :ec2
+  action :run
+  rules ["ec2-default-security-group-traffic"] if ${AUDIT_AWS_EC2_ALERT_LIST}.include?("ec2-default-security-group-traffic")
+  rules [""] if !(${AUDIT_AWS_EC2_ALERT_LIST}.include?("ec2-default-security-group-traffic"))
 end
 
 coreo_aws_rule_runner_ec2 "advise-ec2" do
