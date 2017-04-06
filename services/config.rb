@@ -41,7 +41,7 @@ coreo_aws_rule "ec2-ip-address-whitelisted" do
   description "Security Group contains IP address"
   category "Security"
   suggested_action "Review Security Group to ensure that the host ip address added is to allowed access."
-  level "Warning"
+  level "Low"
   objectives ["security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=~"]
@@ -57,7 +57,7 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
   description "All IP addresses are allowed to access resources in a specific security group."
   category "Security"
   suggested_action "Restrict access to the minimum specific set of IP address or ports necessary."
-  level "Warning"
+  level "Low"
   objectives ["security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=="]
@@ -73,7 +73,7 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
   description "Important TCP port is open and/or open to the world."
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
-  level "Warning"
+  level "Low"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -89,7 +89,7 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
   description "Important TCP port is open and/or open to the world."
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
-  level "Warning"
+  level "Low"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -105,7 +105,7 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
   description "Important TCP port is open and/or open to the world."
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
-  level "Warning"
+  level "Low"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -121,7 +121,7 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
   description "Important TCP port is open and/or open to the world."
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
-  level "Warning"
+  level "Low"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -137,7 +137,7 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
   description "Important TCP port is open and/or open to the world."
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
-  level "Warning"
+  level "Low"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -156,7 +156,7 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
   meta_cis_id "4.2"
   meta_cis_scored "true"
   meta_cis_level "1"
-  level "Warning"
+  level "High"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -175,7 +175,7 @@ coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
   meta_cis_id "4.1"
   meta_cis_scored "true"
   meta_cis_level "1"
-  level "Warning"
+  level "High"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -191,7 +191,7 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
   description "Important TCP port is open and/or open to the world."
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
-  level "Warning"
+  level "Low"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -207,7 +207,7 @@ coreo_aws_rule "ec2-TCP-23" do
   description "Important TCP port is open and/or open to the world."
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
-  level "Warning"
+  level "Low"
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
@@ -223,7 +223,7 @@ coreo_aws_rule "ec2-TCP-21" do
   description "Important TCP port is open and/or open to the world."
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
-  level "Warning"
+  level "Low"
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
@@ -239,7 +239,7 @@ coreo_aws_rule "ec2-TCP-20" do
   description "Important TCP port is open and/or open to the world."
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
-  level "Warning"
+  level "Low"
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
@@ -255,7 +255,7 @@ coreo_aws_rule "ec2-ports-range" do
   description "Security group contains a port range rather than individual ports."
   category "Security"
   suggested_action "Only add rules to your Security group that specify individual ports and don't use port ranges unless they are required."
-  level "Warning"
+  level "Low"
   objectives ["security_groups"]
   audit_objects ["security_group_info.ip_permissions.from_port"]
   operators ["!="]
@@ -270,7 +270,7 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   description "Security group is not used anywhere"
   category "Security"
   suggested_action "Remove this security group"
-  level "Warning"
+  level "Low"
   objectives ["security_groups", "security_groups"]
   audit_objects ["security_group_info", "group_name"]
   operators ["==", "!~"]
@@ -289,7 +289,7 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   meta_cis_id "4.2"
   meta_cis_scored "true"
   meta_cis_level "2"
-  level "Warning"
+  level "Medium"
   objectives ["security_groups", "security_groups"]
   audit_objects ["object.security_groups.group_name", "object.security_groups.ip_permissions"]
   operators ["==","!="]
@@ -305,7 +305,7 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   display_name "Ensure VPC flow logging is enabled in all VPCs (Scored)"
   suggested_action "VPC Flow Logs be enabled for packet 'Rejects' for VPCs."
   description "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs."
-  level "Warning"
+  level "Low"
   meta_cis_id "4.3"
   meta_cis_scored "true"
   meta_cis_level "1"
