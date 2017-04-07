@@ -281,12 +281,12 @@ end
 coreo_aws_rule "ec2-default-security-group-traffic" do
   action :define
   service :ec2
-  link ""
+  link "http://kb.cloudcoreo.com/mydoc_ec2-default-security-group-traffic.html"
   display_name "Default Security Group Unrestricted"
   description "The default security group settings should maximally restrict traffic"
   category "Security"
   suggested_action "Ensure default security groups are set to restrict all traffic"
-  meta_cis_id "4.2"
+  meta_cis_id "4.4"
   meta_cis_scored "true"
   meta_cis_level "2"
   level "Warning"
@@ -301,7 +301,7 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   action :define
   service :user
   category "Audit"
-  link "https://benchmarks.cisecurity.org/tools2/amazon/CIS_Amazon_Web_Services_Foundations_Benchmark_v1.1.0.pdf#page=136"
+  link "http://kb.cloudcoreo.com/mydoc_ec2-vpc-flow-logs.html"
   display_name "Ensure VPC flow logging is enabled in all VPCs (Scored)"
   suggested_action "VPC Flow Logs be enabled for packet 'Rejects' for VPCs."
   description "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs."
@@ -380,7 +380,6 @@ coreo_aws_rule "vpc-inventory" do
   description "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs."
   category "Audit"
   level "Internal"
-  meta_cis_id "4.3"
   meta_cis_scored "true"
   meta_cis_level "1"
   objectives    ["vpcs"]
