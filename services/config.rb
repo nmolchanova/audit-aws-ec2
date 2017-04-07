@@ -297,6 +297,28 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   id_map "object.security_groups.group_id"
 end
 
+coreo_aws_rule "ec2-vpc-flow-logs" do
+  action :define
+  service :user
+  category "Audit"
+  link "https://benchmarks.cisecurity.org/tools2/amazon/CIS_Amazon_Web_Services_Foundations_Benchmark_v1.1.0.pdf#page=136"
+  display_name "Ensure VPC flow logging is enabled in all VPCs (Scored)"
+  suggested_action "VPC Flow Logs be enabled for packet 'Rejects' for VPCs."
+  description "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs."
+  level "Warning"
+  meta_cis_id "4.3"
+  meta_cis_scored "true"
+  meta_cis_level "1"
+  objectives [""]
+  audit_objects [""]
+  operators [""]
+  raise_when [true]
+  id_map "static.no_op"
+end
+
+
+# end of user-visible content. Remaining resources are system-defined
+
 coreo_aws_rule "ec2-security-groups-list" do
   action :define
   service :ec2
@@ -346,25 +368,6 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   operators ["=~"]
   raise_when [//]
   id_map "object.load_balancer_descriptions.load_balancer_name"
-end
-
-coreo_aws_rule "ec2-vpc-flow-logs" do
-  action :define
-  service :user
-  category "Audit"
-  link "https://benchmarks.cisecurity.org/tools2/amazon/CIS_Amazon_Web_Services_Foundations_Benchmark_v1.1.0.pdf#page=136"
-  display_name "Ensure VPC flow logging is enabled in all VPCs (Scored)"
-  suggested_action "VPC Flow Logs be enabled for packet 'Rejects' for VPCs."
-  description "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs."
-  level "Warning"
-  meta_cis_id "4.3"
-  meta_cis_scored "true"
-  meta_cis_level "1"
-  objectives [""]
-  audit_objects [""]
-  operators [""]
-  raise_when [true]
-  id_map "static.no_op"
 end
 
 coreo_aws_rule "vpc-inventory" do
@@ -418,7 +421,7 @@ coreo_uni_util_variables "ec2-planwide" do
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.composite_name' => 'PLAN::stack_name'},
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.plan_name' => 'PLAN::name'},
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'unset'},
-                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.number_violations' => 'unset'}
+                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.number_violations' => '0'}
             ])
 end
 
