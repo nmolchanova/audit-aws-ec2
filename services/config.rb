@@ -2,7 +2,7 @@
 coreo_aws_rule "ec2-inventory-instances" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
+  link "http://kb.cloudcoreo.com/mydoc_all-inventory.html"
   include_violations_in_count false
   display_name "EC2 Instance Inventory"
   description "This rule performs an inventory on all EC2 instances in the target AWS account."
@@ -19,7 +19,7 @@ end
 coreo_aws_rule "ec2-inventory-security-groups" do
   action :define
   service :ec2
-  # link "http://kb.cloudcoreo.com/mydoc_ec2-inventory.html"
+  link "http://kb.cloudcoreo.com/mydoc_all-inventory.html"
   include_violations_in_count false
   display_name "EC2 Security Group Inventory"
   description "This rule performs an inventory on all EC2 Security Groups in the target AWS account."
@@ -373,7 +373,7 @@ end
 coreo_aws_rule "vpc-inventory" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/"
+  link "http://kb.cloudcoreo.com/mydoc_all-inventory.html"
   include_violations_in_count false
   display_name "Ensure VPC flow logging is enabled in all VPCs (Scored)"
   suggested_action "VPC Flow Logs be enabled for packet 'Rejects' for VPCs."
@@ -392,7 +392,7 @@ end
 coreo_aws_rule "flow-logs-inventory" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/"
+  link "http://kb.cloudcoreo.com/mydoc_all-inventory.html"
   include_violations_in_count false
   display_name "VPC for checking Flow logs"
   description "VPC flow logs rules"
