@@ -1,3 +1,55 @@
+ec2-inventory-instances:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-inventory-security-groups:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-ip-address-whitelisted:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-unrestricted-traffic:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-TCP-23:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-TCP-21:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-TCP-20:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-ports-range:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-not-used-security-groups:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-default-security-group-traffic:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-vpc-flow-logs:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-security-groups-list:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
+ec2-instances-active-security-groups-list:
+  "AWS Cloud Object Name": "__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
+  "AWS Tags": "__TAGS__"
 elb-load-balancers-active-security-groups-list:
   "AWS Cloud Object Name": "__OBJECT__"
   "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
