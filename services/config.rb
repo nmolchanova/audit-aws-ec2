@@ -611,10 +611,9 @@ coreo_uni_util_jsrunner "cis43-processor" do
           violations[region][vpcID]['violations'] = {};
       }
 
-      rule = JSON.parse(JSON.stringify(ruleMeta[rule]));
-      rule['region'] = region
-
-      violations[region][vpcID]['violations'][rule] = rule
+      var rule_value = JSON.parse(JSON.stringify(ruleMeta[rule]));
+      rule_value['region'] = region
+      violations[region][vpcID]['violations'][rule] = rule_value;
   }
 
   function verifyActiveFlowLogs(results) {
