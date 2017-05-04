@@ -55,7 +55,7 @@ This repo is designed to work with CloudCoreo. It will monitor EC2 against best 
 1. EC2
 
 ## Categories
-1. Audit
+1. AWS Services Audit
 
 
 
