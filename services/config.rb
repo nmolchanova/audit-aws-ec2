@@ -353,23 +353,6 @@ coreo_aws_rule "ec2-instances-active-security-groups-list" do
   id_map "object.reservation_set.instances_set.instance_id"
 end
 
-coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
-  action :define
-  service :elb
-  include_violations_in_count false
-  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
-  display_name "CloudCoreo Use Only"
-  description "This is an internally defined alert."
-  category "Internal"
-  suggested_action "Ignore"
-  level "Internal"
-  objectives ["load_balancers"]
-  audit_objects ["load_balancer_descriptions.security_groups"]
-  operators ["=~"]
-  raise_when [//]
-  id_map "object.load_balancer_descriptions.load_balancer_name"
-end
-
 coreo_aws_rule "vpc-inventory" do
   action :define
   service :ec2
@@ -443,20 +426,12 @@ coreo_aws_rule_runner_ec2 "advise-unused-security-groups-ec2" do
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_aws_rule_runner_elb "advise-elb-ec2" do
-  action :run
-  rules ['elb-load-balancers-active-security-groups-list']
-  regions ${AUDIT_AWS_EC2_REGIONS}
-end
-
-
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
       "main_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report,
       "number_violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.number_violations,
-      "ec2_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-unused-security-groups-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_rule_runner_elb.advise-elb-ec2.report
+      "ec2_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-unused-security-groups-ec2.report
   }'
   function <<-EOH
 
@@ -476,17 +451,6 @@ const groupIsActive = (groupId) => {
     return false;
 };
 
-Object.keys(json_input.elb_report).forEach((region) => {
-  Object.keys(json_input.elb_report[region]).forEach(key => {
-      const violation = json_input.elb_report[region][key].violations['elb-load-balancers-active-security-groups-list'];
-      if (!violation) return;
-      violation.result_info.forEach((obj) => {
-          obj.object.forEach((secGroup) => {
-              activeSecurityGroups.push(secGroup);
-          })
-      });
-  });
-});
 Object.keys(json_input.ec2_report).forEach((region) => {
 
   Object.keys(json_input.ec2_report[region]).forEach(key => {
