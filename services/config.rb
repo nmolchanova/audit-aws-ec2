@@ -514,7 +514,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
           'description': 'Security group is not used anywhere',
           'category': 'Audit',
           'suggested_action': 'Remove this security group',
-          'level': 'Warning',
+          'level': 'Low',
           'region': violations.region
       };
       number_violations++
