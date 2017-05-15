@@ -653,9 +653,9 @@ coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
                    :name => "js-yaml",
                    :version => "3.7.0"
                }       ])
-  json_input '{ "composite name":"PLAN::stack_name",
-                "plan name":"PLAN::name",
-                "cloud account name": "PLAN::cloud_account_name",
+  json_input '{ "compositeName":"PLAN::stack_name",
+                "planName":"PLAN::name",
+                "cloudAccountName": "PLAN::cloud_account_name",
                 "violations": COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
   function <<-EOH
 
