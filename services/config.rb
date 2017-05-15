@@ -669,7 +669,6 @@ const OWNER_TAG = "${AUDIT_AWS_EC2_OWNER_TAG}";
 const ALLOW_EMPTY = "${AUDIT_AWS_EC2_ALLOW_EMPTY}";
 const SEND_ON = "${AUDIT_AWS_EC2_SEND_ON}";
 
-
 const alertListArray = ${AUDIT_AWS_EC2_ALERT_LIST};
 const ruleInputs = {};
 
