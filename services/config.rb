@@ -647,7 +647,7 @@ coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.9.7-beta18"
+                   :version => "1.9.7-beta19"
                },
                {
                    :name => "js-yaml",
@@ -670,8 +670,7 @@ const ALLOW_EMPTY = "${AUDIT_AWS_EC2_ALLOW_EMPTY}";
 const SEND_ON = "${AUDIT_AWS_EC2_SEND_ON}";
 
 
-const alertListJSON = [${AUDIT_AWS_EC2_ALERT_LIST}];
-const alertListArray = alertListJSON.replace(/'/g, '"');
+const alertListArray = ${AUDIT_AWS_EC2_ALERT_LIST};
 const ruleInputs = {};
 
 let userSuppression;
