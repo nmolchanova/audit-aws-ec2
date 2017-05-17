@@ -394,7 +394,7 @@ coreo_aws_rule_runner "vpcs-flow-logs-inventory" do
   action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :run : :nothing)
   service :ec2
   regions ${AUDIT_AWS_EC2_REGIONS}
-  rules ["vpc-inventory"]
+  rules ["vpc-inventory", "flow-logs-inventory"]
 end
 
 coreo_uni_util_variables "ec2-planwide" do
@@ -416,7 +416,7 @@ end
 
 coreo_aws_rule_runner_ec2 "advise-ec2" do
   action :run
-  rules ${AUDIT_AWS_EC2_ALERT_LIST}
+  rules (${AUDIT_AWS_EC2_ALERT_LIST} - ["flow-logs-inventory"])
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
