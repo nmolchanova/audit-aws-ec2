@@ -69,6 +69,6 @@ ec2-not-used-security-groups:
   "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
   "AWS Tags": "__TAGS__"
 ec2-vpc-flow-logs:
-  "VPC ID": "__OBJECT__~https://console.aws.amazon.com/vpc/home?region=+__OBJECT__.violator_info.region+#vpcs:filter=__OBJECT__"
-  "AWS Region": "+__OBJECT__.violator_info.region+"
+  "VPC ID": "__OBJECT__~https://console.aws.amazon.com/vpc/home?region=+__OBJECT__.violations.__RULE__.region+#vpcs:filter=__OBJECT__"
+  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
   "Flow Logs": "Disabled"

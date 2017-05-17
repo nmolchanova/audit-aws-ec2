@@ -587,7 +587,7 @@ coreo_uni_util_jsrunner "cis43-processor" do
 
       vpcs.forEach(vpc => {
           if (!vpcFlowLogsInventory[region][vpc]['violations'][FLOW_LOGS_INVENTORY_RULE] || !verifyActiveFlowLogs(vpcFlowLogsInventory[region][vpc]['violations'][FLOW_LOGS_INVENTORY_RULE]['result_info'])) {
-                updateOutputWithResults(region, vpc, vpcFlowLogsInventory[region][vpc]['violations'][VPC_INVENTORY_RULE], VPC_FLOW_LOGS_RULE);
+                updateOutputWithResults(region, vpc, vpcFlowLogsInventory[region][vpc]['violations'][VPC_INVENTORY_RULE]['result_info'], VPC_FLOW_LOGS_RULE);
           }
       })
   })
@@ -613,7 +613,9 @@ coreo_uni_util_jsrunner "cis43-processor" do
           violations[region][vpcID]['violations'] = {};
       }
 
-      violations[region][vpcID]['violations'][rule] = Object.assign(ruleMeta[rule]);
+      var rule_value = JSON.parse(JSON.stringify(ruleMeta[rule]));
+      rule_value['region'] = region
+      violations[region][vpcID]['violations'][rule] = rule_value;
   }
 
   function verifyActiveFlowLogs(results) {
