@@ -82,10 +82,6 @@ ec2-instances-active-security-groups-list:
   "AWS Cloud Object Name": "__OBJECT__"
   "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
   "AWS Tags": "__TAGS__"
-elb-load-balancers-active-security-groups-list:
-  "AWS Cloud Object Name": "__OBJECT__"
-  "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
-  "AWS Tags": "__TAGS__"
 vpc-inventory:
   "AWS Cloud Object Name": "__OBJECT__"
   "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
