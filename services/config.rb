@@ -394,8 +394,6 @@ coreo_aws_rule_runner "vpcs-flow-logs-inventory" do
   action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :run : :nothing)
   service :ec2
   regions ${AUDIT_AWS_EC2_REGIONS}
-# turning off flow-logs-inventory temporarily - there is an error
-#  rules ["vpc-inventory", "flow-logs-inventory"]
   rules ["vpc-inventory"]
 end
 
