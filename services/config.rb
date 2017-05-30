@@ -58,6 +58,7 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
   category "Security"
   suggested_action "Restrict access to the minimum specific set of IP address or ports necessary."
   level "Low"
+  meta_nist_171_id "3.4.7"
   objectives ["security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=="]
@@ -74,6 +75,7 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
+  meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -90,6 +92,7 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
+  meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -106,6 +109,7 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
+  meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -122,6 +126,7 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
+  meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -138,6 +143,7 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
+  meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -157,6 +163,7 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
   meta_cis_scored "true"
   meta_cis_level "1"
   level "High"
+  meta_nist_171_id "3.1.14, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -175,6 +182,7 @@ coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
   meta_cis_id "4.1"
   meta_cis_scored "true"
   meta_cis_level "1"
+  meta_nist_171_id "3.1.14, 3.13.6"
   level "High"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
@@ -192,6 +200,7 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
+  meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port", "security_group_info.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -208,6 +217,7 @@ coreo_aws_rule "ec2-TCP-23" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
+  meta_nist_171_id "3.4.7"
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
@@ -224,6 +234,7 @@ coreo_aws_rule "ec2-TCP-21" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
+  meta_nist_171_id "3.4.7, 3.5.4"
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
@@ -240,10 +251,28 @@ coreo_aws_rule "ec2-TCP-20" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
+  meta_nist_171_id "3.4.7, 3.5.4"
   objectives ["","security_groups"]
   audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
   operators ["==","=="]
   raise_when ["tcp", 20]
+  id_map "object.security_group_info.group_id"
+end
+
+coreo_aws_rule "ec2-TCP-8080" do
+  action :define
+  service :ec2
+  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  display_name "TCP port is open - 8080"
+  description "Important TCP port is open and/or open to the world."
+  category "Security"
+  suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
+  level "Low"
+  meta_nist_171_id "3.5.4"
+  objectives ["","security_groups"]
+  audit_objects ["security_group_info.ip_permissions.ip_protocol", "security_group_info.ip_permissions.from_port"]
+  operators ["==","=="]
+  raise_when ["tcp", 8080]
   id_map "object.security_group_info.group_id"
 end
 
@@ -256,6 +285,7 @@ coreo_aws_rule "ec2-ports-range" do
   category "Security"
   suggested_action "Only add rules to your Security group that specify individual ports and don't use port ranges unless they are required."
   level "Low"
+  meta_nist_171_id "3.4.7"
   objectives ["security_groups"]
   audit_objects ["security_group_info.ip_permissions.from_port"]
   operators ["!="]
@@ -271,6 +301,7 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   category "Security"
   suggested_action "Remove this security group"
   level "Low"
+  meta_nist_171_id "3.4.6"
   objectives ["security_groups", "security_groups"]
   audit_objects ["security_group_info", "group_name"]
   operators ["==", "!~"]
@@ -290,6 +321,7 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   meta_cis_scored "true"
   meta_cis_level "2"
   level "Medium"
+  meta_nist_171_id "3.4.7"
   objectives ["security_groups", "security_groups"]
   audit_objects ["object.security_groups.group_name", "object.security_groups.ip_permissions"]
   operators ["==","!="]
