@@ -35,8 +35,8 @@ This composite monitors ec2 against best practices and reports violations and in
 ## Optional variables with default
 
 ### `AUDIT_AWS_EC2_ALERT_LIST`:
-  * description: Which rules would you like to run? Possible values are ec2-inventory-instances ec2-inventory-security-groups ec2-ip-address-whitelisted ec2-unrestricted-traffic ec2-TCP-1521-0.0.0.0/0 ec2-TCP-3306-0.0.0.0/0 ec2-TCP-5432-0.0.0.0/0 ec2-TCP-27017-0.0.0.0/0 ec2-TCP-1433-0.0.0.0/0 ec2-TCP-3389-0.0.0.0/0 ec2-TCP-22-0.0.0.0/0 ec2-TCP-5439-0.0.0.0/0 ec2-TCP-23 ec2-TCP-21 ec2-TCP-20 ec2-ports-range ec2-not-used-security-groups ec2-default-security-group-traffic ec2-vpc-flow-logs
-  * default: ec2-ip-address-whitelisted, ec2-unrestricted-traffic, ec2-TCP-1521-0.0.0.0/0, ec2-TCP-3306-0.0.0.0/0, ec2-TCP-5432-0.0.0.0/0, ec2-TCP-27017-0.0.0.0/0, ec2-TCP-1433-0.0.0.0/0, ec2-TCP-3389-0.0.0.0/0, ec2-TCP-22-0.0.0.0/0, ec2-TCP-5439-0.0.0.0/0, ec2-TCP-23, ec2-TCP-21, ec2-TCP-20, ec2-ports-range, ec2-not-used-security-groups, ec2-default-security-group-traffic, ec2-vpc-flow-logs
+  * description: Which rules would you like to run? Possible values are ec2-inventory-instances ec2-inventory-security-groups ec2-ip-address-whitelisted ec2-unrestricted-traffic ec2-TCP-1521-0.0.0.0/0 ec2-TCP-3306-0.0.0.0/0 ec2-TCP-5432-0.0.0.0/0 ec2-TCP-27017-0.0.0.0/0 ec2-TCP-1433-0.0.0.0/0 ec2-TCP-3389-0.0.0.0/0 ec2-TCP-22-0.0.0.0/0 ec2-TCP-5439-0.0.0.0/0 ec2-TCP-23 ec2-TCP-21 ec2-TCP-20 ec2-TCP-8080 ec2-ports-range ec2-not-used-security-groups ec2-default-security-group-traffic ec2-vpc-flow-logs
+  * default: ec2-ip-address-whitelisted, ec2-unrestricted-traffic, ec2-TCP-1521-0.0.0.0/0, ec2-TCP-3306-0.0.0.0/0, ec2-TCP-5432-0.0.0.0/0, ec2-TCP-27017-0.0.0.0/0, ec2-TCP-1433-0.0.0.0/0, ec2-TCP-3389-0.0.0.0/0, ec2-TCP-22-0.0.0.0/0, ec2-TCP-5439-0.0.0.0/0, ec2-TCP-23, ec2-TCP-21, ec2-TCP-20, ec2-TCP-8080, ec2-ports-range, ec2-not-used-security-groups, ec2-default-security-group-traffic, ec2-vpc-flow-logs
 
 ### `AUDIT_AWS_EC2_OWNER_TAG`:
   * description: Enter an AWS tag whose value is an email address of the owner of the EC2 object. (Optional)
