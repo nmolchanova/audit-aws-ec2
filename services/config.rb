@@ -341,6 +341,7 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   meta_cis_id "4.3"
   meta_cis_scored "true"
   meta_cis_level "1"
+  meta_nist_171_id "3.13.1"
   objectives [""]
   audit_objects [""]
   operators [""]
