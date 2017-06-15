@@ -428,6 +428,7 @@ coreo_aws_rule_runner "vpcs-flow-logs-inventory" do
   service :ec2
   regions ${AUDIT_AWS_EC2_REGIONS}
   rules ["vpc-inventory", "flow-logs-inventory"]
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
 coreo_uni_util_variables "ec2-planwide" do
@@ -445,18 +446,21 @@ coreo_aws_rule_runner "ec2" do
   action :run
   rules ["ec2-default-security-group-traffic"] if ${AUDIT_AWS_EC2_ALERT_LIST}.include?("ec2-default-security-group-traffic")
   rules [""] if !(${AUDIT_AWS_EC2_ALERT_LIST}.include?("ec2-default-security-group-traffic"))
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
 coreo_aws_rule_runner_ec2 "advise-ec2" do
   action :run
   rules (${AUDIT_AWS_EC2_ALERT_LIST} - ["flow-logs-inventory"])
   regions ${AUDIT_AWS_EC2_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
 coreo_aws_rule_runner_ec2 "advise-unused-security-groups-ec2" do
   action :run
   rules ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
   regions ${AUDIT_AWS_EC2_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
 coreo_uni_util_jsrunner "security-groups-ec2" do

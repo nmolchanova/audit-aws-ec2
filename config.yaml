@@ -66,3 +66,8 @@ variables:
     required: true
     type: string
     default: "change"
+  FILTERED_OBJECTS:
+    description: "JSON object of string or regex of aws objects to include or exclude and tag in audit"
+    required: false
+    type: string
+    default:
