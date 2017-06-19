@@ -449,14 +449,16 @@ coreo_aws_rule_runner "ec2" do
   filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
-coreo_aws_rule_runner_ec2 "advise-ec2" do
+coreo_aws_rule_runner "advise-ec2" do
+  service :ec2
   action :run
   rules (${AUDIT_AWS_EC2_ALERT_LIST} - ["flow-logs-inventory"])
   regions ${AUDIT_AWS_EC2_REGIONS}
   filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
-coreo_aws_rule_runner_ec2 "advise-unused-security-groups-ec2" do
+coreo_aws_rule_runner "advise-unused-security-groups-ec2" do
+  service :ec2
   action :run
   rules ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
   regions ${AUDIT_AWS_EC2_REGIONS}
