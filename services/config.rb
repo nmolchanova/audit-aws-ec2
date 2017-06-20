@@ -447,13 +447,15 @@ coreo_aws_rule_runner "ec2" do
   rules [""] if !(${AUDIT_AWS_EC2_ALERT_LIST}.include?("ec2-default-security-group-traffic"))
 end
 
-coreo_aws_rule_runner_ec2 "advise-ec2" do
+coreo_aws_rule_runner "advise-ec2" do
+  service :ec2
   action :run
   rules (${AUDIT_AWS_EC2_ALERT_LIST} - ["flow-logs-inventory"])
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
-coreo_aws_rule_runner_ec2 "advise-unused-security-groups-ec2" do
+coreo_aws_rule_runner "advise-unused-security-groups-ec2" do
+  service :ec2
   action :run
   rules ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
   regions ${AUDIT_AWS_EC2_REGIONS}
@@ -462,15 +464,15 @@ end
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
-      "main_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report,
-      "number_violations":COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.number_violations,
-      "ec2_report":COMPOSITE::coreo_aws_rule_runner_ec2.advise-unused-security-groups-ec2.report
+      "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
+      "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
+      "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report
   }'
   function <<-EOH
 
 const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
 if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
-  coreoExport('number_violations', JSON.stringify(COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.number_violations));
+  coreoExport('number_violations', JSON.stringify(COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations));
   callback(json_input.main_report);
   return;
 }
@@ -538,7 +540,7 @@ end
 coreo_uni_util_variables "ec2-update-planwide-2" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
+                {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
                 {'GLOBAL::number_violations' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.number_violations'}
             ])
@@ -546,7 +548,7 @@ end
 
 coreo_uni_util_jsrunner "cis43-processor" do
   action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :run : :nothing)
-  json_input (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? '[COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report, COMPOSITE::coreo_aws_rule_runner.vpcs-flow-logs-inventory.report]' : '[]')
+  json_input (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? '[COMPOSITE::coreo_aws_rule_runner.advise-ec2.report, COMPOSITE::coreo_aws_rule_runner.vpcs-flow-logs-inventory.report]' : '[]')
   function <<-'EOH'
   const ruleMetaJSON = {
       'ec2-vpc-flow-logs': COMPOSITE::coreo_aws_rule.ec2-vpc-flow-logs.inputs
@@ -633,7 +635,7 @@ end
 coreo_uni_util_variables "ec2-update-planwide-3" do
   action   action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :set : :nothing)
   variables([
-                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.cis43-processor.return'}
+                {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.cis43-processor.return'}
             ])
 end
 
@@ -653,7 +655,7 @@ coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   json_input '{ "compositeName":"PLAN::stack_name",
                 "planName":"PLAN::name",
                 "cloudAccountName": "PLAN::cloud_account_name",
-                "violations": COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report}'
+                "violations": COMPOSITE::coreo_aws_rule_runner.advise-ec2.report}'
   function <<-EOH
 
 const compositeName = json_input.compositeName;
@@ -730,7 +732,7 @@ end
 coreo_uni_util_variables "ec2-update-planwide-4" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_rule_runner_ec2.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.report'},
+                {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.report'},
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.JSONReport'},
                 {'GLOBAL::table' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.table'}
             ])
