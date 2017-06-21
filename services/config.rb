@@ -450,7 +450,7 @@ end
 coreo_aws_rule_runner "advise-ec2" do
   service :ec2
   action :run
-  rules (${AUDIT_AWS_EC2_ALERT_LIST} - ["flow-logs-inventory"])
+  rules (${AUDIT_AWS_EC2_ALERT_LIST} - ["flow-logs-inventory"] - ["ec2-default-security-group-traffic"])
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
