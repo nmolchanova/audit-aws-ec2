@@ -612,6 +612,7 @@ coreo_uni_util_jsrunner "cis43-processor" do
 
       var rule_value = JSON.parse(JSON.stringify(ruleMeta[rule]));
       rule_value['region'] = region
+      rule_value['service'] = 'ec2'
       violations[region][vpcID]['violations'][rule] = rule_value;
   }
 
