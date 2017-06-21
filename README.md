@@ -48,6 +48,9 @@ This composite monitors ec2 against best practices and reports violations and in
 ### `AUDIT_AWS_EC2_ALERT_RECIPIENT`:
   * description: Enter the email address(es) that will receive notifications. If more than one, separate each with a comma.
 
+### `FILTERED_OBJECTS`:
+  * description: JSON object of string or regex of aws objects to include or exclude and tag in audit
+
 ## Tags
 1. Audit
 1. Best Practices
