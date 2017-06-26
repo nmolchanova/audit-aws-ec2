@@ -58,9 +58,6 @@ ec2-vpc-flow-logs:
 ec2-security-groups-list:
   - put-your-object-id-here-1: ""
   - put-your-object-id-here-2: "2017-01-10T00:00Z"
-ec2-default-security-group-traffic:
-  - put-your-object-id-here-1: ""
-  - put-your-object-id-here-2: "2017-01-10T00:00Z"
 ec2-instances-active-security-groups-list:
   - put-your-object-id-here-1: ""
   - put-your-object-id-here-2: "2017-01-10T00:00Z"
