@@ -441,18 +441,10 @@ coreo_uni_util_variables "ec2-planwide" do
             ])
 end
 
-coreo_aws_rule_runner "ec2" do
-  service :ec2
-  action :run
-  rules ["ec2-default-security-group-traffic"] if ${AUDIT_AWS_EC2_ALERT_LIST}.include?("ec2-default-security-group-traffic")
-  rules [""] if !(${AUDIT_AWS_EC2_ALERT_LIST}.include?("ec2-default-security-group-traffic"))
-  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
-end
-
 coreo_aws_rule_runner "advise-ec2" do
   service :ec2
   action :run
-  rules (${AUDIT_AWS_EC2_ALERT_LIST} - ["flow-logs-inventory"] - ["ec2-default-security-group-traffic"])
+  rules (${AUDIT_AWS_EC2_ALERT_LIST} - ["flow-logs-inventory"])
   regions ${AUDIT_AWS_EC2_REGIONS}
   filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
