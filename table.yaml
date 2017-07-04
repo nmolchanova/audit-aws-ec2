@@ -12,6 +12,8 @@ ec2-ip-address-whitelisted:
   "Security Group": "__OBJECT__~https://console.aws.amazon.com/ec2/v2/home?region=+__OBJECT__.violations.__RULE__.region+#SecurityGroups:search=__OBJECT__;sort=desc:tag:Name"
   "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
   "AWS Tags": "__TAGS__"
+  "IP Address": "+__OBJECT__.violations.__RULE__.result_info.0.object.cidr_ip+"
+
 ec2-unrestricted-traffic:
   "Security Group": "__OBJECT__~https://console.aws.amazon.com/ec2/v2/home?region=+__OBJECT__.violations.__RULE__.region+#SecurityGroups:search=__OBJECT__;sort=desc:tag:Name"
   "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
