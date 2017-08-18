@@ -54,7 +54,7 @@ This composite monitors ec2 against best practices and reports violations and in
 ### `FILTERED_OBJECTS`:
   * description: JSON object of string or regex of aws objects to include or exclude and tag in audit
 
-### `S3_BUCKET_NAME`:
+### `AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME`:
   * description: Enter S3 bucket name to upload reports. (Optional)
 
 ## Tags
