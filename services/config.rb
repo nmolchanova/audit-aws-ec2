@@ -821,7 +821,7 @@ COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-rollup.return
 end
 
 coreo_aws_s3_policy "cloudcoreo-audit-aws-ec2-policy" do
-  action((("${S3_BUCKET_NAME}".length > 0) ) ? :create : :nothing)
+  action((("${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}".length > 0) ) ? :create : :nothing)
   policy_document <<-EOF
 {
 "Version": "2012-10-17",
@@ -834,8 +834,8 @@ coreo_aws_s3_policy "cloudcoreo-audit-aws-ec2-policy" do
 ,
 "Action": "s3:*",
 "Resource": [
-"arn:aws:s3:::${S3_BUCKET_NAME}/*",
-"arn:aws:s3:::${S3_BUCKET_NAME}"
+"arn:aws:s3:::${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}/*",
+"arn:aws:s3:::${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}"
 ]
 }
 ]
@@ -844,19 +844,19 @@ coreo_aws_s3_policy "cloudcoreo-audit-aws-ec2-policy" do
 end
 
 coreo_aws_s3_bucket "cloudcoreo-audit-aws-ec2" do
-  action :create
+  action((("${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}".length > 0) ) ? :create : :nothing)
   bucket_policies ["cloudcoreo-audit-aws-ec2-policy"]
   region "us-east-1"
 end
 
 coreo_uni_util_notify "cloudcoreo-audit-aws-ec2-s3" do
-  action((("${S3_BUCKET_NAME}".length > 0) ) ? :notify : :nothing)
+  action((("${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}".length > 0) ) ? :notify : :nothing)
   type 's3'
   allow_empty true
   payload 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.report'
   endpoint ({
       object_name: 'aws-ec2-json',
-      bucket_name: '${S3_BUCKET_NAME}',
+      bucket_name: '${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}',
       folder: 'ec2/PLAN::name',
       properties: {}
   })
