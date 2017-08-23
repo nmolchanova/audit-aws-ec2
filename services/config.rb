@@ -10,7 +10,7 @@ coreo_aws_rule "ec2-inventory-instances" do
   suggested_action "None."
   level "Informational"
   objectives ["instances"]
-  audit_objects ["reservations.instances.instance_id"]
+  audit_objects ["object.reservations.instances.instance_id"]
   operators ["=~"]
   raise_when [//]
   id_map "object.reservations.instances.instance_id"
@@ -43,7 +43,7 @@ coreo_aws_rule "ec2-ip-address-whitelisted" do
   suggested_action "Review Security Group to ensure that the host ip address added is to allowed access."
   level "Low"
   objectives ["security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_ranges.cidr_ip"]
+  audit_objects ["object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=~"]
   raise_when [/\/32/]
   id_map "object.security_groups.group_id"
@@ -60,7 +60,7 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
   level "Low"
   meta_nist_171_id "3.4.7"
   objectives ["security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_ranges.cidr_ip"]
+  audit_objects ["object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=="]
   raise_when ["0.0.0.0/0"]
   id_map "object.security_groups.group_id"
@@ -77,7 +77,7 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
   level "Low"
   meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port", "security_groups.ip_permissions.ip_ranges.cidr_ip"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   raise_when ["tcp", 1521, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
@@ -94,7 +94,7 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
   level "Low"
   meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port", "security_groups.ip_permissions.ip_ranges.cidr_ip"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   raise_when ["tcp", 3306, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
@@ -111,7 +111,7 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
   level "Low"
   meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port", "security_groups.ip_permissions.ip_ranges.cidr_ip"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   raise_when ["tcp", 5432, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
@@ -128,7 +128,7 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
   level "Low"
   meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port", "security_groups.ip_permissions.ip_ranges.cidr_ip"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   raise_when ["tcp", 27017, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
@@ -145,7 +145,7 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
   level "Low"
   meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port", "security_groups.ip_permissions.ip_ranges.cidr_ip"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   raise_when ["tcp", 1433, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
@@ -165,7 +165,7 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
   level "High"
   meta_nist_171_id "3.1.14, 3.13.6"
   objectives ["","","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port", "security_groups.ip_permissions.ip_ranges.cidr_ip"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   raise_when ["tcp", 3389, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
@@ -185,7 +185,7 @@ coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
   meta_nist_171_id "3.1.14, 3.13.6"
   level "High"
   objectives ["","","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port", "security_groups.ip_permissions.ip_ranges.cidr_ip"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   raise_when ["tcp", 22, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
@@ -202,7 +202,7 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
   level "Low"
   meta_nist_171_id "3.4.7, 3.13.6"
   objectives ["","","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port", "security_groups.ip_permissions.ip_ranges.cidr_ip"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
   raise_when ["tcp", 5439, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
@@ -219,7 +219,7 @@ coreo_aws_rule "ec2-TCP-23" do
   level "Low"
   meta_nist_171_id "3.4.7"
   objectives ["","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port"]
   operators ["==","=="]
   raise_when ["tcp", 23]
   id_map "object.security_groups.group_id"
@@ -236,7 +236,7 @@ coreo_aws_rule "ec2-TCP-21" do
   level "Low"
   meta_nist_171_id "3.4.7, 3.5.4"
   objectives ["","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port"]
   operators ["==","=="]
   raise_when ["tcp", 21]
   id_map "object.security_groups.group_id"
@@ -253,7 +253,7 @@ coreo_aws_rule "ec2-TCP-20" do
   level "Low"
   meta_nist_171_id "3.4.7, 3.5.4"
   objectives ["","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port"]
   operators ["==","=="]
   raise_when ["tcp", 20]
   id_map "object.security_groups.group_id"
@@ -270,7 +270,7 @@ coreo_aws_rule "ec2-TCP-8080" do
   level "Low"
   meta_nist_171_id "3.5.4"
   objectives ["","security_groups"]
-  audit_objects ["security_groups.ip_permissions.ip_protocol", "security_groups.ip_permissions.from_port"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port"]
   operators ["==","=="]
   raise_when ["tcp", 8080]
   id_map "object.security_groups.group_id"
@@ -287,7 +287,7 @@ coreo_aws_rule "ec2-ports-range" do
   level "Low"
   meta_nist_171_id "3.4.7"
   objectives ["security_groups"]
-  audit_objects ["security_groups.ip_permissions.from_port"]
+  audit_objects ["object.security_groups.ip_permissions.from_port"]
   operators ["!="]
   raise_when ["object[:to_port]"]
   id_map "object.security_groups.group_id"
@@ -303,7 +303,7 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   level "Low"
   meta_nist_171_id "3.4.6"
   objectives ["security_groups", "security_groups"]
-  audit_objects ["security_groups", "group_name"]
+  audit_objects ["object.security_groups", "object.group_name"]
   operators ["==", "!~"]
   raise_when [false, /^default$/]
   id_map "object.security_groups.group_id"
@@ -363,7 +363,7 @@ coreo_aws_rule "ec2-security-groups-list" do
   suggested_action "Ignore"
   level "Internal"
   objectives ["security_groups"]
-  audit_objects ["security_groups.group_name"]
+  audit_objects ["object.security_groups.group_name"]
   operators ["=~"]
   raise_when [//]
   id_map "object.security_groups.group_id"
@@ -380,7 +380,7 @@ coreo_aws_rule "ec2-instances-active-security-groups-list" do
   suggested_action "Ignore"
   level "Internal"
   objectives ["instances"]
-  audit_objects ["reservations.instances.security_groups.group_id"]
+  audit_objects ["object.reservations.instances.security_groups.group_id"]
   operators ["=~"]
   raise_when [//]
   id_map "object.reservations.instances.instance_id"
@@ -399,7 +399,7 @@ coreo_aws_rule "vpc-inventory" do
   meta_cis_scored "true"
   meta_cis_level "1"
   objectives    ["vpcs"]
-  audit_objects ["vpcs.vpc_id"]
+  audit_objects ["object.vpcs.vpc_id"]
   operators     ["=~"]
   raise_when    [//]
   id_map        "object.vpcs.vpc_id"
@@ -417,7 +417,7 @@ coreo_aws_rule "flow-logs-inventory" do
   level "Internal"
   objectives    ["vpcs"]
   objectives    ["flow_logs"]
-  audit_objects ["flow_logs.resource_id"]
+  audit_objects ["object.flow_logs.resource_id"]
   operators     ["=~"]
   raise_when    [//]
   id_map        "object.flow_logs.resource_id"
@@ -643,7 +643,7 @@ coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.10.7-beta63"
+                   :version => "1.10.7-beta64"
                },
                {
                    :name => "js-yaml",
@@ -817,5 +817,46 @@ COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-rollup.return
   payload_type 'text'
   endpoint ({
       :to => '${AUDIT_AWS_EC2_ALERT_RECIPIENT}', :subject => 'CloudCoreo ec2 rule results on PLAN::stack_name :: PLAN::name'
+  })
+end
+
+coreo_aws_s3_policy "cloudcoreo-audit-aws-ec2-policy" do
+  action((("${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}".length > 0) ) ? :create : :nothing)
+  policy_document <<-EOF
+{
+"Version": "2012-10-17",
+"Statement": [
+{
+"Sid": "",
+"Effect": "Allow",
+"Principal":
+{ "AWS": "*" }
+,
+"Action": "s3:*",
+"Resource": [
+"arn:aws:s3:::${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}/*",
+"arn:aws:s3:::${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}"
+]
+}
+]
+}
+  EOF
+end
+
+coreo_aws_s3_bucket "bucket-${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}" do
+  action((("${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}".length > 0) ) ? :create : :nothing)
+  bucket_policies ["cloudcoreo-audit-aws-ec2-policy"]
+end
+
+coreo_uni_util_notify "cloudcoreo-audit-aws-ec2-s3" do
+  action((("${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}".length > 0) ) ? :notify : :nothing)
+  type 's3'
+  allow_empty true
+  payload 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.report'
+  endpoint ({
+      object_name: 'aws-ec2-json',
+      bucket_name: '${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}',
+      folder: 'ec2/PLAN::name',
+      properties: {}
   })
 end
