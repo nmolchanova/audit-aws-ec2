@@ -386,6 +386,23 @@ coreo_aws_rule "ec2-instances-active-security-groups-list" do
   id_map "object.reservations.instances.instance_id"
 end
 
+coreo_aws_rule "elb-instances-active-security-groups-list" do
+  action :define
+  service :elb
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["load_balancers"]
+  audit_objects ["object.load_balancer_descriptions.security_groups"]
+  operators ["=~"]
+  raise_when [//]
+  id_map "object.load_balancer_descriptions.canonical_hosted_zone_name"
+end
+
 coreo_aws_rule "vpc-inventory" do
   action :define
   service :ec2
@@ -457,12 +474,21 @@ coreo_aws_rule_runner "advise-unused-security-groups-ec2" do
   filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
+coreo_aws_rule_runner "advise-unused-security-groups-elb" do
+  service :elb
+  action :run
+  rules ["elb-instances-active-security-groups-list"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
+end
+
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
       "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
       "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
-      "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report
+      "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report,
+      "elb_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-elb.report
   }'
   function <<-EOH
 
@@ -475,21 +501,23 @@ if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
 
 const activeSecurityGroups = [];
 
-const groupIsActive = (groupId) => {
-    for (let activeGroupId of activeSecurityGroups) {
-        if (activeGroupId === groupId) return true;
-    }
-    return false;
-};
-
-Object.keys(json_input.ec2_report).forEach((region) => {
-
-  Object.keys(json_input.ec2_report[region]).forEach(key => {
-      const violation = json_input.ec2_report[region][key].violations['ec2-instances-active-security-groups-list'];
-      if (!violation) return;
-      violation.result_info.forEach((obj) => {
-          activeSecurityGroups.push(obj.object.group_id);
-      });
+// Only keep reports from json_input named *_report where * is not 'main'
+const reports = Object.keys(json_input)
+    .filter(key => key.match(/_report$/) && !(key === 'main_report'))
+    .reduce((obj, key) => {
+        obj[key] = json_input[key];
+        return obj;
+    }, {});
+reports.forEach((report) => {
+  Object.keys(json_input[report]).forEach((region) => {
+    Object.keys(json_input[report][region]).forEach(key => {
+        const service = report.split('_')[0]
+        const violation = json_input[report][region][key].violations[`${service}-instances-active-security-groups-list`];
+        if (!violation) return;
+        violation.result_info.forEach((obj) => {
+            activeSecurityGroups.push(obj.object.group_id);
+        });
+    });
   });
 });
 let number_violations = 0;
@@ -498,31 +526,31 @@ if(json_input['number_violations']) {
 }
 Object.keys(json_input.ec2_report).forEach((region) => {
   Object.keys(json_input.ec2_report[region]).forEach(key => {
-      const tags = json_input.ec2_report[region][key].tags;
-      const violations = json_input.ec2_report[region][key].violations["ec2-security-groups-list"];
-      if (!violations) return;
+    const tags = json_input.ec2_report[region][key].tags;
+    const violations = json_input.ec2_report[region][key].violations["ec2-security-groups-list"];
+    if (!violations) return;
 
-      const currentSecGroup = violations['result_info'][0].object;
-      if (groupIsActive(currentSecGroup.group_id)) return;
-      const securityGroupIsNotUsedAlert = {
-          'display_name': 'EC2 security group is not used',
-          'description': 'Security group is not used anywhere',
-          'category': 'Audit',
-          'suggested_action': 'Remove this security group',
-          'level': 'Low',
-          'region': violations.region
-      };
-      number_violations++
-      const violationKey = 'ec2-not-used-security-groups';
-      //console.log("working on key: " + key + " in region: " + region);
-      if (!json_input.main_report[region]) {
-          json_input.main_report[region] = {};
-      }
-      if (!json_input.main_report[region][key]) {
-          json_input.main_report[region][key] = { violations: {}, tags: [] };
-      }
-      json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
-      json_input.main_report[region][key].tags.concat(tags);
+    const currentSecGroup = violations['result_info'][0].object;
+    if (activeSecurityGroups.includes(currentSecGroup.group_id)) return;
+    const securityGroupIsNotUsedAlert = {
+        'display_name': 'EC2 security group is not used',
+        'description': 'Security group is not used anywhere',
+        'category': 'Audit',
+        'suggested_action': 'Remove this security group',
+        'level': 'Low',
+        'region': violations.region
+    };
+    number_violations++
+    const violationKey = 'ec2-not-used-security-groups';
+    //console.log("working on key: " + key + " in region: " + region);
+    if (!json_input.main_report[region]) {
+        json_input.main_report[region] = {};
+    }
+    if (!json_input.main_report[region][key]) {
+        json_input.main_report[region][key] = { violations: {}, tags: [] };
+    }
+    json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
+    json_input.main_report[region][key].tags.concat(tags);
   });
 });
 
