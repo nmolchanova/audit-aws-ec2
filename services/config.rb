@@ -388,7 +388,7 @@ end
 
 coreo_aws_rule "elb-instances-active-security-groups-list" do
   action :define
-  service :elb
+  service :elasticloadbalancing
   include_violations_in_count false
   link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
@@ -475,7 +475,7 @@ coreo_aws_rule_runner "advise-unused-security-groups-ec2" do
 end
 
 coreo_aws_rule_runner "advise-unused-security-groups-elb" do
-  service :elb
+  service :elasticloadbalancing
   action :run
   rules ["elb-instances-active-security-groups-list"]
   regions ${AUDIT_AWS_EC2_REGIONS}
