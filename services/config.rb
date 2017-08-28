@@ -503,28 +503,28 @@ const activeSecurityGroups = [];
 
 // Only keep reports from json_input named *_report where * is not 'main'
 const reports = Object.keys(json_input)
-    .filter(key => key.match(/_report$/) && !(key === 'main_report'));
+  .filter(key => key.match(/_report$/) && !(key === 'main_report'));
 reports.forEach((report) => {
   Object.keys(json_input[report]).forEach((region) => {
     Object.keys(json_input[report][region]).forEach(key => {
-        const service = report.split('_')[0];
-        const violation = json_input[report][region][key].violations[`${service}-instances-active-security-groups-list`];
-        if (!violation) return;
-        violation.result_info.forEach((obj) => {
-          switch(service) {
-            case 'ec2':
-              activeSecurityGroups.push(obj.object.group_id);
-              break;
-            case 'elb':
-              activeSecurityGroups.push(obj.object);
-              break;
-          }
-        });
+      const service = report.split('_')[0];
+      const violation = json_input[report][region][key].violations[`${service}-instances-active-security-groups-list`];
+      if (!violation) return;
+      violation.result_info.forEach((obj) => {
+        switch (service) {
+          case 'ec2':
+            activeSecurityGroups.push(obj.object.group_id);
+            break;
+          case 'elb':
+            activeSecurityGroups.push(obj.object);
+            break;
+        }
+      });
     });
   });
 });
 let number_violations = 0;
-if(json_input['number_violations']) {
+if (json_input['number_violations']) {
   number_violations = parseInt(json_input['number_violations']);
 }
 Object.keys(json_input.ec2_report).forEach((region) => {
