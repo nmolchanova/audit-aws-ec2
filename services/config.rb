@@ -400,7 +400,7 @@ coreo_aws_rule "elb-instances-active-security-groups-list" do
   audit_objects ["object.load_balancer_descriptions.security_groups.to_s"]
   operators ["=~"]
   raise_when [//]
-  id_map "object.load_balancer_descriptions.canonical_hosted_zone_name"
+  id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
 coreo_aws_rule "vpc-inventory" do
