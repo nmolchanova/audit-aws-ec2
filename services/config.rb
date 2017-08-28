@@ -503,11 +503,7 @@ const activeSecurityGroups = [];
 
 // Only keep reports from json_input named *_report where * is not 'main'
 const reports = Object.keys(json_input)
-    .filter(key => key.match(/_report$/) && !(key === 'main_report'))
-    .reduce((obj, key) => {
-        obj[key] = json_input[key];
-        return obj;
-    }, {});
+    .filter(key => key.match(/_report$/) && !(key === 'main_report'));
 reports.forEach((report) => {
   Object.keys(json_input[report]).forEach((region) => {
     Object.keys(json_input[report][region]).forEach(key => {
