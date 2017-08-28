@@ -397,7 +397,7 @@ coreo_aws_rule "elb-instances-active-security-groups-list" do
   suggested_action "Ignore"
   level "Internal"
   objectives ["load_balancers"]
-  audit_objects ["object.load_balancer_descriptions.security_groups"]
+  audit_objects ["object.load_balancer_descriptions.security_groups.to_s"]
   operators ["=~"]
   raise_when [//]
   id_map "object.load_balancer_descriptions.canonical_hosted_zone_name"
