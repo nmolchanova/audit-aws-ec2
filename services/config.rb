@@ -397,7 +397,7 @@ coreo_aws_rule "elb-instances-active-security-groups-list" do
   suggested_action "Ignore"
   level "Internal"
   objectives ["load_balancers"]
-  audit_objects ["object.load_balancer_descriptions.security_groups.to_s"]
+  audit_objects ["object.load_balancer_descriptions.security_groups"]
   operators ["=~"]
   raise_when [//]
   id_map "object.load_balancer_descriptions.load_balancer_name"
@@ -507,11 +507,18 @@ const reports = Object.keys(json_input)
 reports.forEach((report) => {
   Object.keys(json_input[report]).forEach((region) => {
     Object.keys(json_input[report][region]).forEach(key => {
-        const service = report.split('_')[0]
+        const service = report.split('_')[0];
         const violation = json_input[report][region][key].violations[`${service}-instances-active-security-groups-list`];
         if (!violation) return;
         violation.result_info.forEach((obj) => {
-            activeSecurityGroups.push(obj.object.group_id);
+          switch(service) {
+            case 'ec2':
+              activeSecurityGroups.push(obj.object.group_id);
+              break;
+            case 'elb':
+              activeSecurityGroups.push(obj.object);
+              break;
+          }
         });
     });
   });
@@ -536,7 +543,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
         'level': 'Low',
         'region': violations.region
     };
-    number_violations++
+    number_violations++;
     const violationKey = 'ec2-not-used-security-groups';
     //console.log("working on key: " + key + " in region: " + region);
     if (!json_input.main_report[region]) {
