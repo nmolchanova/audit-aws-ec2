@@ -403,6 +403,23 @@ coreo_aws_rule "elb-instances-active-security-groups-list" do
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
+coreo_aws_rule "rds-instances-active-security-groups-list" do
+  action :define
+  service :rds
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["db_instances"]
+  audit_objects ["object.db_instances.vpc_security_groups.security_group_id"]
+  operators ["=~"]
+  raise_when [//]
+  id_map "object.db_instances.db_name"
+end
+
 coreo_aws_rule "vpc-inventory" do
   action :define
   service :ec2
@@ -482,13 +499,22 @@ coreo_aws_rule_runner "advise-unused-security-groups-elb" do
   filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
+coreo_aws_rule_runner "advise-unused-security-groups-rds" do
+  service :rds
+  action :run
+  rules ["rds-instances-active-security-groups-list"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
+end
+
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
       "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
       "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
       "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-elb.report
+      "elb_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-elb.report,
+      "rds_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-rds.report
   }'
   function <<-EOH
 
@@ -508,15 +534,15 @@ reports.forEach((report) => {
   Object.keys(json_input[report]).forEach((region) => {
     Object.keys(json_input[report][region]).forEach(key => {
       const service = report.split('_')[0];
-      const violation = json_input[report][region][key].violations[`${service}-instances-active-security-groups-list`];
+      const violation = json_input[report][region][key].violator_info.security_groups;
       if (!violation) return;
-      violation.result_info.forEach((obj) => {
+      violation.forEach((obj) => {
         switch (service) {
           case 'ec2':
-            activeSecurityGroups.push(obj.object.group_id);
+            activeSecurityGroups.push(obj.group_id);
             break;
           case 'elb':
-            activeSecurityGroups.push(obj.object);
+            activeSecurityGroups.push(obj);
             break;
         }
       });
