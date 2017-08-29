@@ -626,7 +626,7 @@ reports.forEach((report) => {
             activeSecurityGroups.push(obj.object.vpc_security_group_id);
             break;
           case 'elasticache':
-            activeSecurityGroups.push(obj.object,security_group_id);
+            activeSecurityGroups.push(obj.object.security_group_id);
             break;
         }
       });
