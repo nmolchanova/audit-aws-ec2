@@ -403,6 +403,23 @@ coreo_aws_rule "elb-instances-active-security-groups-list" do
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
+coreo_aws_rule "alb-instances-active-security-groups-list" do
+  action :define
+  service :elasticloadbalancingv2
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["load_balancers"]
+  audit_objects ["object.load_balancers.security_groups"]
+  operators ["=~"]
+  raise_when [//]
+  id_map "object.load_balancers.load_balancer_name"
+end
+
 coreo_aws_rule "rds-instances-active-security-groups-list" do
   action :define
   service :rds
@@ -499,6 +516,14 @@ coreo_aws_rule_runner "advise-unused-security-groups-elb" do
   filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
+coreo_aws_rule_runner "advise-unused-security-groups-alb" do
+  service :elasticloadbalancingv2
+  action :run
+  rules ["alb-instances-active-security-groups-list"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
+end
+
 coreo_aws_rule_runner "advise-unused-security-groups-rds" do
   service :rds
   action :run
@@ -514,6 +539,7 @@ coreo_uni_util_jsrunner "security-groups-ec2" do
       "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
       "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report,
       "elb_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-elb.report,
+      "alb_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-alb.report,
       "rds_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-rds.report
   }'
   function <<-EOH
@@ -541,7 +567,7 @@ reports.forEach((report) => {
           case 'ec2':
             activeSecurityGroups.push(obj.object.group_id);
             break;
-          case 'elb':
+          case 'elb' || 'alb':
             obj.object.forEach(sg => activeSecurityGroups.push(sg));
             break;
           case 'rds':
