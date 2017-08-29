@@ -437,6 +437,23 @@ coreo_aws_rule "rds-instances-active-security-groups-list" do
   id_map "object.db_instances.db_name"
 end
 
+coreo_aws_rule "redshift-instances-active-security-groups-list" do
+  action :define
+  service :redshift
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["clusters"]
+  audit_objects ["object.clusters.vpc_security_groups.vpc_security_group_id"]
+  operators ["=~"]
+  raise_when [//]
+  id_map "object.clusters.cluster_identifier"
+end
+
 coreo_aws_rule "vpc-inventory" do
   action :define
   service :ec2
@@ -532,6 +549,14 @@ coreo_aws_rule_runner "advise-unused-security-groups-rds" do
   filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
+coreo_aws_rule_runner "advise-unused-security-groups-redshift" do
+  service :rds
+  action :run
+  rules ["redshift-instances-active-security-groups-list"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
+end
+
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
@@ -540,7 +565,8 @@ coreo_uni_util_jsrunner "security-groups-ec2" do
       "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report,
       "elb_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-elb.report,
       "alb_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-alb.report,
-      "rds_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-rds.report
+      "rds_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-rds.report,
+      "redshift_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-redshift.report
   }'
   function <<-EOH
 
