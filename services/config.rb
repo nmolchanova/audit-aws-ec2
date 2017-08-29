@@ -414,7 +414,7 @@ coreo_aws_rule "rds-instances-active-security-groups-list" do
   suggested_action "Ignore"
   level "Internal"
   objectives ["db_instances"]
-  audit_objects ["object.db_instances.vpc_security_groups.security_group_id"]
+  audit_objects ["object.db_instances.vpc_security_groups.vpc_security_group_id"]
   operators ["=~"]
   raise_when [//]
   id_map "object.db_instances.db_name"
