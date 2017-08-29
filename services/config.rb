@@ -534,15 +534,18 @@ reports.forEach((report) => {
   Object.keys(json_input[report]).forEach((region) => {
     Object.keys(json_input[report][region]).forEach(key => {
       const service = report.split('_')[0];
-      const violation = json_input[report][region][key].violator_info.security_groups;
+      const violation = json_input[report][region][key].violations[`${service}-instances-active-security-groups-list`];
       if (!violation) return;
-      violation.forEach((obj) => {
+      violation.result_info.forEach((obj) => {
         switch (service) {
           case 'ec2':
-            activeSecurityGroups.push(obj.group_id);
+            activeSecurityGroups.push(obj.object.group_id);
             break;
           case 'elb':
-            activeSecurityGroups.push(obj);
+            obj.object.forEach(sg => activeSecurityGroups.push(sg));
+            break;
+          case 'rds':
+            activeSecurityGroups.push(obj.object.vpc_security_group_id);
             break;
         }
       });
