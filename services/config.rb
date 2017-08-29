@@ -622,8 +622,11 @@ reports.forEach((report) => {
           case 'elb' || 'alb':
             obj.object.forEach(sg => activeSecurityGroups.push(sg));
             break;
-          case 'rds':
+          case 'rds' || 'redshift':
             activeSecurityGroups.push(obj.object.vpc_security_group_id);
+            break;
+          case 'elasticache':
+            activeSecurityGroups.push(obj.object,security_group_id);
             break;
         }
       });
