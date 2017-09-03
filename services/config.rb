@@ -311,7 +311,7 @@ end
 
 coreo_aws_rule "ec2-default-security-group-traffic" do
   action :define
-  service :ec2
+  service :user
   link "http://kb.cloudcoreo.com/mydoc_ec2-default-security-group-traffic.html"
   display_name "Default Security Group Unrestricted"
   description "The default security group settings should maximally restrict traffic"
@@ -351,6 +351,40 @@ end
 
 
 # end of user-visible content. Remaining resources are system-defined
+
+coreo_aws_rule "ec2-security-group-nil-permissions" do
+  action :define
+  service :ec2
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["security_groups"]
+  audit_objects ["object.security_groups.ip_permissions"]
+  operators ["!="]
+  raise_when [nil]
+  id_map "object.security_groups.group_id"
+end
+
+coreo_aws_rule "ec2-default-security-groups-list" do
+  action :define
+  service :ec2
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["security_groups"]
+  audit_objects ["object.security_groups.group_name"]
+  operators ["=="]
+  raise_when ["default"]
+  id_map "object.security_groups.group_id"
+end
 
 coreo_aws_rule "ec2-security-groups-list" do
   action :define
@@ -421,6 +455,12 @@ coreo_aws_rule "flow-logs-inventory" do
   operators     ["=~"]
   raise_when    [//]
   id_map        "object.flow_logs.resource_id"
+end
+
+coreo_aws_rule_runner "ec2-default-security-groups-traffic" do
+  action :run
+  service :ec2
+  rules ["ec2-default-security-groups-list", "ec2-security-group-nil-permissions"]
 end
 
 coreo_aws_rule_runner "vpcs-flow-logs-inventory" do
@@ -540,6 +580,64 @@ coreo_uni_util_variables "ec2-update-planwide-2" do
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
                 {'GLOBAL::number_violations' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.number_violations'}
             ])
+end
+
+coreo_uni_util_jsrunner "default-security-group-traffic" do
+  action :run
+  data_type "json"
+  provide_composite_access true
+  json_input '{ 
+                "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
+                "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
+                "ec2_report":COMPOSITE::coreo_aws_rule_runner.ec2-default-security-groups-traffic.report,
+                }'
+  function <<-EOH
+
+  const alertArrayJSON = ${AUDIT_AWS_EC2_ALERT_LIST};
+  if(!alertArrayJSON.includes('ec2-default-security-group-traffic')) {
+    coreoExport('number_violations', JSON.stringify(COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations));
+    callback(json_input.main_report);
+    return;
+  }
+
+  Object.keys(json_input.ec2_report).forEach((region) => {
+    Object.keys(json_input.ec2_report[region]).forEach(key => {
+        const tags = json_input.ec2_report[region][key].tags;
+        const violations = json_input.ec2_report[region][key].violations["ec2-default-security-groups-list"];
+        if (!violations) return;
+        const violations1 = json_input.ec2_report[region][key].violations["ec2-security-group-nil-permissions"];
+        if (!violations1) return;
+
+        const defSGMetadata = {
+              'service': 'ec2',
+              'display_name': 'Default Security Group Unrestricted',
+              'description': 'The default security group settings should maximally restrict traffic',
+              'category': 'Security',
+              'suggested_action': 'Ensure default security groups are set to restrict all traffic',
+              'level': 'Medium',
+              'meta_cis_id': '4.4',
+              'meta_cis_scored': 'true',
+              'meta_cis_level': '2'
+        };
+        number_violations++
+        const violationKey = 'ec2-default-security-group-traffic';
+        
+        if (!json_input.main_report[region]) {
+            json_input.main_report[region] = {};
+        }
+        if (!json_input.main_report[region][key]) {
+            json_input.main_report[region][key] = { violations: {}, tags: [] };
+        }
+        json_input.main_report[region][key].violations[violationKey] = defSGMetadata;
+        json_input.main_report[region][key].tags.concat(tags);
+    });
+  });
+
+
+  coreoExport('number_violations', JSON.stringify(number_violations));
+
+  callback(json_input.main_report);
+    EOH
 end
 
 coreo_uni_util_jsrunner "cis43-processor" do
