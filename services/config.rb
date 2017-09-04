@@ -457,7 +457,7 @@ coreo_aws_rule "flow-logs-inventory" do
   id_map        "object.flow_logs.resource_id"
 end
 
-coreo_aws_rule_runner "ec2-default-security-groups-traffic" do
+coreo_aws_rule_runner "advise-ec2-default-security-groups-traffic" do
   action :run
   service :ec2
   rules ["ec2-default-security-groups-list", "ec2-security-group-nil-permissions"]
@@ -589,7 +589,7 @@ coreo_uni_util_jsrunner "default-security-group-traffic" do
   json_input '{ 
                 "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
                 "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
-                "ec2_report":COMPOSITE::coreo_aws_rule_runner.ec2-default-security-groups-traffic.report,
+                "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2-default-security-groups-traffic.report,
                 }'
   function <<-EOH
 
