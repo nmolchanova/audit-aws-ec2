@@ -568,8 +568,9 @@ Object.keys(json_input.ec2_report).forEach((region) => {
 
 
 coreoExport('number_violations', JSON.stringify(number_violations));
+const report = JSON.stringify(json_input.main_report)
 
-callback(json_input.main_report);
+callback(report);
   EOH
 end
 
