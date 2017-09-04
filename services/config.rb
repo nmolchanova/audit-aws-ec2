@@ -460,7 +460,7 @@ end
 coreo_aws_rule_runner "ec2-default-security-groups-traffic" do
   action :run
   service :ec2
-  rules ["ec2-default-security-groups-list"]
+  rules ["ec2-default-security-groups-list", "ec2-security-group-nil-permissions"]
 end
 
 coreo_aws_rule_runner "vpcs-flow-logs-inventory" do
