@@ -577,7 +577,7 @@ end
 coreo_uni_util_variables "ec2-update-planwide-2" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.report'},
+                {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
                 {'GLOBAL::number_violations' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.number_violations'}
             ])
@@ -587,7 +587,7 @@ coreo_uni_util_jsrunner "default-security-group-traffic" do
   action :run
   json_input '{ 
                 "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
-                "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
+                "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.return,
                 "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2-default-security-groups-traffic.report,
                 }'
   function <<-EOH
