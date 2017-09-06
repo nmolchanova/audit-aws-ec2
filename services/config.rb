@@ -568,19 +568,16 @@ Object.keys(json_input.ec2_report).forEach((region) => {
 
 
 coreoExport('number_violations', JSON.stringify(number_violations));
-const areport = JSON.stringify(json_input.main_report)
-const jreport = json_input.main_report
-coreoExport('report', areport)
+const report = JSON.stringify(json_input.main_report)
 
-
-callback(jreport);
+callback(report);
   EOH
 end
 
 coreo_uni_util_variables "ec2-update-planwide-2" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.report'},
+                {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
                 {'GLOBAL::number_violations' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.number_violations'}
             ])
