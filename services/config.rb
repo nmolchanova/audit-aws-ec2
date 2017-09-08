@@ -458,9 +458,9 @@ coreo_aws_rule "flow-logs-inventory" do
 end
 
 coreo_aws_rule_runner "advise-ec2-default-security-groups-traffic" do
-  action :run
   service :ec2
-  rules ["ec2-default-security-groups-list", "ec2-security-group-nil-permissions"]
+  action :run
+  regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
 coreo_aws_rule_runner "vpcs-flow-logs-inventory" do
@@ -567,22 +567,16 @@ Object.keys(json_input.ec2_report).forEach((region) => {
 });
 
 
-const violations = json_input['main_report'];
-const report = JSON.stringify(violations)
-
-coreoExport('JSONReport', JSON.stringify(json_input));
-coreoExport('report', report);
 coreoExport('number_violations', JSON.stringify(number_violations));
-
-callback(violations);
+callback(json_input.main_report);
   EOH
 end
 
 coreo_uni_util_variables "ec2-update-planwide-2" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.report'},
-                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.JSONReturn'},
+                {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
+                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
                 {'GLOBAL::number_violations' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.number_violations'}
             ])
 end
@@ -590,8 +584,8 @@ end
 coreo_uni_util_jsrunner "default-security-group-traffic" do
   action :run
   json_input '{ 
-                "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
-                "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.return,
+                "number_violations":COMPOSITE::number_violations,
+                "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
                 "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2-default-security-groups-traffic.report,
                 }'
   function <<-EOH
