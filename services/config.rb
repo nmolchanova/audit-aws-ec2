@@ -460,6 +460,7 @@ end
 coreo_aws_rule_runner "advise-ec2-default-security-groups-traffic" do
   service :ec2
   action :run
+  rules ["ec2-default-security-groups-list", "ec2-security-group-nil-permissions"]
   regions ${AUDIT_AWS_EC2_REGIONS}
 end
 
