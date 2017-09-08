@@ -599,7 +599,6 @@ end
 coreo_uni_util_jsrunner "default-security-group-traffic" do
   action :run
   json_input '{ 
-                "number_violations":COMPOSITE::number_violations,
                 "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
                 "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2-default-security-groups-traffic.report,
                 }'
@@ -607,7 +606,6 @@ coreo_uni_util_jsrunner "default-security-group-traffic" do
 
   const alertArrayJSON = ${AUDIT_AWS_EC2_ALERT_LIST};
   if(!alertArrayJSON.includes('ec2-default-security-group-traffic')) {
-    coreoExport('number_violations', JSON.stringify(COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations));
     callback(json_input.main_report);
     return;
   }
@@ -631,7 +629,6 @@ coreo_uni_util_jsrunner "default-security-group-traffic" do
               'meta_cis_scored': 'true',
               'meta_cis_level': '2'
         };
-        number_violations++
         const violationKey = 'ec2-default-security-group-traffic';
         
         if (!json_input.main_report[region]) {
