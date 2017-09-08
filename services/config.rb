@@ -501,8 +501,7 @@ end
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
-      "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
-      "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
+      
       "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report
   }'
   function <<-EOH
