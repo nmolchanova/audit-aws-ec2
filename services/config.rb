@@ -58,7 +58,7 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
   category "Security"
   suggested_action "Restrict access to the minimum specific set of IP address or ports necessary."
   level "Low"
-  meta_nist_171_id "3.4.7"
+  meta_nist_171_id "3.4.7, 3.4.8"
   objectives ["security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=="]
@@ -75,7 +75,7 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -92,7 +92,7 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -109,7 +109,7 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -126,7 +126,7 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -143,7 +143,7 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -200,7 +200,7 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -217,7 +217,7 @@ coreo_aws_rule "ec2-TCP-23" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7"
+  meta_nist_171_id "3.4.7, 3.4.8"
   objectives ["","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port"]
   operators ["==","=="]
@@ -234,7 +234,7 @@ coreo_aws_rule "ec2-TCP-21" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.5.4"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.5.4"
   objectives ["","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port"]
   operators ["==","=="]
@@ -251,7 +251,7 @@ coreo_aws_rule "ec2-TCP-20" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.5.4"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.5.4"
   objectives ["","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port"]
   operators ["==","=="]
@@ -285,7 +285,7 @@ coreo_aws_rule "ec2-ports-range" do
   category "Security"
   suggested_action "Only add rules to your Security group that specify individual ports and don't use port ranges unless they are required."
   level "Low"
-  meta_nist_171_id "3.4.7"
+  meta_nist_171_id "3.4.7, 3.4.8"
   objectives ["security_groups"]
   audit_objects ["object.security_groups.ip_permissions.from_port"]
   operators ["!="]
@@ -321,7 +321,7 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   meta_cis_scored "true"
   meta_cis_level "2"
   level "Medium"
-  meta_nist_171_id "3.4.7"
+  meta_nist_171_id "3.4.7, 3.4.8"
   objectives ["security_groups", "security_groups"]
   audit_objects ["object.security_groups.group_name", "object.security_groups.ip_permissions"]
   operators ["==","!="]
