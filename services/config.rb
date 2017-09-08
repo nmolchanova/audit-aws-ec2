@@ -577,7 +577,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
   });
 });
 
-const main_report = json_input.['violations'];
+const main_report = json_input['main_report'];
 const report = JSON.stringify(main_report)
 
 
