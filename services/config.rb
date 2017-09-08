@@ -217,7 +217,7 @@ coreo_aws_rule "ec2-TCP-23" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.4.8"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.5.4"
   objectives ["","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port"]
   operators ["==","=="]
