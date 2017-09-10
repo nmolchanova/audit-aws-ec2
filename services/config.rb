@@ -513,13 +513,7 @@ coreo_uni_util_jsrunner "security-groups-ec2" do
                }])
   json_input '{
       "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
-      "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
-      "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report,
-      "elb_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-elb.report,
-      "alb_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-alb.report,
-      "rds_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-rds.report,
-      "redshift_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-redshift.report,
-      "elasticache_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-elasticache.report
+      "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report
   }'
   function <<-EOH
 
