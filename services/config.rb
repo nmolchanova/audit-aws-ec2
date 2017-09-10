@@ -642,9 +642,6 @@ coreo_uni_util_jsrunner "default-security-group-traffic" do
     });
   });
 
-
-  coreoExport('number_violations', JSON.stringify(number_violations));
-
   callback(json_input.main_report);
     EOH
 end
