@@ -620,7 +620,9 @@ if(ec2_alerts_list.includes('ec2-default-security-group-traffic')){
 const main_report = json_input['main_report'];
 const report = JSON.stringify(main_report)
 
-coreoExport('number_violations', JSON.stringify(number_violations));
+if(json_input['number_violations']) {
+  coreoExport('number_violations', JSON.stringify(number_violations));
+}
 
 coreoExport('report', report);
 callback(json_input.main_report);
