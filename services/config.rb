@@ -622,6 +622,8 @@ const report = JSON.stringify(main_report)
 
 if(json_input['number_violations']) {
   coreoExport('number_violations', JSON.stringify(number_violations));
+} else {
+  coreoExport('number_violations', JSON.stringify(json.input.number_violations));
 }
 
 coreoExport('report', report);
