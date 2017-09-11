@@ -601,7 +601,6 @@ if(ec2_alerts_list.includes('ec2-default-security-group-traffic')){
               'meta_cis_scored': 'true',
               'meta_cis_level': '2'
         };
-        number_violations++
         const violationKey2 = 'ec2-default-security-group-traffic';
         
         if (!json_input.main_report[region]) {
