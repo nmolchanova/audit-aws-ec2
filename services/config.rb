@@ -434,7 +434,7 @@ coreo_aws_rule "rds-instances-active-security-groups-list" do
   audit_objects ["object.db_instances.vpc_security_groups.vpc_security_group_id"]
   operators ["=~"]
   raise_when [//]
-  id_map "object.db_instances.db_name"
+  id_map "object.db_instances.db_instance_identifier"
 end
 
 coreo_aws_rule "redshift-instances-active-security-groups-list" do
