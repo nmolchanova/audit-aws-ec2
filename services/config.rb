@@ -500,17 +500,6 @@ end
 
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
-  data_type "json"
-  provide_composite_access true
-  packages([
-               {
-                   :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.10.7-beta63"
-               },
-               {
-                   :name => "js-yaml",
-                   :version => "3.7.0"
-               }])
   json_input '{
       "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
       "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
