@@ -546,7 +546,7 @@ if(ec2_alerts_list.includes('ec2-not-used-security-groups')){
         });
     });
   });
-  let number_violations = 0;
+  var number_violations = 0;
   if(json_input['number_violations']) {
     number_violations = parseInt(json_input['number_violations']);
   }
@@ -583,7 +583,6 @@ if(ec2_alerts_list.includes('ec2-not-used-security-groups')){
 
 if(ec2_alerts_list.includes('ec2-default-security-group-traffic')){
   Object.keys(json_input.def_groups_report).forEach((region) => {
-    let number_violations = 0;
     Object.keys(json_input.def_groups_report[region]).forEach(key => {
         const tags2 = json_input.def_groups_report[region][key].tags;
         const violations2 = json_input.def_groups_report[region][key].violations["ec2-default-security-groups-list"];
@@ -602,7 +601,6 @@ if(ec2_alerts_list.includes('ec2-default-security-group-traffic')){
               'meta_cis_scored': 'true',
               'meta_cis_level': '2'
         };
-        number_violations++
         const violationKey2 = 'ec2-default-security-group-traffic';
         
         if (!json_input.main_report[region]) {
