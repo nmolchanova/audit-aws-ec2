@@ -834,8 +834,8 @@ coreo_aws_s3_policy "cloudcoreo-audit-aws-ec2-policy" do
 ,
 "Action": "s3:*",
 "Resource": [
-"arn:aws:s3:::${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}/*",
-"arn:aws:s3:::${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}"
+"arn:aws:s3:::bucket-${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}/*",
+"arn:aws:s3:::bucket-${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}"
 ]
 }
 ]
@@ -855,7 +855,7 @@ coreo_uni_util_notify "cloudcoreo-audit-aws-ec2-s3" do
   payload 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.report'
   endpoint ({
       object_name: 'aws-ec2-json',
-      bucket_name: '${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}',
+      bucket_name: 'bucket-${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}',
       folder: 'ec2/PLAN::name',
       properties: {}
   })
