@@ -311,7 +311,7 @@ end
 
 coreo_aws_rule "ec2-default-security-group-traffic" do
   action :define
-  service :ec2
+  service :user
   link "http://kb.cloudcoreo.com/mydoc_ec2-default-security-group-traffic.html"
   display_name "Default Security Group Unrestricted"
   description "The default security group settings should maximally restrict traffic"
@@ -351,6 +351,40 @@ end
 
 
 # end of user-visible content. Remaining resources are system-defined
+
+coreo_aws_rule "ec2-security-group-nil-permissions" do
+  action :define
+  service :ec2
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["security_groups"]
+  audit_objects ["object.security_groups.ip_permissions"]
+  operators ["!="]
+  raise_when [nil]
+  id_map "object.security_groups.group_id"
+end
+
+coreo_aws_rule "ec2-default-security-groups-list" do
+  action :define
+  service :ec2
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["security_groups"]
+  audit_objects ["object.security_groups.group_name"]
+  operators ["=="]
+  raise_when ["default"]
+  id_map "object.security_groups.group_id"
+end
 
 coreo_aws_rule "ec2-security-groups-list" do
   action :define
@@ -423,6 +457,13 @@ coreo_aws_rule "flow-logs-inventory" do
   id_map        "object.flow_logs.resource_id"
 end
 
+coreo_aws_rule_runner "advise-ec2-default-security-groups-traffic" do
+  service :ec2
+  action :run
+  rules ["ec2-default-security-groups-list", "ec2-security-group-nil-permissions"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
+end
+
 coreo_aws_rule_runner "vpcs-flow-logs-inventory" do
   action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :run : :nothing)
   service :ec2
@@ -462,73 +503,117 @@ coreo_uni_util_jsrunner "security-groups-ec2" do
   json_input '{
       "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
       "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
-      "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report
+      "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report,
+      "def_groups_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2-default-security-groups-traffic.report
   }'
   function <<-EOH
 
 const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
-if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
+if(!ec2_alerts_list.includes('ec2-not-used-security-groups') && !ec2_alerts_list.includes('ec2-default-security-group-traffic')) {
   coreoExport('number_violations', JSON.stringify(COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations));
   callback(json_input.main_report);
   return;
 }
 
-const activeSecurityGroups = [];
+if(ec2_alerts_list.includes('ec2-not-used-security-groups')){
+  const activeSecurityGroups = [];
 
-const groupIsActive = (groupId) => {
-    for (let activeGroupId of activeSecurityGroups) {
-        if (activeGroupId === groupId) return true;
-    }
-    return false;
-};
+  const groupIsActive = (groupId) => {
+      for (let activeGroupId of activeSecurityGroups) {
+          if (activeGroupId === groupId) return true;
+      }
+      return false;
+  };
 
-Object.keys(json_input.ec2_report).forEach((region) => {
+  Object.keys(json_input.ec2_report).forEach((region) => {
 
-  Object.keys(json_input.ec2_report[region]).forEach(key => {
-      const violation = json_input.ec2_report[region][key].violations['ec2-instances-active-security-groups-list'];
-      if (!violation) return;
-      violation.result_info.forEach((obj) => {
-          activeSecurityGroups.push(obj.object.group_id);
-      });
+    Object.keys(json_input.ec2_report[region]).forEach(key => {
+        const violation = json_input.ec2_report[region][key].violations['ec2-instances-active-security-groups-list'];
+        if (!violation) return;
+        violation.result_info.forEach((obj) => {
+            activeSecurityGroups.push(obj.object.group_id);
+        });
+    });
   });
-});
-let number_violations = 0;
-if(json_input['number_violations']) {
-  number_violations = parseInt(json_input['number_violations']);
+  var number_violations = 0;
+  if(json_input['number_violations']) {
+    number_violations = parseInt(json_input['number_violations']);
+  }
+  Object.keys(json_input.ec2_report).forEach((region) => {
+    Object.keys(json_input.ec2_report[region]).forEach(key => {
+        const tags = json_input.ec2_report[region][key].tags;
+        const violations = json_input.ec2_report[region][key].violations["ec2-security-groups-list"];
+        if (!violations) return;
+
+        const currentSecGroup = violations['result_info'][0].object;
+        if (groupIsActive(currentSecGroup.group_id)) return;
+        const securityGroupIsNotUsedAlert = {
+            'display_name': 'EC2 security group is not used',
+            'description': 'Security group is not used anywhere',
+            'category': 'Audit',
+            'suggested_action': 'Remove this security group',
+            'level': 'Low',
+            'region': violations.region
+        };
+        number_violations++
+        const violationKey = 'ec2-not-used-security-groups';
+        //console.log("working on key: " + key + " in region: " + region);
+        if (!json_input.main_report[region]) {
+            json_input.main_report[region] = {};
+        }
+        if (!json_input.main_report[region][key]) {
+            json_input.main_report[region][key] = { violations: {}, tags: [] };
+        }
+        json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
+        json_input.main_report[region][key].tags.concat(tags);
+    });
+  });
 }
-Object.keys(json_input.ec2_report).forEach((region) => {
-  Object.keys(json_input.ec2_report[region]).forEach(key => {
-      const tags = json_input.ec2_report[region][key].tags;
-      const violations = json_input.ec2_report[region][key].violations["ec2-security-groups-list"];
-      if (!violations) return;
 
-      const currentSecGroup = violations['result_info'][0].object;
-      if (groupIsActive(currentSecGroup.group_id)) return;
-      const securityGroupIsNotUsedAlert = {
-          'display_name': 'EC2 security group is not used',
-          'description': 'Security group is not used anywhere',
-          'category': 'Audit',
-          'suggested_action': 'Remove this security group',
-          'level': 'Low',
-          'region': violations.region
-      };
-      number_violations++
-      const violationKey = 'ec2-not-used-security-groups';
-      //console.log("working on key: " + key + " in region: " + region);
-      if (!json_input.main_report[region]) {
-          json_input.main_report[region] = {};
-      }
-      if (!json_input.main_report[region][key]) {
-          json_input.main_report[region][key] = { violations: {}, tags: [] };
-      }
-      json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
-      json_input.main_report[region][key].tags.concat(tags);
+if(ec2_alerts_list.includes('ec2-default-security-group-traffic')){
+  Object.keys(json_input.def_groups_report).forEach((region) => {
+    Object.keys(json_input.def_groups_report[region]).forEach(key => {
+        const tags2 = json_input.def_groups_report[region][key].tags;
+        const violations2 = json_input.def_groups_report[region][key].violations["ec2-default-security-groups-list"];
+        if (!violations2) return;
+        const violations3 = json_input.def_groups_report[region][key].violations["ec2-security-group-nil-permissions"];
+        if (!violations3) return;
+
+        const defSGMetadata = {
+              'service': 'ec2',
+              'display_name': 'Default Security Group Unrestricted',
+              'description': 'The default security group settings should maximally restrict traffic',
+              'category': 'Security',
+              'suggested_action': 'Ensure default security groups are set to restrict all traffic',
+              'level': 'Medium',
+              'meta_cis_id': '4.4',
+              'meta_cis_scored': 'true',
+              'meta_cis_level': '2'
+        };
+        const violationKey2 = 'ec2-default-security-group-traffic';
+        
+        if (!json_input.main_report[region]) {
+            json_input.main_report[region] = {};
+        }
+        if (!json_input.main_report[region][key]) {
+            json_input.main_report[region][key] = { violations: {}, tags: [] };
+        }
+        json_input.main_report[region][key].violations[violationKey2] = defSGMetadata;
+        json_input.main_report[region][key].tags.concat(tags2);
+    });
   });
-});
+}
 
+const main_report = json_input['main_report'];
+const report = JSON.stringify(main_report)
 
-coreoExport('number_violations', JSON.stringify(number_violations));
+if(json_input['number_violations']) {
+  coreoExport('number_violations', JSON.stringify(number_violations));
+} else {
+  coreoExport('number_violations', JSON.stringify(json_input.number_violations));
+}
 
+coreoExport('report', report);
 callback(json_input.main_report);
   EOH
 end
@@ -536,7 +621,7 @@ end
 coreo_uni_util_variables "ec2-update-planwide-2" do
   action :set
   variables([
-                {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
+                {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.report'},
                 {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.return'},
                 {'GLOBAL::number_violations' => 'COMPOSITE::coreo_uni_util_jsrunner.security-groups-ec2.number_violations'}
             ])
