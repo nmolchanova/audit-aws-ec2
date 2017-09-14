@@ -295,18 +295,18 @@ end
 
 coreo_aws_rule "ec2-not-used-security-groups" do
   action :define
-  service :ec2
+  service :user
   display_name "EC2 security group is not used"
   description "Security group is not used anywhere"
   category "Security"
   suggested_action "Remove this security group"
   level "Low"
   meta_nist_171_id "3.4.6"
-  objectives ["security_groups", "security_groups"]
-  audit_objects ["object.security_groups", "object.group_name"]
-  operators ["==", "!~"]
-  raise_when [false, /^default$/]
-  id_map "object.security_groups.group_id"
+  objectives [""]
+  audit_objects [""]
+  operators [""]
+  raise_when [true]
+  id_map "static.no_op"
 end
 
 coreo_aws_rule "ec2-default-security-group-traffic" do
@@ -457,6 +457,23 @@ coreo_aws_rule "flow-logs-inventory" do
   id_map        "object.flow_logs.resource_id"
 end
 
+coreo_aws_rule "ec2-unused-security-groups" do
+  action :define
+  service :ec2
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["security_groups", "security_groups"]
+  audit_objects ["object.security_groups", "object.group_name"]
+  operators ["==", "!~"]
+  raise_when [false, /^default$/]
+  id_map "object.security_groups.group_id"
+end
+
 coreo_aws_rule_runner "advise-ec2-default-security-groups-traffic" do
   service :ec2
   action :run
@@ -493,7 +510,7 @@ end
 coreo_aws_rule_runner "advise-unused-security-groups-ec2" do
   service :ec2
   action :run
-  rules ["ec2-security-groups-list", "ec2-instances-active-security-groups-list"]
+  rules ["ec2-security-groups-list", "ec2-instances-active-security-groups-list", "ec2-unused-security-groups"]
   regions ${AUDIT_AWS_EC2_REGIONS}
   filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
