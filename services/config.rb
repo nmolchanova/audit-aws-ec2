@@ -389,7 +389,7 @@ end
 coreo_aws_rule "ec2-security-groups-list" do
   action :define
   service :ec2
-  include_violations_in_count false
+  include_violations_in_count true
   link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
   description "This is an internally defined alert."
@@ -406,7 +406,7 @@ end
 coreo_aws_rule "ec2-instances-active-security-groups-list" do
   action :define
   service :ec2
-  include_violations_in_count false
+  include_violations_in_count true
   link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
   description "This is an internally defined alert."
@@ -460,7 +460,7 @@ end
 coreo_aws_rule "ec2-unused-security-groups" do
   action :define
   service :ec2
-  include_violations_in_count false
+  include_violations_in_count true
   link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
   description "This is an internally defined alert."
