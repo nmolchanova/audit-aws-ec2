@@ -591,7 +591,7 @@ if(ec2_alerts_list.includes('ec2-default-security-group-traffic')){
               'meta_cis_level': '2'
         };
         const violationKey2 = 'ec2-default-security-group-traffic';
-        
+
         if (!json_input.main_report[region]) {
             json_input.main_report[region] = {};
         }
@@ -728,7 +728,7 @@ coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.10.7-beta64"
+                   :version => "1.10.7-beta65"
                },
                {
                    :name => "js-yaml",
