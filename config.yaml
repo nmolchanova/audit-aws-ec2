@@ -27,7 +27,6 @@ variables:
       - ec2-default-security-group-traffic # cis_id:4.4
       - ec2-vpc-flow-logs # cis_id:4.3
       - ec2-ebs-snapshots-encrypted
-      - ec2-ebs-volumes-encrypted
 #             - ec2-security-groups-list # not_violation
 #             - ec2-instances-active-security-groups-list # not_violation
 #             - elb-load-balancers-active-security-groups-list # not_violation

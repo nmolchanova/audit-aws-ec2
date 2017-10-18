@@ -49,24 +49,6 @@ coreo_aws_rule "ec2-ip-address-whitelisted" do
   id_map "object.security_groups.group_id"
 end
 
-coreo_aws_rule "ec2-ebs-volumes-encrypted" do
-  action :define
-  service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-ebs-volumes-encrypted.html"
-  display_name "EBS Volumes are not Encrypted"
-  description "EBS Volumes should be encrypted to protect data"
-  category "Security"
-  suggested_action "Ensure all ebs volumes are encrypted"
-  level "Medium"
-  meta_nist_171_id "3.13.16"
-  objectives ["describe_volumes"]
-  call_modifiers [{owner_ids: [ "static.self" ]}]
-  audit_objects ["object.volumes.encrypted"]
-  operators ["=="]
-  raise_when [false]
-  id_map "object.volumes.volume_id"
-end
-
 coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
   action :define
   service :ec2
@@ -76,7 +58,7 @@ coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
   category "Security"
   suggested_action "Ensure all ebs volume snapshots are encrypted"
   level "Medium"
-  meta_nist_171_id "3.8.9, 3.13.16"
+  meta_nist_171_id "3.8.9"
   objectives ["describe_snapshots"]
   call_modifiers [{owner_ids: [ "static.self" ]}]
   audit_objects ["object.snapshots.encrypted"]
