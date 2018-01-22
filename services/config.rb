@@ -789,7 +789,7 @@ EOH
 end
 
 coreo_uni_util_variables "ec2-update-planwide-3" do
-  action   action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :set : :nothing)
+  action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :set : :nothing)
   variables([
                 {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.cis43-processor.return'}
             ])
