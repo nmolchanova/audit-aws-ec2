@@ -724,7 +724,7 @@ coreo_uni_util_jsrunner "cis43-processor" do
   const FLOW_LOGS_INVENTORY_RULE = 'flow-logs-inventory';
   const VPC_INVENTORY_RULE = 'vpc-inventory';
 
-  const regionArrayJSON = ${AUDIT_AWS_EC2_REGIONS};
+  const regionArrayJSON = '${AUDIT_AWS_EC2_REGIONS}';
   const regionArray = JSON.parse(regionArrayJSON.replace(/'/g, '"'))
 
   const vpcFlowLogsInventory = json_input[1];
