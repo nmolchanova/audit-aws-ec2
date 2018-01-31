@@ -1,4 +1,4 @@
-fvariables:
+variables:
   HTML_REPORT_SUBJECT:
     required: false
     type: string
