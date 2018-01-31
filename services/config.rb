@@ -49,6 +49,24 @@ coreo_aws_rule "ec2-ip-address-whitelisted" do
   id_map "object.security_groups.group_id"
 end
 
+coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
+  action :define
+  service :ec2
+  link "http://kb.cloudcoreo.com/mydoc_ec2-ebs-snapshots-encrypted.html"
+  display_name "EBS Volume Snapshots are not Encrypted"
+  description "EBS Snapshots should be encrypted to protect data at rest"
+  category "Security"
+  suggested_action "Ensure all ebs volume snapshots are encrypted"
+  level "Medium"
+  meta_nist_171_id "3.8.9"
+  objectives ["describe_snapshots"]
+  call_modifiers [{owner_ids: [ "static.self" ]}]
+  audit_objects ["object.snapshots.encrypted"]
+  operators ["=="]
+  raise_when [false]
+  id_map "object.snapshots.snapshot_id"
+end
+
 coreo_aws_rule "ec2-unrestricted-traffic" do
   action :define
   service :ec2
@@ -58,7 +76,7 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
   category "Security"
   suggested_action "Restrict access to the minimum specific set of IP address or ports necessary."
   level "Low"
-  meta_nist_171_id "3.4.7"
+  meta_nist_171_id "3.4.7, 3.4.8"
   objectives ["security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["=="]
@@ -75,7 +93,7 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -92,7 +110,7 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -109,7 +127,7 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -126,7 +144,7 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -143,7 +161,7 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -200,7 +218,7 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.13.6"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.13.6"
   objectives ["","","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port", "object.security_groups.ip_permissions.ip_ranges.cidr_ip"]
   operators ["==","==","=="]
@@ -217,7 +235,7 @@ coreo_aws_rule "ec2-TCP-23" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.5.4"
   objectives ["","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port"]
   operators ["==","=="]
@@ -234,7 +252,7 @@ coreo_aws_rule "ec2-TCP-21" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.5.4"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.5.4"
   objectives ["","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port"]
   operators ["==","=="]
@@ -251,7 +269,7 @@ coreo_aws_rule "ec2-TCP-20" do
   category "Security"
   suggested_action "Only open those ports that must be open for your service to operate. Consider deleting or modifying the affected security group."
   level "Low"
-  meta_nist_171_id "3.4.7, 3.5.4"
+  meta_nist_171_id "3.4.7, 3.4.8, 3.5.4"
   objectives ["","security_groups"]
   audit_objects ["object.security_groups.ip_permissions.ip_protocol", "object.security_groups.ip_permissions.from_port"]
   operators ["==","=="]
@@ -285,7 +303,7 @@ coreo_aws_rule "ec2-ports-range" do
   category "Security"
   suggested_action "Only add rules to your Security group that specify individual ports and don't use port ranges unless they are required."
   level "Low"
-  meta_nist_171_id "3.4.7"
+  meta_nist_171_id "3.4.7, 3.4.8"
   objectives ["security_groups"]
   audit_objects ["object.security_groups.ip_permissions.from_port"]
   operators ["!="]
@@ -321,7 +339,7 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   meta_cis_scored "true"
   meta_cis_level "2"
   level "Medium"
-  meta_nist_171_id "3.4.7"
+  meta_nist_171_id "3.4.7, 3.4.8"
   objectives ["security_groups", "security_groups"]
   audit_objects ["object.security_groups.group_name", "object.security_groups.ip_permissions"]
   operators ["==","!="]
@@ -341,7 +359,7 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   meta_cis_id "4.3"
   meta_cis_scored "true"
   meta_cis_level "1"
-  meta_nist_171_id "3.13.1"
+  meta_nist_171_id "3.13.1, 3.13.6"
   objectives [""]
   audit_objects [""]
   operators [""]
@@ -418,6 +436,91 @@ coreo_aws_rule "ec2-instances-active-security-groups-list" do
   operators ["=~"]
   raise_when [//]
   id_map "object.reservations.instances.instance_id"
+end
+
+coreo_aws_rule "elb-instances-active-security-groups-list" do
+  action :define
+  service :elasticloadbalancing
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["load_balancers"]
+  audit_objects ["object.load_balancer_descriptions.security_groups"]
+  operators ["=~"]
+  raise_when [//]
+  id_map "object.load_balancer_descriptions.load_balancer_name"
+end
+
+coreo_aws_rule "alb-instances-active-security-groups-list" do
+  action :define
+  service :elasticloadbalancingv2
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["load_balancers"]
+  audit_objects ["object.load_balancers.security_groups"]
+  operators ["=~"]
+  raise_when [//]
+  id_map "object.load_balancers.load_balancer_name"
+end
+
+coreo_aws_rule "rds-instances-active-security-groups-list" do
+  action :define
+  service :rds
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["db_instances"]
+  audit_objects ["object.db_instances.vpc_security_groups.vpc_security_group_id"]
+  operators ["=~"]
+  raise_when [//]
+  id_map "object.db_instances.db_instance_identifier"
+end
+
+coreo_aws_rule "redshift-instances-active-security-groups-list" do
+  action :define
+  service :redshift
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["clusters"]
+  audit_objects ["object.clusters.vpc_security_groups.vpc_security_group_id"]
+  operators ["=~"]
+  raise_when [//]
+  id_map "object.clusters.cluster_identifier"
+end
+
+coreo_aws_rule "elasticache-instances-active-security-groups-list" do
+  action :define
+  service :elasticache
+  include_violations_in_count false
+  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  display_name "CloudCoreo Use Only"
+  description "This is an internally defined alert."
+  category "Internal"
+  suggested_action "Ignore"
+  level "Internal"
+  objectives ["cache_clusters"]
+  audit_objects ["object.cache_clusters.security_groups.security_group_id"]
+  operators ["=~"]
+  raise_when [//]
+  id_map "object.cache_clusters.cache_cluster_id"
 end
 
 coreo_aws_rule "vpc-inventory" do
@@ -498,13 +601,57 @@ coreo_aws_rule_runner "advise-unused-security-groups-ec2" do
   filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
 end
 
+coreo_aws_rule_runner "advise-unused-security-groups-elb" do
+  service :elasticloadbalancing
+  action :run
+  rules ["elb-instances-active-security-groups-list"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
+end
+
+coreo_aws_rule_runner "advise-unused-security-groups-alb" do
+  service :elasticloadbalancingv2
+  action :run
+  rules ["alb-instances-active-security-groups-list"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
+end
+
+coreo_aws_rule_runner "advise-unused-security-groups-rds" do
+  service :rds
+  action :run
+  rules ["rds-instances-active-security-groups-list"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
+end
+
+coreo_aws_rule_runner "advise-unused-security-groups-redshift" do
+  service :redshift
+  action :run
+  rules ["redshift-instances-active-security-groups-list"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
+end
+
+coreo_aws_rule_runner "advise-unused-security-groups-elasticache" do
+  service :elasticache
+  action :run
+  rules ["elasticache-instances-active-security-groups-list"]
+  regions ${AUDIT_AWS_EC2_REGIONS}
+  filter(${FILTERED_OBJECTS}) if ${FILTERED_OBJECTS}
+end
+
 coreo_uni_util_jsrunner "security-groups-ec2" do
   action :run
   json_input '{
       "main_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2.report,
       "number_violations":COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations,
       "ec2_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-ec2.report,
-      "def_groups_report":COMPOSITE::coreo_aws_rule_runner.advise-ec2-default-security-groups-traffic.report
+      "elb_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-elb.report,
+      "alb_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-alb.report,
+      "rds_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-rds.report,
+      "redshift_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-redshift.report,
+      "elasticache_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-elasticache.report
   }'
   function <<-EOH
 
@@ -518,89 +665,65 @@ if(!ec2_alerts_list.includes('ec2-not-used-security-groups') && !ec2_alerts_list
 if(ec2_alerts_list.includes('ec2-not-used-security-groups')){
   const activeSecurityGroups = [];
 
-  const groupIsActive = (groupId) => {
-      for (let activeGroupId of activeSecurityGroups) {
-          if (activeGroupId === groupId) return true;
-      }
-      return false;
-  };
-
-  Object.keys(json_input.ec2_report).forEach((region) => {
-
-    Object.keys(json_input.ec2_report[region]).forEach(key => {
-        const violation = json_input.ec2_report[region][key].violations['ec2-instances-active-security-groups-list'];
-        if (!violation) return;
-        violation.result_info.forEach((obj) => {
+// Only keep reports from json_input named *_report where * is not 'main'
+const reports = Object.keys(json_input)
+  .filter(key => key.match(/_report$/) && !(key === 'main_report'));
+reports.forEach((report) => {
+  Object.keys(json_input[report]).forEach((region) => {
+    Object.keys(json_input[report][region]).forEach(key => {
+      const service = report.split('_')[0];
+      const violation = json_input[report][region][key].violations[`${service}-instances-active-security-groups-list`];
+      if (!violation) return;
+      violation.result_info.forEach((obj) => {
+        switch (service) {
+          case 'ec2':
             activeSecurityGroups.push(obj.object.group_id);
-        });
+            break;
+          case 'elb' || 'alb':
+            obj.object.forEach(sg => activeSecurityGroups.push(sg));
+            break;
+          case 'rds' || 'redshift':
+            activeSecurityGroups.push(obj.object.vpc_security_group_id);
+            break;
+          case 'elasticache':
+            activeSecurityGroups.push(obj.object.security_group_id);
+            break;
+        }
+      });
     });
   });
-  var number_violations = 0;
-  if(json_input['number_violations']) {
-    number_violations = parseInt(json_input['number_violations']);
-  }
-  Object.keys(json_input.ec2_report).forEach((region) => {
-    Object.keys(json_input.ec2_report[region]).forEach(key => {
-        const tags = json_input.ec2_report[region][key].tags;
-        const violations = json_input.ec2_report[region][key].violations["ec2-security-groups-list"];
-        if (!violations) return;
-
-        const currentSecGroup = violations['result_info'][0].object;
-        if (groupIsActive(currentSecGroup.group_id)) return;
-        const securityGroupIsNotUsedAlert = {
-            'display_name': 'EC2 security group is not used',
-            'description': 'Security group is not used anywhere',
-            'category': 'Audit',
-            'suggested_action': 'Remove this security group',
-            'level': 'Low',
-            'region': violations.region
-        };
-        number_violations++
-        const violationKey = 'ec2-not-used-security-groups';
-        //console.log("working on key: " + key + " in region: " + region);
-        if (!json_input.main_report[region]) {
-            json_input.main_report[region] = {};
-        }
-        if (!json_input.main_report[region][key]) {
-            json_input.main_report[region][key] = { violations: {}, tags: [] };
-        }
-        json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
-        json_input.main_report[region][key].tags.concat(tags);
-    });
-  });
+});
+let number_violations = 0;
+if (json_input['number_violations']) {
+  number_violations = parseInt(json_input['number_violations']);
 }
+Object.keys(json_input.ec2_report).forEach((region) => {
+  Object.keys(json_input.ec2_report[region]).forEach(key => {
+    const tags = json_input.ec2_report[region][key].tags;
+    const violations = json_input.ec2_report[region][key].violations["ec2-security-groups-list"];
+    if (!violations) return;
 
-if(ec2_alerts_list.includes('ec2-default-security-group-traffic')){
-  Object.keys(json_input.def_groups_report).forEach((region) => {
-    Object.keys(json_input.def_groups_report[region]).forEach(key => {
-        const tags2 = json_input.def_groups_report[region][key].tags;
-        const violations2 = json_input.def_groups_report[region][key].violations["ec2-default-security-groups-list"];
-        if (!violations2) return;
-        const violations3 = json_input.def_groups_report[region][key].violations["ec2-security-group-nil-permissions"];
-        if (!violations3) return;
-
-        const defSGMetadata = {
-              'service': 'ec2',
-              'display_name': 'Default Security Group Unrestricted',
-              'description': 'The default security group settings should maximally restrict traffic',
-              'category': 'Security',
-              'suggested_action': 'Ensure default security groups are set to restrict all traffic',
-              'level': 'Medium',
-              'meta_cis_id': '4.4',
-              'meta_cis_scored': 'true',
-              'meta_cis_level': '2'
-        };
-        const violationKey2 = 'ec2-default-security-group-traffic';
-
-        if (!json_input.main_report[region]) {
-            json_input.main_report[region] = {};
-        }
-        if (!json_input.main_report[region][key]) {
-            json_input.main_report[region][key] = { violations: {}, tags: [] };
-        }
-        json_input.main_report[region][key].violations[violationKey2] = defSGMetadata;
-        json_input.main_report[region][key].tags.concat(tags2);
-    });
+    const currentSecGroup = violations['result_info'][0].object;
+    if (activeSecurityGroups.includes(currentSecGroup.group_id)) return;
+    const securityGroupIsNotUsedAlert = {
+        'display_name': 'EC2 security group is not used',
+        'description': 'Security group is not used anywhere',
+        'category': 'Audit',
+        'suggested_action': 'Remove this security group',
+        'level': 'Low',
+        'region': violations.region
+    };
+    number_violations++;
+    const violationKey = 'ec2-not-used-security-groups';
+    //console.log("working on key: " + key + " in region: " + region);
+    if (!json_input.main_report[region]) {
+        json_input.main_report[region] = {};
+    }
+    if (!json_input.main_report[region][key]) {
+        json_input.main_report[region][key] = { violations: {}, tags: [] };
+    }
+    json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
+    json_input.main_report[region][key].tags.concat(tags);
   });
 }
 
@@ -715,7 +838,7 @@ EOH
 end
 
 coreo_uni_util_variables "ec2-update-planwide-3" do
-  action   action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :set : :nothing)
+  action (("${AUDIT_AWS_EC2_ALERT_LIST}".include?("ec2-vpc-flow-logs")) ? :set : :nothing)
   variables([
                 {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.cis43-processor.return'}
             ])
