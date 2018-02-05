@@ -11,8 +11,8 @@ coreo_aws_rule "ec2-inventory-instances" do
   level "Informational"
   objectives ["instances"]
   audit_objects ["object.reservations.instances.instance_id"]
-  operators ["=~"]
-  raise_when [true]
+  operators ["!="]
+  raise_when [2018]
   id_map "object.reservations.instances.instance_id"
 end
 
