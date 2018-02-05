@@ -3,16 +3,16 @@ coreo_aws_rule "ec2-inventory-instances" do
   action :define
   service :ec2
   link "http://kb.cloudcoreo.com/mydoc_all-inventory.html"
-  include_violations_in_count false
+  include_violations_in_count true
   display_name "EC2 Instance Inventory"
   description "This rule performs an inventory on all EC2 instances in the target AWS account."
   category "Inventory"
   suggested_action "None."
-  level "Informational"
+  level "Low"
   objectives ["instances"]
   audit_objects ["object.reservations.instances.instance_id"]
   operators ["!="]
-  raise_when [2018]
+  raise_when [//]
   id_map "object.reservations.instances.instance_id"
 end
 
