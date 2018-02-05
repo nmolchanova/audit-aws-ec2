@@ -12,7 +12,7 @@ coreo_aws_rule "ec2-inventory-instances" do
   objectives ["instances"]
   audit_objects ["object.reservations.instances.instance_id"]
   operators ["=~"]
-  raise_when [//]
+  raise_when [true]
   id_map "object.reservations.instances.instance_id"
 end
 
