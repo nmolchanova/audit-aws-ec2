@@ -518,7 +518,6 @@ coreo_aws_rule "flow-logs-inventory" do
   category "Audit"
   suggested_action "Enable Flow Logs"
   level "Internal"
-  objectives    ["vpcs"]
   objectives    ["flow_logs"]
   audit_objects ["object.flow_logs.resource_id"]
   operators     ["=~"]
