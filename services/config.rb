@@ -802,7 +802,7 @@ coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
   packages([
                {
                    :name => "cloudcoreo-jsrunner-commons",
-                   :version => "1.10.7-beta64"
+                   :version => "1.10.7-beta77"
                },
                {
                    :name => "js-yaml",
@@ -830,27 +830,10 @@ const htmlReportSubject = "${HTML_REPORT_SUBJECT}";
 const alertListArray = ${AUDIT_AWS_EC2_ALERT_LIST};
 const ruleInputs = {};
 
-let userSuppression;
 let userSchemes;
 
 const fs = require('fs');
 const yaml = require('js-yaml');
-function setSuppression() {
-  try {
-      userSuppression = yaml.safeLoad(fs.readFileSync('./suppression.yaml', 'utf8'));
-  } catch (e) {
-    if (e.name==="YAMLException") {
-      throw new Error("Syntax error in suppression.yaml file. "+ e.message);
-    }
-    else{
-      console.log(e.name);
-      console.log(e.message);
-      userSuppression=[];
-    }
-  }
-
-  coreoExport('suppression', JSON.stringify(userSuppression));
-}
 
 function setTable() {
   try {
@@ -868,11 +851,10 @@ function setTable() {
 
   coreoExport('table', JSON.stringify(userSchemes));
 }
-setSuppression();
 setTable();
 
 const argForConfig = {
-    NO_OWNER_EMAIL, cloudObjects, userSuppression, OWNER_TAG,
+    NO_OWNER_EMAIL, cloudObjects, OWNER_TAG,
     userSchemes, alertListArray, ruleInputs, ALLOW_EMPTY,
     SEND_ON, cloudAccount, compositeName, planName, htmlReportSubject, teamName
 }
@@ -886,7 +868,6 @@ function createConfig(argForConfig) {
         teamName: argForConfig.teamName,
         violations: argForConfig.cloudObjects,
         userSchemes: argForConfig.userSchemes,
-        userSuppression: argForConfig.userSuppression,
         alertList: argForConfig.alertListArray,
         disabled: argForConfig.ruleInputs,
         cloudAccount: argForConfig.cloudAccount
@@ -906,7 +887,6 @@ const CloudCoreoJSRunner = require('cloudcoreo-jsrunner-commons');
 const emails = CloudCoreoJSRunner.createEmails(JSON_INPUT, SETTINGS);
 const suppressionJSON = CloudCoreoJSRunner.createJSONWithSuppress(JSON_INPUT, SETTINGS);
 
-coreoExport('JSONReport', JSON.stringify(suppressionJSON));
 coreoExport('report', JSON.stringify(suppressionJSON['violations']));
 
 callback(emails);
@@ -917,7 +897,6 @@ coreo_uni_util_variables "ec2-update-planwide-4" do
   action :set
   variables([
                 {'COMPOSITE::coreo_aws_rule_runner.advise-ec2.report' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.report'},
-                {'COMPOSITE::coreo_uni_util_variables.ec2-planwide.results' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.JSONReport'},
                 {'GLOBAL::table' => 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.table'}
             ])
 end
@@ -993,8 +972,8 @@ coreo_aws_s3_policy "cloudcoreo-audit-aws-ec2-policy" do
 ,
 "Action": "s3:*",
 "Resource": [
-"arn:aws:s3:::${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}/*",
-"arn:aws:s3:::${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}"
+"arn:aws:s3:::bucket-${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}/*",
+"arn:aws:s3:::bucket-${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}"
 ]
 }
 ]
@@ -1014,7 +993,7 @@ coreo_uni_util_notify "cloudcoreo-audit-aws-ec2-s3" do
   payload 'COMPOSITE::coreo_uni_util_jsrunner.ec2-tags-to-notifiers-array.report'
   endpoint ({
       object_name: 'aws-ec2-json',
-      bucket_name: '${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}',
+      bucket_name: 'bucket-${AUDIT_AWS_EC2_S3_NOTIFICATION_BUCKET_NAME}',
       folder: 'ec2/PLAN::name',
       properties: {}
   })

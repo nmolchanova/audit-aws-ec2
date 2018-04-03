@@ -84,3 +84,6 @@ ec2-vpc-flow-logs:
   "VPC ID": "__OBJECT__~https://console.aws.amazon.com/vpc/home?region=+__OBJECT__.violations.__RULE__.region+#vpcs:filter=__OBJECT__"
   "AWS Region": "+__OBJECT__.violations.__RULE__.region+"
   "Flow Logs": "Disabled"
+default:
+  "Object ID": "__OBJECT__"
+  "Region": "+__OBJECT__.violations.__RULE__.region+"
