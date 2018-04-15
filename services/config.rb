@@ -14,9 +14,6 @@ coreo_aws_rule "ec2-inventory-instances" do
   operators ["=~"]
   raise_when [//]
   id_map "object.reservations.instances.instance_id"
-  meta_viz_query "{ query(func: has(instance)) @filter(%<instance_filter>s) { instance_id } }"
-  meta_rule_query "{ query(func: has(instance)) @filter(%<instance_filter>s) { instance_id } }"
-  meta_rule_node_triggers ['instance']
 end
 
 coreo_aws_rule "ec2-inventory-security-groups" do
@@ -34,9 +31,6 @@ coreo_aws_rule "ec2-inventory-security-groups" do
   operators ["=~"]
   raise_when [//]
   id_map "object.security_groups.group_id"
-  meta_viz_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) { group_id } }"
-  meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) { group_id } }"
-  meta_rule_node_triggers ['security_group']
 end
 
 coreo_aws_rule "ec2-ip-address-whitelisted" do
@@ -71,7 +65,6 @@ coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
   operators ["=="]
   raise_when [false]
   id_map "object.snapshots.snapshot_id"
-  meta_viz_query "{ query(func: has(snapshot)) @filter(%<snapshot_filter>s AND NOT has(encrypted) OR eq(encrypted, \"false\")) { snapshot_id } }"
   meta_rule_query "{ query(func: has(snapshot)) @filter(%<snapshot_filter>s AND NOT has(encrypted) OR eq(encrypted, \"false\")) { snapshot_id } }"
   meta_rule_node_triggers ['snapshot']
 end
@@ -334,7 +327,6 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   operators ["==", "!~"]
   raise_when [false, /^default$/]
   id_map "object.security_groups.group_id"
-  meta_viz_query "{ filter as objects(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { relates_to @filter(NOT has(owner) AND NOT has(vpc)) { objectId } } query(func: has(security_group)) @filter(NOT uid(filter)) { group_id } }"
   meta_rule_query "{ filter as objects(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { relates_to @filter(NOT has(owner) AND NOT has(vpc)) { objectId } } query(func: has(security_group)) @filter(NOT uid(filter)) { group_id } }"
   meta_rule_node_triggers ['security_group']
 end
@@ -357,7 +349,6 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   operators ["==","!="]
   raise_when ["default", nil]
   id_map "object.security_groups.group_id"
-  meta_viz_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s AND eq(group_name, \"default\") AND NOT eq(ip_permissions, \"\")) { group_id } }"
   meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s AND eq(group_name, \"default\") AND NOT eq(ip_permissions, \"\")) { group_id } }"
   meta_rule_node_triggers ['security_group']
 end
@@ -400,9 +391,6 @@ coreo_aws_rule "ec2-security-groups-list" do
   operators ["=~"]
   raise_when [//]
   id_map "object.security_groups.group_id"
-  meta_viz_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) { group_name } }"
-  meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) { group_name } }"
-  meta_rule_node_triggers ['security_group']
 end
 
 coreo_aws_rule "ec2-instances-active-security-groups-list" do
@@ -524,9 +512,6 @@ coreo_aws_rule "vpc-inventory" do
   operators     ["=~"]
   raise_when    [//]
   id_map        "object.vpcs.vpc_id"
-  meta_viz_query "{ query(func: has(vpc)) @filter(%<vpc_filter>s) { vpc_id } }"
-  meta_rule_query "{ query(func: has(vpc)) @filter(%<vpc_filter>s) { vpc_id } }"
-  meta_rule_node_triggers ['security_group']
 end
 
 coreo_aws_rule "flow-logs-inventory" do
@@ -545,9 +530,6 @@ coreo_aws_rule "flow-logs-inventory" do
   operators     ["=~"]
   raise_when    [//]
   id_map        "object.flow_logs.resource_id"
-  meta_viz_query "{ query(func: has(flow_log)) @filter(%<flow_log_filter>s) { flow_log_id } }"
-  meta_rule_query "{ query(func: has(flow_log)) @filter(%<flow_log_filter>s) { flow_log_id } }"
-  meta_rule_node_triggers ['security_group']
 end
 
 coreo_aws_rule_runner "vpcs-flow-logs-inventory" do
