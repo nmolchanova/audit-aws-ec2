@@ -401,6 +401,27 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   operators [""]
   raise_when [true]
   id_map "static.no_op"
+  meta_rule_query "
+  {
+   loggedVpc as  query(func: has(resource)) @filter(has(relates_to)) @cascade
+    {
+      relates_to @filter(has(flow_log) AND eq(flow_log_status, "ACTIVE")) {
+      }
+    }
+    allVpc as var(func: has(vpc))
+    {
+      expand(_all_)
+    }
+    query3(func: uid(allVpc)) @filter(NOT uid(loggedVpc))
+    {
+      uid
+      label
+      objectId
+      objectName
+    }
+  }
+  "
+  meta_rule_node_triggers ['vpc', 'flow_log']
 end
 # end of user-visible content. Remaining resources are system-defined
 
