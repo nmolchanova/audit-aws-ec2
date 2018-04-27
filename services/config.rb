@@ -339,7 +339,7 @@ coreo_aws_rule "ec2-ports-range" do
   operators ["!="]
   raise_when ["object[:to_port]"]
   id_map "object.security_groups.group_id"
-  meta_rule_query "{ ports(func: has(security_group)) @filter(%<security_group_filter>s) { relates_to @filter(%<ip_permission_filter>s) { to_ports as to_port } } query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(from_port, val(to_port))) { objectId  } } }"
+  meta_rule_query "{ var(func: has(security_group)) @filter(%<security_group_filter>s) { relates_to @filter(%<ip_permission_filter>s) { to_ports as to_port } } query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(from_port, val(to_port))) { objectId  } } }"
   meta_rule_node_triggers ['security_group', 'ip_permission']
 end
 
@@ -357,7 +357,7 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   operators ["==", "!~"]
   raise_when [false, /^default$/]
   id_map "object.security_groups.group_id"
-  meta_rule_query "{ filter as objects(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { relates_to @filter(NOT has(owner) AND NOT has(vpc)) { objectId } } query(func: has(security_group)) @filter(NOT uid(filter)) { group_id } }"
+  meta_rule_query "{ filter as var(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { relates_to @filter(NOT has(owner) AND NOT has(vpc)) { objectId } } query(func: has(security_group)) @filter(NOT uid(filter)) { group_id } }"
   meta_rule_node_triggers ['security_group']
 end
 
@@ -401,26 +401,7 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   operators [""]
   raise_when [true]
   id_map "static.no_op"
-  meta_rule_query "
-  {
-   loggedVpc as  query(func: has(resource)) @filter(has(relates_to)) @cascade
-    {
-      relates_to @filter(has(flow_log) AND eq(flow_log_status, "ACTIVE")) {
-      }
-    }
-    allVpc as var(func: has(vpc))
-    {
-      expand(_all_)
-    }
-    query3(func: uid(allVpc)) @filter(NOT uid(loggedVpc))
-    {
-      uid
-      label
-      objectId
-      objectName
-    }
-  }
-  "
+  meta_rule_query "{ logged_vpc as  var(func: has(resource)) @filter(%<vpc_filter>s) @cascade { relates_to @filter(%<flow_log_filter>s AND eq(flow_log_status, \"ACTIVE\")) } query(func: has(vpc)) @filter(NOT uid(logged_vpc)) { objectId }}"
   meta_rule_node_triggers ['vpc', 'flow_log']
 end
 # end of user-visible content. Remaining resources are system-defined
