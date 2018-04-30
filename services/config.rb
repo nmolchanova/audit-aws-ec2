@@ -457,7 +457,7 @@ coreo_aws_rule "elb-instances-active-security-groups-list" do
   id_map "object.load_balancer_descriptions.load_balancer_name"
 end
 
-coreo_aws_rule "elb-instances-active-security-groups-list" do
+coreo_aws_rule "alb-instances-active-security-groups-list" do
   action :define
   service :elasticloadbalancingv2
   include_violations_in_count false
