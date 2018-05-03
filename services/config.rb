@@ -48,7 +48,7 @@ coreo_aws_rule "ec2-ip-address-whitelisted" do
   raise_when [/\/32/]
   id_map "object.security_groups.group_id"
   meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND regexp(ip_ranges, /\/32/)) { objectId  } } }"
-  meta_rule_node_triggers ['security_group', 'ip_permission']
+  meta_rule_node_triggers {'security_group' => [], 'ip_permission' => ['ip_ranges']}
 end
 
 coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
