@@ -47,7 +47,20 @@ coreo_aws_rule "ec2-ip-address-whitelisted" do
   operators ["=~"]
   raise_when [/\/32/]
   id_map "object.security_groups.group_id"
-  meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND regexp(ip_ranges, /\/32/)) { objectId  } } }"
+  meta_rule_query <<~QUERY
+  {
+    ranges as var(func: %<ip_permission_filter>) {
+      range as ip_ranges
+    }
+    query(func: (%<security_group_filter>s) @cascade {
+      %<default_predicates>
+      group_id
+      relates_to @filter(uid(ranges) AND regexp(val(range), /\/32/)) {
+        %<default_predicates>
+      }
+    }
+  }
+  QUERY
   meta_rule_node_triggers ({'security_group' => [], 'ip_permission' => ['ip_ranges']})
 end
 
@@ -67,8 +80,20 @@ coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
   operators ["=="]
   raise_when [false]
   id_map "object.snapshots.snapshot_id"
-  meta_rule_query "{ query(func: has(snapshot)) @filter(%<snapshot_filter>s AND NOT has(encrypted) OR eq(encrypted, \"false\")) { snapshot_id } }"
-  meta_rule_node_triggers ['snapshot']
+  meta_rule_query <<~QUERY
+  {
+    encryption_unknown as var(func: %<snapshot_filter>s) @filter(NOT has(encrypted)) { }
+    encryption_known as var(func: %<snapshot_filter>s) @filter(has(encrypted)) {
+      is_encrypted as encrypted
+    }
+    unencrypted as var(func: uid(encryption_known)) @filter(eq(val(is_encrypted), "false")) { }
+    query(func: uid(encryption_unknown, unencrypted)) {
+      %<default_predicates>
+      snapshot_id
+    }
+  }
+  QUERY
+  meta_rule_node_triggers ({'snapshot' => []})
 end
 
 coreo_aws_rule "ec2-unrestricted-traffic" do
@@ -86,6 +111,7 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
   operators ["=="]
   raise_when ["0.0.0.0/0"]
   id_map "object.security_groups.group_id"
+  # TODO Requires ip_range object
   meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_ranges, \"0.0.0.0/0\")) { objectId  } } }"
   meta_rule_node_triggers ['security_group', 'ip_permission']
 end
@@ -105,6 +131,7 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 1521, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
+  # TODO Requires ip_range object
   meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") AND eq(from_port, 1521) AND eq(ip_ranges, \"0.0.0.0/0\")) { objectId  } } }"
   meta_rule_node_triggers ['security_group', 'ip_permission']
 end
@@ -124,6 +151,7 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 3306, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
+  # TODO Requires ip_range object
   meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") AND eq(from_port, 3306) AND eq(ip_ranges, \"0.0.0.0/0\")) { objectId  } } }"
   meta_rule_node_triggers ['security_group', 'ip_permission']
 end
@@ -143,6 +171,7 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 5432, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
+  # TODO Requires ip_range object
   meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") AND eq(from_port, 5432) AND eq(ip_ranges, \"0.0.0.0/0\")) { objectId  } } }"
   meta_rule_node_triggers ['security_group', 'ip_permission']
 end
@@ -162,6 +191,7 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 27017, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
+  # TODO Requires ip_range object
   meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") AND eq(from_port, 27017) AND eq(ip_ranges, \"0.0.0.0/0\")) { objectId  } } }"
   meta_rule_node_triggers ['security_group', 'ip_permission']
 end
@@ -181,6 +211,7 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 1433, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
+  # TODO Requires ip_range object
   meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") AND eq(from_port, 1433) AND eq(ip_ranges, \"0.0.0.0/0\")) { objectId  } } }"
   meta_rule_node_triggers ['security_group', 'ip_permission']
 end
@@ -203,6 +234,7 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 3389, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
+  # TODO Requires ip_range object
   meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") AND eq(from_port, 3389) AND eq(ip_ranges, \"0.0.0.0/0\")) { objectId  } } }"
   meta_rule_node_triggers ['security_group', 'ip_permission']
 end
@@ -225,6 +257,7 @@ coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 22, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
+  # TODO Requires ip_range object
   meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") AND eq(from_port, 22) AND eq(ip_ranges, \"0.0.0.0/0\")) { objectId  } } }"
   meta_rule_node_triggers ['security_group', 'ip_permission']
 end
@@ -244,6 +277,7 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 5439, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
+  # TODO Requires ip_range object
   meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") AND eq(from_port, 5439) AND eq(ip_ranges, \"0.0.0.0/0\")) { objectId  } } }"
   meta_rule_node_triggers ['security_group', 'ip_permission']
 end
@@ -263,8 +297,25 @@ coreo_aws_rule "ec2-TCP-23" do
   operators ["==","=="]
   raise_when ["tcp", 23]
   id_map "object.security_groups.group_id"
-  meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") AND eq(from_port, 23)) { objectId  } } }"
-  meta_rule_node_triggers ['security_group', 'ip_permission']
+  meta_rule_query <<~QUERY
+  { 
+    permissions as var(func: %<ip_permission_filter>s) {
+      protocols as ip_protocol
+      from_ports as from_port
+    }
+    query(func: %<security_group>s) @cascade {
+      %<default_predicates>
+		  group_id 
+      relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 23)) {
+        %<default_predicates> 
+      }
+    }
+  }
+  QUERY
+  meta_rule_node_triggers ({
+                             'security_group' => [],
+                             'ip_permission' => ['ip_protocol', 'from_port']
+                           })
 end
 
 coreo_aws_rule "ec2-TCP-21" do
@@ -282,8 +333,25 @@ coreo_aws_rule "ec2-TCP-21" do
   operators ["==","=="]
   raise_when ["tcp", 21]
   id_map "object.security_groups.group_id"
-  meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") OR eq(from_port, 21)) { objectId  } } }"
-  meta_rule_node_triggers ['security_group', 'ip_permission']
+  meta_rule_query <<~QUERY
+  { 
+    permissions as var(func: %<ip_permission_filter>s) {
+      protocols as ip_protocol
+      from_ports as from_port
+    }
+    query(func: %<security_group>s) @cascade {
+      %<default_predicates>
+		  group_id 
+      relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 21)) {
+        %<default_predicates> 
+      }
+    }
+  }
+  QUERY
+  meta_rule_node_triggers ({
+                             'security_group' => [],
+                             'ip_permission' => ['ip_protocol', 'from_port']
+                           })
 end
 
 coreo_aws_rule "ec2-TCP-20" do
@@ -301,8 +369,25 @@ coreo_aws_rule "ec2-TCP-20" do
   operators ["==","=="]
   raise_when ["tcp", 20]
   id_map "object.security_groups.group_id"
-  meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") OR eq(from_port, 20)) { objectId  } } }"
-  meta_rule_node_triggers ['security_group', 'ip_permission']
+  meta_rule_query <<~QUERY
+  { 
+    permissions as var(func: %<ip_permission_filter>s) {
+      protocols as ip_protocol
+      from_ports as from_port
+    }
+    query(func: %<security_group>s) @cascade {
+      %<default_predicates>
+		  group_id 
+      relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 20)) {
+        %<default_predicates> 
+      }
+    }
+  }
+  QUERY
+  meta_rule_node_triggers ({
+                             'security_group' => [],
+                             'ip_permission' => ['ip_protocol', 'from_port']
+                           })
 end
 
 coreo_aws_rule "ec2-TCP-8080" do
@@ -320,8 +405,25 @@ coreo_aws_rule "ec2-TCP-8080" do
   operators ["==","=="]
   raise_when ["tcp", 8080]
   id_map "object.security_groups.group_id"
-  meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(ip_protocol, \"tcp\") OR eq(from_port, 8080)) { objectId  } } }"
-  meta_rule_node_triggers ['security_group', 'ip_permission']
+  meta_rule_query <<~QUERY
+  { 
+    permissions as var(func: %<ip_permission_filter>s) {
+      protocols as ip_protocol
+      from_ports as from_port
+    }
+    query(func: %<security_group>s) @cascade {
+      %<default_predicates>
+		  group_id 
+      relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 8080)) {
+        %<default_predicates>
+      }
+    }
+  }
+  QUERY
+  meta_rule_node_triggers ({
+                             'security_group' => [],
+                             'ip_permission' => ['ip_protocol', 'from_port']
+                           })
 end
 
 coreo_aws_rule "ec2-ports-range" do
@@ -339,8 +441,26 @@ coreo_aws_rule "ec2-ports-range" do
   operators ["!="]
   raise_when ["object[:to_port]"]
   id_map "object.security_groups.group_id"
-  meta_rule_query "{ var(func: has(security_group)) @filter(%<security_group_filter>s) { relates_to @filter(%<ip_permission_filter>s) { to_ports as to_port } } query(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { group_id relates_to @filter(%<ip_permission_filter>s AND eq(from_port, val(to_port))) { objectId  } } }"
-  meta_rule_node_triggers ['security_group', 'ip_permission']
+  meta_rule_query <<~QUERY
+  {
+    groups as var(func: has(security_group)) {
+      permissions as relates_to @filter(has(ip_permission) AND has(from_port) AND has(to_port)) {
+        to_ports as to_port
+      }
+    }
+    query(func: uid(groups)) @cascade {
+      %<default_predicates>
+      group_id
+      relates_to @filter(uid(permissions) AND NOT eq(from_port, val(to_ports))) {
+        %<default_predicates> 
+      }
+    }
+  }
+  QUERY
+  meta_rule_node_triggers ({
+                             'security_group' => [],
+                             'ip_permission' => ['from_port', 'to_port']
+                           })
 end
 
 coreo_aws_rule "ec2-not-used-security-groups" do
@@ -357,8 +477,20 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   operators ["==", "!~"]
   raise_when [false, /^default$/]
   id_map "object.security_groups.group_id"
-  meta_rule_query "{ filter as var(func: has(security_group)) @filter(%<security_group_filter>s) @cascade { relates_to @filter(NOT has(owner) AND NOT has(vpc)) { objectId } } query(func: has(security_group)) @filter(NOT uid(filter)) { group_id } }"
-  meta_rule_node_triggers ['security_group']
+  meta_rule_query <<~QUERY
+  { 
+    filter as var(func: %<security_group_filter>s) @cascade { 
+      relates_to @filter(NOT has(owner) AND NOT has(vpc)) { } 
+    } 
+    query(func: has(security_group)) @filter(NOT uid(filter)) {
+      %<default_predicates> 
+      group_id 
+    } 
+  }
+  QUERY
+  meta_rule_node_triggers({
+                            'security_group' => []
+                          })
 end
 
 coreo_aws_rule "ec2-default-security-group-traffic" do
@@ -379,8 +511,21 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   operators ["==","!="]
   raise_when ["default", nil]
   id_map "object.security_groups.group_id"
-  meta_rule_query "{ query(func: has(security_group)) @filter(%<security_group_filter>s AND eq(group_name, \"default\") AND NOT eq(ip_permissions, \"\")) { group_id } }"
-  meta_rule_node_triggers ['security_group']
+  meta_rule_query <<~QUERY
+  {
+    sg as var(func: has(security_group)) @cascade {
+      gn as group_name
+      relates_to @filter(has(ip_permission))
+    }
+    query(func: uid(sg)) @filter(eq(val(gn), "default")) {
+      %<default_predicates>s
+      group_id
+    }
+  }
+  QUERY
+  meta_rule_node_triggers({
+                            'security_group' => ['ip_permission']
+                          })
 end
 
 coreo_aws_rule "ec2-vpc-flow-logs" do
@@ -401,8 +546,23 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   operators [""]
   raise_when [true]
   id_map "static.no_op"
-  meta_rule_query "{ logged_vpc as  var(func: has(resource)) @filter(%<vpc_filter>s) @cascade { relates_to @filter(%<flow_log_filter>s AND eq(flow_log_status, \"ACTIVE\")) } query(func: has(vpc)) @filter(NOT uid(logged_vpc)) { objectId }}"
-  meta_rule_node_triggers ['vpc', 'flow_log']
+  meta_rule_query <<~QUERY
+  {
+    r as var(func: %<vpc_filter>s) @cascade {
+      relates_to @filter(%<flow_log_filter>s) {
+        fls as flow_log_status
+      }
+    }
+    query(func: has(vpc)) @filter(NOT uid(r)) {
+      %<default_predicates>s
+      relates_to @filter(eq(val(fls), "ACTIVE"))
+    }
+  }
+  QUERY
+  meta_rule_node_triggers({
+                            'vpc' => [],
+                            'flow_log' => ['flow_log_status']
+                          })
 end
 # end of user-visible content. Remaining resources are system-defined
 
