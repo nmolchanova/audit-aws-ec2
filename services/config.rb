@@ -122,7 +122,7 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
     query(func: uid(sg)) @cascade {
       %<default_predicates>s
       group_id
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\"0.0.0.0/0\"}]")) {
+      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]")) {
         %<default_predicates>s
         ip_ranges
       }
@@ -163,7 +163,7 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
     query(func: uid(sg)) @cascade {
       group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\"0.0.0.0/0\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),1521 ) ) {
+      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),1521 ) ) {
         %<default_predicates>s
         ip_ranges
         ip_protocol
@@ -206,7 +206,7 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
     query(func: uid(sg)) @cascade {
       group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\"0.0.0.0/0\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),3306) ) {
+      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),3306) ) {
         %<default_predicates>s
         ip_ranges
         ip_protocol
@@ -249,7 +249,7 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
     query(func: uid(sg)) @cascade {
       group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\"0.0.0.0/0\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),5432) ) {
+      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),5432) ) {
         %<default_predicates>s
         ip_ranges
         ip_protocol
@@ -292,7 +292,7 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
     query(func: uid(sg)) @cascade {
       group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\"0.0.0.0/0\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),27017) ) {
+      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),27017) ) {
         %<default_predicates>s
         ip_ranges
         ip_protocol
@@ -335,7 +335,7 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
     query(func: uid(sg)) @cascade {
       group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\"0.0.0.0/0\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),1433) ) {
+      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),1433) ) {
         %<default_predicates>s
         ip_ranges
         ip_protocol
@@ -381,7 +381,7 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
     query(func: uid(sg)) @cascade {
       group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\"0.0.0.0/0\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),3389) ) {
+      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),3389) ) {
         %<default_predicates>s
         ip_ranges
         ip_protocol
@@ -427,7 +427,7 @@ coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
     query(func: uid(sg)) @cascade {
       group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\"0.0.0.0/0\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),22) ) {
+      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),22) ) {
         %<default_predicates>s
         ip_ranges
         ip_protocol
@@ -470,7 +470,7 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
     query(func: uid(sg)) @cascade {
       group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\"0.0.0.0/0\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),5439) ) {
+      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),5439) ) {
         %<default_predicates>s
         ip_ranges
         ip_protocol
