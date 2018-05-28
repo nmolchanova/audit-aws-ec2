@@ -49,14 +49,14 @@ coreo_aws_rule "ec2-ip-address-whitelisted" do
   id_map "object.security_groups.group_id"
   meta_rule_query <<~QUERY
   {
-    ranges as var(func: %<ip_permission_filter>) {
+    ranges as var(func: %<ip_permission_filter>s) {
       range as ip_ranges
     }
     query(func: %<security_group_filter>s) @cascade {
-      %<default_predicates>
+      %<default_predicates>s
       group_id
       relates_to @filter(uid(ranges) AND regexp(val(range), /\/32/)) {
-        %<default_predicates>
+        %<default_predicates>s
       }
     }
   }
@@ -88,7 +88,7 @@ coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
     }
     unencrypted as var(func: uid(encryption_known)) @filter(eq(val(is_encrypted), "false")) { }
     query(func: uid(encryption_unknown, unencrypted)) {
-      %<default_predicates>
+      %<default_predicates>s
       snapshot_id
     }
   }
@@ -507,10 +507,10 @@ coreo_aws_rule "ec2-TCP-23" do
       from_ports as from_port
     }
     query(func: %<security_group>s) @cascade {
-      %<default_predicates>
+      %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 23)) {
-        %<default_predicates> 
+        %<default_predicates>s 
       }
     }
   }
@@ -543,10 +543,10 @@ coreo_aws_rule "ec2-TCP-21" do
       from_ports as from_port
     }
     query(func: %<security_group>s) @cascade {
-      %<default_predicates>
+      %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 21)) {
-        %<default_predicates> 
+        %<default_predicates>s 
       }
     }
   }
@@ -579,10 +579,10 @@ coreo_aws_rule "ec2-TCP-20" do
       from_ports as from_port
     }
     query(func: %<security_group>s) @cascade {
-      %<default_predicates>
+      %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 20)) {
-        %<default_predicates> 
+        %<default_predicates>s 
       }
     }
   }
@@ -615,10 +615,10 @@ coreo_aws_rule "ec2-TCP-8080" do
       from_ports as from_port
     }
     query(func: %<security_group>s) @cascade {
-      %<default_predicates>
+      %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 8080)) {
-        %<default_predicates>
+        %<default_predicates>s
       }
     }
   }
@@ -652,10 +652,10 @@ coreo_aws_rule "ec2-ports-range" do
       }
     }
     query(func: uid(groups)) @cascade {
-      %<default_predicates>
+      %<default_predicates>s
       group_id
       relates_to @filter(uid(permissions) AND NOT eq(from_port, val(to_ports))) {
-        %<default_predicates> 
+        %<default_predicates>s 
       }
     }
   }
@@ -686,7 +686,7 @@ coreo_aws_rule "ec2-not-used-security-groups" do
       relates_to @filter(NOT has(owner) AND NOT has(vpc)) { } 
     } 
     query(func: has(security_group)) @filter(NOT uid(filter)) {
-      %<default_predicates> 
+      %<default_predicates>s 
       group_id 
     } 
   }
