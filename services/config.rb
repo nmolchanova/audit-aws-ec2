@@ -1,33 +1,3 @@
-coreo_aws_rule "ec2-vpc-flow-logs" do
-  action :define
-  service :user
-  category "Audit"
-  link "http://kb.cloudcoreo.com/mydoc_ec2-vpc-flow-logs.html"
-  display_name "Ensure VPC flow logging is enabled in all VPCs (Scored)"
-  suggested_action "VPC Flow Logs be enabled for packet 'Rejects' for VPCs."
-  description "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs."
-  level "Low"
-  meta_cis_id "4.3"
-  meta_cis_scored "true"
-  meta_cis_level "1"
-  meta_nist_171_id "3.13.1, 3.13.6"
-  objectives [""]
-  audit_objects [""]
-  operators [""]
-  raise_when [true]
-  id_map "static.no_op"
-  meta_rule_query <<~QUERY
-  {
-    query(func: has(vpc)) {
-      %<default_predicates>s
-    }
-  }
-  QUERY
-  meta_rule_node_triggers({
-                              'vpc' => [],
-                              'flow_log' => ['flow_log_status']
-                          })
-end
 
 coreo_aws_rule "ec2-inventory-instances" do
   action :define
@@ -761,6 +731,47 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
                           })
 end
 
+coreo_aws_rule "ec2-vpc-flow-logs" do
+  action :define
+  service :user
+  category "Audit"
+  link "http://kb.cloudcoreo.com/mydoc_ec2-vpc-flow-logs.html"
+  display_name "Ensure VPC flow logging is enabled in all VPCs (Scored)"
+  suggested_action "VPC Flow Logs be enabled for packet 'Rejects' for VPCs."
+  description "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs."
+  level "Low"
+  meta_cis_id "4.3"
+  meta_cis_scored "true"
+  meta_cis_level "1"
+  meta_nist_171_id "3.13.1, 3.13.6"
+  objectives [""]
+  audit_objects [""]
+  operators [""]
+  raise_when [true]
+  id_map "static.no_op"
+  meta_rule_query <<~QUERY
+  {
+    vpcs as var(func: %<vpc_filter>s) @cascade {
+      fl as relates_to @filter(%<flow_log_filter>s) {
+        fls as flow_log_status
+      }
+    }
+    v as var(func: uid(vpcs)) @cascade {
+      relates_to @filter(uid(fl) AND eq(val(fls), "ACTIVE"))
+    }
+    query(func: has(vpc)) @filter(NOT uid(v)) {
+      %<default_predicates>s
+      relates_to @filter(NOT has(flow_log)) {
+        %<default_predicates>s
+      }
+    }
+  }
+  QUERY
+  meta_rule_node_triggers({
+                              'vpc' => [],
+                              'flow_log' => ['flow_log_status']
+                          })
+end
 # end of user-visible content. Remaining resources are system-defined
 
 coreo_aws_rule "ec2-security-groups-list" do
