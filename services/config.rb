@@ -542,7 +542,7 @@ coreo_aws_rule "ec2-TCP-21" do
       protocols as ip_protocol
       from_ports as from_port
     }
-    query(func: %<security_group>s) @cascade {
+    query(func: %<security_group_filter>s) @cascade {
       %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 21)) {
@@ -578,7 +578,7 @@ coreo_aws_rule "ec2-TCP-20" do
       protocols as ip_protocol
       from_ports as from_port
     }
-    query(func: %<security_group>s) @cascade {
+    query(func: %<security_group_filter>s) @cascade {
       %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 20)) {
@@ -614,7 +614,7 @@ coreo_aws_rule "ec2-TCP-8080" do
       protocols as ip_protocol
       from_ports as from_port
     }
-    query(func: %<security_group>s) @cascade {
+    query(func: %<security_group_filter>s) @cascade {
       %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 8080)) {
