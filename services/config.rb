@@ -18,14 +18,8 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   id_map "static.no_op"
   meta_rule_query <<~QUERY
   {
-    v as var(func: %<vpc_filter>s) @cascade {
-      fl relates_to @filter(%<flow_log_filter>s) {
-        fls as flow_log_status
-      }
-    }
-    query(func: has(vpc)) @filter(NOT uid(r)) {
+    query(func: has(vpc)) {
       %<default_predicates>s
-      relates_to @filter(uid(fl) AND eq(val(fls), "ACTIVE"))
     }
   }
   QUERY
