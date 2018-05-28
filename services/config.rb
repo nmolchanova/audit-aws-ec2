@@ -506,7 +506,7 @@ coreo_aws_rule "ec2-TCP-23" do
       protocols as ip_protocol
       from_ports as from_port
     }
-    query(func: %<security_group>s) @cascade {
+    query(func: %<security_group_filter>s) @cascade {
       %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 23)) {
