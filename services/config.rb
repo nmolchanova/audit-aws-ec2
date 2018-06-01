@@ -1113,7 +1113,7 @@ coreo_uni_util_jsrunner "cis43-processor" do
   const ruleMetaJSON = {
       'ec2-vpc-flow-logs': COMPOSITE::coreo_aws_rule.ec2-vpc-flow-logs.inputs
   };
-  const ruleInputsToKeep = ['service', 'category', 'link', 'display_name', 'suggested_action', 'description', 'level', 'meta_cis_id', 'meta_cis_scored', 'meta_cis_level', 'include_violations_in_count'];
+  const ruleInputsToKeep = ['service', 'category', 'link', 'display_name', 'suggested_action', 'description', 'level', 'meta_cis_id', 'meta_cis_scored', 'meta_cis_level', 'include_violations_in_count', 'meta_rule_query'];
   const ruleMeta = {};
 
   Object.keys(ruleMetaJSON).forEach(rule => {
