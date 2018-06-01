@@ -885,8 +885,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
         'suggested_action': 'Remove this security group',
         'level': 'Low',
         'region': violations.region,
-        'test': currentSecGroup,
-        'meta_rule_query': violations,
+        'meta_rule_query': json_input.ec2_report[region][key].violations["ec2-not-used-security-groups"]
     };
     number_violations++;
     const violationKey = 'ec2-not-used-security-groups';
