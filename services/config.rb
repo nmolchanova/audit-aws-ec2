@@ -1066,6 +1066,8 @@ Object.keys(json_input.ec2_report).forEach((region) => {
     if (!violations) return;
 
     const currentSecGroup = violations['result_info'][0].object;
+    console.log("omurbek-query");
+    console.log(currentSecGroup);
     if (activeSecurityGroups.includes(currentSecGroup.group_id)) return;
     const securityGroupIsNotUsedAlert = {
         'display_name': 'EC2 security group is not used',
@@ -1074,7 +1076,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
         'suggested_action': 'Remove this security group',
         'level': 'Low',
         'region': violations.region,
-        'meta_rule_query': violations.meta_rule_query
+        'meta_rule_query': currentSecGroup.meta_rule_query
     };
     number_violations++;
     const violationKey = 'ec2-not-used-security-groups';
