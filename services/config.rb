@@ -670,6 +670,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
         'suggested_action': 'Remove this security group',
         'level': 'Low',
         'region': violations.region,
+        'service': 'ec2',
         'servicebek': 'ec2'
     };
     number_violations++;
