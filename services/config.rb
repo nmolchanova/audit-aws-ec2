@@ -899,7 +899,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
         'meta_rule_node_triggers': "{
                                       'vpc' => [],
                                       'flow_log' => ['flow_log_status']
-                                    })"
+                                    }"
     };
     number_violations++;
     const violationKey = 'ec2-not-used-security-groups';
