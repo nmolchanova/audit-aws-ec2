@@ -665,13 +665,13 @@ Object.keys(json_input.ec2_report).forEach((region) => {
     if (activeSecurityGroups.includes(currentSecGroup.group_id)) return;
     const securityGroupIsNotUsedAlert = {
         'display_name': 'EC2 security group is not used',
-        'description': 'Security group is not used anywhere',
+        'description': 'Security group is not used anywhere HEHEHE',
         'category': 'Audit',
         'suggested_action': 'Remove this security group',
         'level': 'Low',
         'region': violations.region,
         'service': 'ec2',
-        'servicebek': 'ec2'
+        'include_violations_in_count': true
     };
     number_violations++;
     const violationKey = 'ec2-not-used-security-groups';
