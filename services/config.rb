@@ -49,19 +49,34 @@ coreo_aws_rule "ec2-ip-address-whitelisted" do
   id_map "object.security_groups.group_id"
   meta_rule_query <<~QUERY
   {
-    ranges as var(func: %<ip_permission_filter>s) {
-      range as ip_ranges
+    sg as var(func: %<security_group_filter>s) @cascade {
+      ip as relates_to @filter(%<ip_permission_filter>s) {
+        range as relates_to @filter(%<ip_range_filter>s) {
+          start as range_start
+          end as range_end
+          whitelisted as math(start == end)
+        }
+      }
     }
-    query(func: %<security_group_filter>s) @cascade {
+    query(func: uid(sg)) @cascade {
       %<default_predicates>s
       group_id
-      relates_to @filter(uid(ranges) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/32\\\"}]")) {
+      relates_to @filter(uid(ip)) {
         %<default_predicates>s
+        ip_protocol
+        relates_to @filter(uid(range) AND eq(val(whitelisted), true)) {
+          %<default_predicates>s
+          cidr_ip
+        }
       }
     }
   }
   QUERY
-  meta_rule_node_triggers ({'security_group' => [], 'ip_permission' => ['ip_ranges']})
+  meta_rule_node_triggers({
+                            'security_group' => [],
+                            'ip_permission' => [],
+                            'ip_range' => ['cidr_ip']
+                          })
 end
 
 coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
@@ -111,28 +126,37 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
   operators ["=="]
   raise_when ["0.0.0.0/0"]
   id_map "object.security_groups.group_id"
-  # TODO Requires ip_range object
+  # TODO: Resolve for IPv6
   meta_rule_query <<~QUERY
   {
     sg as var(func: %<security_group_filter>s) @cascade {
       ip as relates_to @filter(%<ip_permission_filter>s) {
-        range as ip_ranges
+        range as relates_to @filter(%<ip_range_filter>s) {
+          start as range_start
+          end as range_end
+          open as math(end - start == #{2**32 - 1})
+        }
       }
     }
     query(func: uid(sg)) @cascade {
       %<default_predicates>s
       group_id
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]")) {
+      relates_to @filter(uid(ip)) {
         %<default_predicates>s
-        ip_ranges
+        ip_protocol
+        relates_to @filter(uid(range) AND eq(val(open), true)) {
+          %<default_predicates>s
+          cidr_ip
+        }
       }
     }
   }
   QUERY
-  meta_rule_node_triggers ({
-                             'security_group' => [],
-                             'ip_permission' => ['ip_ranges']
-                           })
+  meta_rule_node_triggers({
+                            'security_group' => [],
+                            'ip_permission' => [],
+                            'ip_range' => ['cidr_ip']
+                          })
 end
 
 coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
@@ -150,32 +174,40 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 1521, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
-  # TODO Requires ip_range object
+  # TODO resolve for IPv6
   meta_rule_query <<~QUERY
   {
     sg as var(func: %<security_group_filter>s) @cascade {
-      ip as relates_to @filter( %<ip_permission_filter>s ) {
-        range as ip_ranges
+      ip as relates_to @filter(%<ip_permission_filter>s) {
         protocol as ip_protocol
         port as from_port
+        range as relates_to @filter(%<ip_range_filter>s) {
+          start as range_start
+          end as range_end
+          open as math(end - start == #{2**32 - 1})
+        }
       }
     }
     query(func: uid(sg)) @cascade {
-      group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),1521 ) ) {
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 1521)) {
         %<default_predicates>s
-        ip_ranges
         ip_protocol
         from_port
+        relates_to @filter(uid(range) AND eq(val(open), true)) {
+          %<default_predicates>s
+          cidr_ip
+        }
       }
     }
   }
   QUERY
-  meta_rule_node_triggers ({
-      'security_group' => [],
-      'ip_permission' => ['ip_ranges', 'ip_protocol', 'from_port']
-  })
+  meta_rule_node_triggers({
+                            'security_group' => [],
+                            'ip_permission' => ['ip_protocol', 'from_port'],
+                            'ip_range' => ['cidr_ip']
+                          })
 end
 
 coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
@@ -193,32 +225,40 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 3306, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
-  # TODO Requires ip_range object
+  # TODO resolve for IPv6
   meta_rule_query <<~QUERY
   {
     sg as var(func: %<security_group_filter>s) @cascade {
-      ip as relates_to @filter( %<ip_permission_filter>s ) {
-        range as ip_ranges
+      ip as relates_to @filter(%<ip_permission_filter>s) {
         protocol as ip_protocol
         port as from_port
+        range as relates_to @filter(%<ip_range_filter>s) {
+          start as range_start
+          end as range_end
+          open as math(end - start == #{2**32 - 1})
+        }
       }
     }
     query(func: uid(sg)) @cascade {
-      group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),3306) ) {
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 3306)) {
         %<default_predicates>s
-        ip_ranges
         ip_protocol
         from_port
+        relates_to @filter(uid(range) AND eq(val(open), true)) {
+          %<default_predicates>s
+          cidr_ip
+        }
       }
     }
   }
   QUERY
-  meta_rule_node_triggers ({
-      'security_group' => [],
-      'ip_permission' => ['ip_ranges', 'ip_protocol', 'from_port']
-  })
+  meta_rule_node_triggers({
+                            'security_group' => [],
+                            'ip_permission' => ['ip_protocol', 'from_port'],
+                            'ip_range' => ['cidr_ip']
+                          })
 end
 
 coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
@@ -236,32 +276,40 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 5432, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
-  # TODO Requires ip_range object
+  # TODO resolve for IPv6
   meta_rule_query <<~QUERY
   {
     sg as var(func: %<security_group_filter>s) @cascade {
-      ip as relates_to @filter( %<ip_permission_filter>s ) {
-        range as ip_ranges
+      ip as relates_to @filter(%<ip_permission_filter>s) {
         protocol as ip_protocol
         port as from_port
+        range as relates_to @filter(%<ip_range_filter>s) {
+          start as range_start
+          end as range_end
+          open as math(end - start == #{2**32 - 1})
+        }
       }
     }
     query(func: uid(sg)) @cascade {
-      group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),5432) ) {
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 5432)) {
         %<default_predicates>s
-        ip_ranges
         ip_protocol
         from_port
+        relates_to @filter(uid(range) AND eq(val(open), true)) {
+          %<default_predicates>s
+          cidr_ip
+        }
       }
     }
   }
   QUERY
-  meta_rule_node_triggers ({
-      'security_group' => [],
-      'ip_permission' => ['ip_ranges', 'ip_protocol', 'from_port']
-  })
+  meta_rule_node_triggers({
+                            'security_group' => [],
+                            'ip_permission' => ['ip_protocol', 'from_port'],
+                            'ip_range' => ['cidr_ip']
+                          })
 end
 
 coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
@@ -279,32 +327,40 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 27017, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
-  # TODO Requires ip_range object
+  # TODO resolve for IPv6
   meta_rule_query <<~QUERY
   {
     sg as var(func: %<security_group_filter>s) @cascade {
-      ip as relates_to @filter( %<ip_permission_filter>s ) {
-        range as ip_ranges
+      ip as relates_to @filter(%<ip_permission_filter>s) {
         protocol as ip_protocol
         port as from_port
+        range as relates_to @filter(%<ip_range_filter>s) {
+          start as range_start
+          end as range_end
+          open as math(end - start == #{2**32 - 1})
+        }
       }
     }
     query(func: uid(sg)) @cascade {
-      group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),27017) ) {
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 27017)) {
         %<default_predicates>s
-        ip_ranges
         ip_protocol
         from_port
+        relates_to @filter(uid(range) AND eq(val(open), true)) {
+          %<default_predicates>s
+          cidr_ip
+        }
       }
     }
   }
   QUERY
-  meta_rule_node_triggers ({
-      'security_group' => [],
-      'ip_permission' => ['ip_ranges', 'ip_protocol', 'from_port']
-  })
+  meta_rule_node_triggers({
+                            'security_group' => [],
+                            'ip_permission' => ['ip_protocol', 'from_port'],
+                            'ip_range' => ['cidr_ip']
+                          })
 end
 
 coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
@@ -322,32 +378,40 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 1433, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
-  # TODO Requires ip_range object
+  # TODO resolve for IPv6
   meta_rule_query <<~QUERY
   {
     sg as var(func: %<security_group_filter>s) @cascade {
-      ip as relates_to @filter( %<ip_permission_filter>s ) {
-        range as ip_ranges
+      ip as relates_to @filter(%<ip_permission_filter>s) {
         protocol as ip_protocol
         port as from_port
+        range as relates_to @filter(%<ip_range_filter>s) {
+          start as range_start
+          end as range_end
+          open as math(end - start == #{2**32 - 1})
+        }
       }
     }
     query(func: uid(sg)) @cascade {
-      group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),1433) ) {
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 1433)) {
         %<default_predicates>s
-        ip_ranges
         ip_protocol
         from_port
+        relates_to @filter(uid(range) AND eq(val(open), true)) {
+          %<default_predicates>s
+          cidr_ip
+        }
       }
     }
   }
   QUERY
-  meta_rule_node_triggers ({
-      'security_group' => [],
-      'ip_permission' => ['ip_ranges', 'ip_protocol', 'from_port']
-  })
+  meta_rule_node_triggers({
+                            'security_group' => [],
+                            'ip_permission' => ['ip_protocol', 'from_port'],
+                            'ip_range' => ['cidr_ip']
+                          })
 end
 
 coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
@@ -368,32 +432,40 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 3389, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
-  # TODO Requires ip_range object
+  # TODO resolve for IPv6
   meta_rule_query <<~QUERY
   {
     sg as var(func: %<security_group_filter>s) @cascade {
-      ip as relates_to @filter( %<ip_permission_filter>s ) {
-        range as ip_ranges
+      ip as relates_to @filter(%<ip_permission_filter>s) {
         protocol as ip_protocol
         port as from_port
+        range as relates_to @filter(%<ip_range_filter>s) {
+          start as range_start
+          end as range_end
+          open as math(end - start == #{2**32 - 1})
+        }
       }
     }
     query(func: uid(sg)) @cascade {
-      group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),3389) ) {
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 3389)) {
         %<default_predicates>s
-        ip_ranges
         ip_protocol
         from_port
+        relates_to @filter(uid(range) AND eq(val(open), true)) {
+          %<default_predicates>s
+          cidr_ip
+        }
       }
     }
   }
   QUERY
-  meta_rule_node_triggers ({
-      'security_group' => [],
-      'ip_permission' => ['ip_ranges', 'ip_protocol', 'from_port']
-  })
+  meta_rule_node_triggers({
+                            'security_group' => [],
+                            'ip_permission' => ['ip_protocol', 'from_port'],
+                            'ip_range' => ['cidr_ip']
+                          })
 end
 
 coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
@@ -414,32 +486,40 @@ coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 22, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
-  # TODO Requires ip_range object
+  # TODO resolve for IPv6
   meta_rule_query <<~QUERY
   {
     sg as var(func: %<security_group_filter>s) @cascade {
-      ip as relates_to @filter( %<ip_permission_filter>s ) {
-        range as ip_ranges
+      ip as relates_to @filter(%<ip_permission_filter>s) {
         protocol as ip_protocol
         port as from_port
+        range as relates_to @filter(%<ip_range_filter>s) {
+          start as range_start
+          end as range_end
+          open as math(end - start == #{2**32 - 1})
+        }
       }
     }
     query(func: uid(sg)) @cascade {
-      group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),22) ) {
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 22)) {
         %<default_predicates>s
-        ip_ranges
         ip_protocol
         from_port
+        relates_to @filter(uid(range) AND eq(val(open), true)) {
+          %<default_predicates>s
+          cidr_ip
+        }
       }
     }
   }
   QUERY
-  meta_rule_node_triggers ({
-      'security_group' => [],
-      'ip_permission' => ['ip_ranges', 'ip_protocol', 'from_port']
-  })
+  meta_rule_node_triggers({
+                            'security_group' => [],
+                            'ip_permission' => ['ip_protocol', 'from_port'],
+                            'ip_range' => ['cidr_ip']
+                          })
 end
 
 coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
@@ -457,32 +537,40 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
   operators ["==","==","=="]
   raise_when ["tcp", 5439, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
-  # TODO Requires ip_range object
+  # TODO resolve for IPv6
   meta_rule_query <<~QUERY
   {
     sg as var(func: %<security_group_filter>s) @cascade {
-      ip as relates_to @filter( %<ip_permission_filter>s ) {
-        range as ip_ranges
+      ip as relates_to @filter(%<ip_permission_filter>s) {
         protocol as ip_protocol
         port as from_port
+        range as relates_to @filter(%<ip_range_filter>s) {
+          start as range_start
+          end as range_end
+          open as math(end - start == #{2**32 - 1})
+        }
       }
     }
     query(func: uid(sg)) @cascade {
-      group_id
       %<default_predicates>s
-      relates_to @filter(uid(ip) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/0\\\"}]") AND eq(val(protocol), "tcp") AND eq(val(port),5439) ) {
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 5439)) {
         %<default_predicates>s
-        ip_ranges
         ip_protocol
         from_port
+        relates_to @filter(uid(range) AND eq(val(open), true)) {
+          %<default_predicates>s
+          cidr_ip
+        }
       }
     }
   }
   QUERY
-  meta_rule_node_triggers ({
-      'security_group' => [],
-      'ip_permission' => ['ip_ranges', 'ip_protocol', 'from_port']
-  })
+  meta_rule_node_triggers({
+                            'security_group' => [],
+                            'ip_permission' => ['ip_protocol', 'from_port'],
+                            'ip_range' => ['cidr_ip']
+                          })
 end
 
 coreo_aws_rule "ec2-TCP-23" do
