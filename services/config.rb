@@ -624,7 +624,7 @@ if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
 }
 
 console.log(ruleMetaJSON);
-console.log(ruleMetaJSON.ec2-not-used-security-groups);
+console.log(ruleMetaJSON['ec2-not-used-security-groups']);
 
 const activeSecurityGroups = [];
 
@@ -675,8 +675,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
         'suggested_action': 'Remove this security group',
         'level': 'Low',
         'region': violations.region,
-        'service': ruleMetaJSON.ec2-not-used-security-groups,
-        'defas': ruleMetaJSON.ec2-not-used-security-groups,
+        'service': ruleMetaJSON['ec2-not-used-security-groups'],
         'include_violations_in_count': true
     };
     number_violations++;
