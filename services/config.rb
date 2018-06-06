@@ -623,6 +623,9 @@ if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
   return;
 }
 
+console.log(ruleMetaJSON);
+console.log(ruleMetaJSON.ec2-not-used-security-groups);
+
 const activeSecurityGroups = [];
 
 // Only keep reports from json_input named *_report where * is not 'main'
