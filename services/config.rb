@@ -678,7 +678,10 @@ Object.keys(json_input.ec2_report).forEach((region) => {
     if (activeSecurityGroups.includes(currentSecGroup.group_id)) return;
     number_violations++;
     const violationKey = 'ec2-not-used-security-groups';
-    ruleMeta[violationKey]['region']=violations.region;
+    const securityGroupIsNotUsedAlert = {
+        'region': violations.region
+    };
+    Object.assign(securityGroupIsNotUsedAlert, ruleMeta[violationKey]);
 
     if (!json_input.main_report[region]) {
         json_input.main_report[region] = {};
@@ -686,7 +689,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
     if (!json_input.main_report[region][key]) {
         json_input.main_report[region][key] = { violations: {}, tags: [] };
     }
-    json_input.main_report[region][key].violations[violationKey] = ruleMeta[violationKey];
+    json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
     json_input.main_report[region][key].tags.concat(tags);
   });
 });
