@@ -1073,7 +1073,22 @@ Object.keys(json_input.ec2_report).forEach((region) => {
         'category': 'Audit',
         'suggested_action': 'Remove this security group',
         'level': 'Low',
-        'region': violations.region
+        'region': violations.region,
+        'meta_rule_query': "{
+                              v as var(func: %<vpc_filter>s) @cascade {
+                                fl relates_to @filter(%<flow_log_filter>s) {
+                                  fls as flow_log_status
+                                }
+                              }
+                              query(func: has(vpc)) @filter(NOT uid(r)) {
+                                %<default_predicates>s
+                                relates_to @filter(uid(fl) AND eq(val(fls),\"ACTIVE\"))
+                              }
+                            }",
+        'meta_rule_node_triggers': "{
+                                      'vpc' => [],
+                                      'flow_log' => ['flow_log_status']
+                                    }"
     };
     number_violations++;
     const violationKey = 'ec2-not-used-security-groups';
@@ -1112,7 +1127,7 @@ coreo_uni_util_jsrunner "cis43-processor" do
   const ruleMetaJSON = {
       'ec2-vpc-flow-logs': COMPOSITE::coreo_aws_rule.ec2-vpc-flow-logs.inputs
   };
-  const ruleInputsToKeep = ['service', 'category', 'link', 'display_name', 'suggested_action', 'description', 'level', 'meta_cis_id', 'meta_cis_scored', 'meta_cis_level', 'include_violations_in_count', 'meta_rule_query'];
+  const ruleInputsToKeep = ['service', 'category', 'link', 'display_name', 'suggested_action', 'description', 'level', 'meta_cis_id', 'meta_cis_scored', 'meta_cis_level', 'include_violations_in_count', 'meta_rule_query', 'meta_rule_node_triggers'];
   const ruleMeta = {};
 
   Object.keys(ruleMetaJSON).forEach(rule => {
@@ -1222,7 +1237,7 @@ coreo_uni_util_jsrunner "ec2-tags-to-notifiers-array" do
 const compositeName = json_input.compositeName;
 const planName = json_input.planName;
 const cloudAccount = json_input.cloudAccountName;
-const cloudObjects = json_input.violations;
+const cloudObjects = json_input.violations; 
 const teamName = json_input.teamName;
 
 const NO_OWNER_EMAIL = "${AUDIT_AWS_EC2_ALERT_RECIPIENT}";
