@@ -325,6 +325,20 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   operators ["==", "!~"]
   raise_when [false, /^default$/]
   id_map "object.security_groups.group_id"
+  meta_rule_query <<~QUERY
+  { 
+    filter as var(func: %<security_group_filter>s) @cascade { 
+      relates_to @filter(NOT has(owner) AND NOT has(vpc)) { } 
+    } 
+    query(func: has(security_group)) @filter(NOT uid(filter)) {
+      %<default_predicates>s 
+      group_id 
+    } 
+  }
+  QUERY
+  meta_rule_node_triggers({
+                              'security_group' => []
+                          })
 end
 
 coreo_aws_rule "ec2-default-security-group-traffic" do
@@ -623,7 +637,7 @@ if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
   return;
 }
 
-  const ruleInputsToKeep = ['service', 'category', 'link', 'display_name', 'suggested_action', 'description', 'level', 'meta_cis_id', 'meta_cis_scored', 'meta_cis_level', 'include_violations_in_count'];
+  const ruleInputsToKeep = ['service', 'category', 'link', 'display_name', 'suggested_action', 'description', 'level', 'meta_cis_id', 'meta_cis_scored', 'meta_cis_level', 'include_violations_in_count', 'meta_rule_query', 'meta_rule_node_triggers'];
   const ruleMeta = {};
 
   Object.keys(ruleMetaJSON).forEach(rule => {
