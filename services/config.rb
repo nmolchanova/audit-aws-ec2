@@ -689,6 +689,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
     };
     number_violations++;
     const violationKey = 'ec2-not-used-security-groups';
+    ruleMeta[violationKey]['region']=violations.region;
     if (!json_input.main_report[region]) {
         json_input.main_report[region] = {};
     }
