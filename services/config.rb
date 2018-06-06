@@ -893,7 +893,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
                               }
                               query(func: has(vpc)) @filter(NOT uid(r)) {
                                 %<default_predicates>s
-                                relates_to @filter(uid(fl) AND eq(val(fls), "ACTIVE"))
+                                relates_to @filter(uid(fl) AND eq(val(fls),\"ACTIVE\"))
                               }
                             }",
         'meta_rule_node_triggers': "{
