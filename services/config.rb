@@ -599,6 +599,8 @@ coreo_aws_rule "ec2-TCP-23" do
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 23)) {
         %<default_predicates>s 
+        from_port
+        protocol
       }
     }
   }
@@ -635,6 +637,8 @@ coreo_aws_rule "ec2-TCP-21" do
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 21)) {
         %<default_predicates>s 
+        from_port
+        protocol
       }
     }
   }
@@ -671,6 +675,8 @@ coreo_aws_rule "ec2-TCP-20" do
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 20)) {
         %<default_predicates>s 
+        from_port
+        protocol
       }
     }
   }
@@ -707,6 +713,8 @@ coreo_aws_rule "ec2-TCP-8080" do
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 8080)) {
         %<default_predicates>s
+        from_port
+        protocol
       }
     }
   }
@@ -744,6 +752,9 @@ coreo_aws_rule "ec2-ports-range" do
       group_id
       relates_to @filter(uid(permissions) AND NOT eq(from_port, val(to_ports))) {
         %<default_predicates>s 
+        from_port
+        to_port
+        protocol
       }
     }
   }
