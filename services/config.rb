@@ -613,7 +613,9 @@ coreo_uni_util_jsrunner "security-groups-ec2" do
       "elasticache_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-elasticache.report
   }'
   function <<-EOH
-
+const ruleMetaJSON = {
+     'ec2-not-used-security-groups': COMPOSITE::coreo_aws_rule.ec2-not-used-security-groups.inputs
+};
 const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
 if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
   coreoExport('number_violations', JSON.stringify(COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations));
@@ -670,7 +672,8 @@ Object.keys(json_input.ec2_report).forEach((region) => {
         'suggested_action': 'Remove this security group',
         'level': 'Low',
         'region': violations.region,
-        'service': 'ec2',
+        'service': ruleMetaJSON.ec2-not-used-security-groups,
+        'defas': ruleMetaJSON.ec2-not-used-security-groups,
         'include_violations_in_count': true
     };
     number_violations++;
