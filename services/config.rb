@@ -1173,7 +1173,7 @@ Object.keys(json_input.ec2_report).forEach((region) => {
         'suggested_action': 'Remove this security group',
         'level': 'Low',
         'region': violations.region,
-        'meta_rule_query': "{
+        'meta_rule_query': `{
                               v as var(func: %<vpc_filter>s) @cascade {
                                 fl relates_to @filter(%<flow_log_filter>s) {
                                   fls as flow_log_status
@@ -1181,13 +1181,13 @@ Object.keys(json_input.ec2_report).forEach((region) => {
                               }
                               query(func: has(vpc)) @filter(NOT uid(r)) {
                                 %<default_predicates>s
-                                relates_to @filter(uid(fl) AND eq(val(fls),\"ACTIVE\"))
+                                relates_to @filter(uid(fl) AND eq(val(fls),"ACTIVE"))
                               }
-                            }",
-        'meta_rule_node_triggers': "{
+                            }`,
+        'meta_rule_node_triggers': `{
                                       'vpc' => [],
                                       'flow_log' => ['flow_log_status']
-                                    }"
+                                    }`
     };
     number_violations++;
     const violationKey = 'ec2-not-used-security-groups';
