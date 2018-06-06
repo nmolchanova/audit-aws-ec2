@@ -623,8 +623,17 @@ if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
   return;
 }
 
-console.log(ruleMetaJSON);
-console.log(ruleMetaJSON['ec2-not-used-security-groups']);
+  const ruleInputsToKeep = ['service', 'category', 'link', 'display_name', 'suggested_action', 'description', 'level', 'meta_cis_id', 'meta_cis_scored', 'meta_cis_level', 'include_violations_in_count'];
+  const ruleMeta = {};
+
+  Object.keys(ruleMetaJSON).forEach(rule => {
+      const flattenedRule = {};
+      ruleMetaJSON[rule].forEach(input => {
+          if (ruleInputsToKeep.includes(input.name))
+              flattenedRule[input.name] = input.value;
+      })
+      ruleMeta[rule] = flattenedRule;
+  })
 
 const activeSecurityGroups = [];
 
@@ -680,14 +689,13 @@ Object.keys(json_input.ec2_report).forEach((region) => {
     };
     number_violations++;
     const violationKey = 'ec2-not-used-security-groups';
-    //console.log("working on key: " + key + " in region: " + region);
     if (!json_input.main_report[region]) {
         json_input.main_report[region] = {};
     }
     if (!json_input.main_report[region][key]) {
         json_input.main_report[region][key] = { violations: {}, tags: [] };
     }
-    json_input.main_report[region][key].violations[violationKey] = securityGroupIsNotUsedAlert;
+    json_input.main_report[region][key].violations[violationKey] = ruleMeta[violationKey];
     json_input.main_report[region][key].tags.concat(tags);
   });
 });
