@@ -49,14 +49,14 @@ coreo_aws_rule "ec2-ip-address-whitelisted" do
   id_map "object.security_groups.group_id"
   meta_rule_query <<~QUERY
   {
-    ranges as var(func: %<ip_permission_filter>) {
+    ranges as var(func: %<ip_permission_filter>s) {
       range as ip_ranges
     }
     query(func: %<security_group_filter>s) @cascade {
-      %<default_predicates>
+      %<default_predicates>s
       group_id
-      relates_to @filter(uid(ranges) AND regexp(val(range), /\/32/)) {
-        %<default_predicates>
+      relates_to @filter(uid(ranges) AND eq(val(range), "[{:cidr_ip=>\\\"0.0.0.0/32\\\"}]")) {
+        %<default_predicates>s
       }
     }
   }
@@ -88,7 +88,7 @@ coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
     }
     unencrypted as var(func: uid(encryption_known)) @filter(eq(val(is_encrypted), "false")) { }
     query(func: uid(encryption_unknown, unencrypted)) {
-      %<default_predicates>
+      %<default_predicates>s
       snapshot_id
     }
   }
@@ -506,11 +506,11 @@ coreo_aws_rule "ec2-TCP-23" do
       protocols as ip_protocol
       from_ports as from_port
     }
-    query(func: %<security_group>s) @cascade {
-      %<default_predicates>
+    query(func: %<security_group_filter>s) @cascade {
+      %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 23)) {
-        %<default_predicates> 
+        %<default_predicates>s 
       }
     }
   }
@@ -542,11 +542,11 @@ coreo_aws_rule "ec2-TCP-21" do
       protocols as ip_protocol
       from_ports as from_port
     }
-    query(func: %<security_group>s) @cascade {
-      %<default_predicates>
+    query(func: %<security_group_filter>s) @cascade {
+      %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 21)) {
-        %<default_predicates> 
+        %<default_predicates>s 
       }
     }
   }
@@ -578,11 +578,11 @@ coreo_aws_rule "ec2-TCP-20" do
       protocols as ip_protocol
       from_ports as from_port
     }
-    query(func: %<security_group>s) @cascade {
-      %<default_predicates>
+    query(func: %<security_group_filter>s) @cascade {
+      %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 20)) {
-        %<default_predicates> 
+        %<default_predicates>s 
       }
     }
   }
@@ -614,11 +614,11 @@ coreo_aws_rule "ec2-TCP-8080" do
       protocols as ip_protocol
       from_ports as from_port
     }
-    query(func: %<security_group>s) @cascade {
-      %<default_predicates>
+    query(func: %<security_group_filter>s) @cascade {
+      %<default_predicates>s
 		  group_id 
       relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 8080)) {
-        %<default_predicates>
+        %<default_predicates>s
       }
     }
   }
@@ -652,10 +652,10 @@ coreo_aws_rule "ec2-ports-range" do
       }
     }
     query(func: uid(groups)) @cascade {
-      %<default_predicates>
+      %<default_predicates>s
       group_id
       relates_to @filter(uid(permissions) AND NOT eq(from_port, val(to_ports))) {
-        %<default_predicates> 
+        %<default_predicates>s 
       }
     }
   }
@@ -686,7 +686,7 @@ coreo_aws_rule "ec2-not-used-security-groups" do
       relates_to @filter(NOT has(owner) AND NOT has(vpc)) { } 
     } 
     query(func: has(security_group)) @filter(NOT uid(filter)) {
-      %<default_predicates> 
+      %<default_predicates>s 
       group_id 
     } 
   }
@@ -751,20 +751,25 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   id_map "static.no_op"
   meta_rule_query <<~QUERY
   {
-    v as var(func: %<vpc_filter>s) @cascade {
-      fl relates_to @filter(%<flow_log_filter>s) {
+    vpcs as var(func: %<vpc_filter>s) @cascade {
+      fl as relates_to @filter(%<flow_log_filter>s) {
         fls as flow_log_status
       }
     }
-    query(func: has(vpc)) @filter(NOT uid(r)) {
-      %<default_predicates>s
+    v as var(func: uid(vpcs)) @cascade {
       relates_to @filter(uid(fl) AND eq(val(fls), "ACTIVE"))
+    }
+    query(func: has(vpc)) @filter(NOT uid(v)) {
+      %<default_predicates>s
+      relates_to @filter(NOT has(flow_log)) {
+        %<default_predicates>s
+      }
     }
   }
   QUERY
   meta_rule_node_triggers({
-                            'vpc' => [],
-                            'flow_log' => ['flow_log_status']
+                              'vpc' => [],
+                              'flow_log' => ['flow_log_status']
                           })
 end
 # end of user-visible content. Remaining resources are system-defined
@@ -1061,6 +1066,8 @@ Object.keys(json_input.ec2_report).forEach((region) => {
     if (!violations) return;
 
     const currentSecGroup = violations['result_info'][0].object;
+    console.log("omurbek-query");
+    console.log(currentSecGroup);
     if (activeSecurityGroups.includes(currentSecGroup.group_id)) return;
     const securityGroupIsNotUsedAlert = {
         'display_name': 'EC2 security group is not used',
@@ -1068,7 +1075,8 @@ Object.keys(json_input.ec2_report).forEach((region) => {
         'category': 'Audit',
         'suggested_action': 'Remove this security group',
         'level': 'Low',
-        'region': violations.region
+        'region': violations.region,
+        'meta_rule_query': currentSecGroup.meta_rule_query
     };
     number_violations++;
     const violationKey = 'ec2-not-used-security-groups';
@@ -1107,7 +1115,7 @@ coreo_uni_util_jsrunner "cis43-processor" do
   const ruleMetaJSON = {
       'ec2-vpc-flow-logs': COMPOSITE::coreo_aws_rule.ec2-vpc-flow-logs.inputs
   };
-  const ruleInputsToKeep = ['service', 'category', 'link', 'display_name', 'suggested_action', 'description', 'level', 'meta_cis_id', 'meta_cis_scored', 'meta_cis_level', 'include_violations_in_count'];
+  const ruleInputsToKeep = ['service', 'category', 'link', 'display_name', 'suggested_action', 'description', 'level', 'meta_cis_id', 'meta_cis_scored', 'meta_cis_level', 'include_violations_in_count', 'meta_rule_query'];
   const ruleMeta = {};
 
   Object.keys(ruleMetaJSON).forEach(rule => {
