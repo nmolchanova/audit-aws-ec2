@@ -159,6 +159,44 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
                           })
 end
 
+coreo_aws_rule "ec2-all-ports-all-protocols" do
+  action :define
+  service :ec2
+  link "http://kb.cloudcoreo.com/mydoc_ec2-unrestricted-traffic.html"
+  display_name "Security group allows traffic on all ports and all protocols"
+  description "IP address(es) are allowed to access resources in a specific security group through any port and any protocol."
+  category "Security"
+  suggested_action "Restrict access to the minimum specific set of ports and protocols necessary."
+  level "Low"
+  meta_nist_171_id "3.4.7, 3.4.8"
+  objectives ["security_groups"]
+  audit_objects ["object.security_groups.ip_permissions.ip_protocol"]
+  operators ["=="]
+  raise_when ["-1"]
+  id_map "object.security_groups.group_id"
+  meta_rule_query <<~QUERY
+  {
+    sg as var(func: %<security_group_filter>s) @cascade {
+      ip as relates_to @filter(%<ip_permission_filter>s) {
+        protocol as ip_protocol
+      }
+    }
+    query(func: uid(sg)) @cascade {
+      %<default_predicates>s
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "-1")) {
+        %<default_predicates>s
+        ip_protocol
+      }
+    }
+  }
+  QUERY
+  meta_rule_node_triggers ({
+                             'security_group' => [],
+                             'ip_permission' => ['ip_protocol']
+                           })
+end
+
 coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
   action :define
   service :ec2
