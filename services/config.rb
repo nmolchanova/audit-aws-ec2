@@ -745,12 +745,14 @@ coreo_aws_rule "ec2-ports-range" do
     groups as var(func: %<security_group_filter>s ) {
       permissions as relates_to @filter(%<ip_permission_filter>s AND has(from_port) AND has(to_port)) {
         to_ports as to_port
+        from_ports as from_port
+        is_range as math(to_ports != from_ports)
       }
     }
     query(func: uid(groups)) @cascade {
       %<default_predicates>s
       group_id
-      relates_to @filter(uid(permissions) AND NOT eq(from_port, val(to_ports))) {
+      relates_to @filter(uid(permissions) AND eq(val(is_range), true)) {
         %<default_predicates>s 
         from_port
         to_port
