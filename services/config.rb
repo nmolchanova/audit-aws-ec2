@@ -1213,17 +1213,23 @@ Object.keys(json_input.ec2_report).forEach((region) => {
         'suggested_action': 'Remove this security group',
         'level': 'Low',
         'region': violations.region,
-        'meta_rule_query': `{
-                              v as var(func: %<vpc_filter>s) @cascade {
-                                fl relates_to @filter(%<flow_log_filter>s) {
-                                  fls as flow_log_status
-                                }
-                              }
-                              query(func: has(vpc)) @filter(NOT uid(r)) {
-                                %<default_predicates>s
-                                relates_to @filter(uid(fl) AND eq(val(fls),"ACTIVE"))
-                              }
-                            }`,
+        'meta_rule_query': `
+                  {
+                    vpcs as var(func: %<vpc_filter>s) @cascade {
+                      fl as relates_to @filter(%<flow_log_filter>s) {
+                        fls as flow_log_status
+                      }
+                    }
+                    v as var(func: uid(vpcs)) @cascade {
+                      relates_to @filter(uid(fl) AND eq(val(fls), "ACTIVE"))
+                    }
+                    query(func: has(vpc)) @filter(NOT uid(v)) {
+                      %<default_predicates>s
+                      relates_to @filter(NOT has(flow_log)) {
+                        %<default_predicates>s
+                      }
+                    }
+                  }`,
         'meta_rule_node_triggers': `{
                                       'vpc' => [],
                                       'flow_log' => ['flow_log_status']
