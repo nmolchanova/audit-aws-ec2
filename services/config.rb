@@ -822,7 +822,7 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   meta_rule_query <<~QUERY
   { 
     filter as var(func: %<security_group_filter>s) @cascade { 
-      relates_to @filter(NOT has(owner) AND NOT has(vpc)) { } 
+      relates_to @filter(NOT (has(owner) OR has(vpc) OR has(ip_permission) OR has(ip_permissions_egress))) { }
     } 
     query(func: has(security_group)) @filter(NOT uid(filter)) {
       %<default_predicates>s 
