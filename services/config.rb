@@ -794,7 +794,8 @@ coreo_aws_rule "ec2-ports-range" do
         %<default_predicates>s 
         from_port
         to_port
-        protocol
+        ip_protocol
+        is_range: val(is_range)
       }
     }
   }
