@@ -627,18 +627,25 @@ coreo_aws_rule "ec2-TCP-23" do
   raise_when ["tcp", 23]
   id_map "object.security_groups.group_id"
   meta_rule_query <<~QUERY
-  { 
-    permissions as var(func: %<ip_permission_filter>s) {
-      protocols as ip_protocol
-      from_ports as from_port
+  {
+    sg as var(func: %<security_group_filter>s) @cascade {
+      ip as relates_to @filter(%<ip_permission_filter>s) {
+        protocol as ip_protocol
+        port as from_port
+        range as relates_to @filter(has(ip_range))
+      }
     }
-    query(func: %<security_group_filter>s) @cascade {
-      %<default_predicates>s
-		  group_id 
-      relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 23)) {
-        %<default_predicates>s 
+    query(func: uid(sg)) @cascade {
+      objectId service location label
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 23)) {
+        objectId service location label
+        ip_protocol
         from_port
-        protocol
+        relates_to @filter(uid(range)) {
+          objectId service location label
+          cidr_ip
+        }
       }
     }
   }
@@ -665,18 +672,25 @@ coreo_aws_rule "ec2-TCP-21" do
   raise_when ["tcp", 21]
   id_map "object.security_groups.group_id"
   meta_rule_query <<~QUERY
-  { 
-    permissions as var(func: %<ip_permission_filter>s) {
-      protocols as ip_protocol
-      from_ports as from_port
+  {
+    sg as var(func: %<security_group_filter>s) @cascade {
+      ip as relates_to @filter(%<ip_permission_filter>s) {
+        protocol as ip_protocol
+        port as from_port
+        range as relates_to @filter(has(ip_range))
+      }
     }
-    query(func: %<security_group_filter>s) @cascade {
-      %<default_predicates>s
-		  group_id 
-      relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 21)) {
-        %<default_predicates>s 
+    query(func: uid(sg)) @cascade {
+      objectId service location label
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 21)) {
+        objectId service location label
+        ip_protocol
         from_port
-        protocol
+        relates_to @filter(uid(range)) {
+          objectId service location label
+          cidr_ip
+        }
       }
     }
   }
@@ -703,18 +717,25 @@ coreo_aws_rule "ec2-TCP-20" do
   raise_when ["tcp", 20]
   id_map "object.security_groups.group_id"
   meta_rule_query <<~QUERY
-  { 
-    permissions as var(func: %<ip_permission_filter>s) {
-      protocols as ip_protocol
-      from_ports as from_port
+  {
+    sg as var(func: %<security_group_filter>s) @cascade {
+      ip as relates_to @filter(%<ip_permission_filter>s) {
+        protocol as ip_protocol
+        port as from_port
+        range as relates_to @filter(has(ip_range))
+      }
     }
-    query(func: %<security_group_filter>s) @cascade {
-      %<default_predicates>s
-		  group_id 
-      relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 20)) {
-        %<default_predicates>s 
+    query(func: uid(sg)) @cascade {
+      objectId service location label
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 20)) {
+        objectId service location label
+        ip_protocol
         from_port
-        protocol
+        relates_to @filter(uid(range)) {
+          objectId service location label
+          cidr_ip
+        }
       }
     }
   }
@@ -741,18 +762,25 @@ coreo_aws_rule "ec2-TCP-8080" do
   raise_when ["tcp", 8080]
   id_map "object.security_groups.group_id"
   meta_rule_query <<~QUERY
-  { 
-    permissions as var(func: %<ip_permission_filter>s) {
-      protocols as ip_protocol
-      from_ports as from_port
+  {
+    sg as var(func: %<security_group_filter>s) @cascade {
+      ip as relates_to @filter(%<ip_permission_filter>s) {
+        protocol as ip_protocol
+        port as from_port
+        range as relates_to @filter(has(ip_range))
+      }
     }
-    query(func: %<security_group_filter>s) @cascade {
-      %<default_predicates>s
-		  group_id 
-      relates_to @filter(uid(permissions) AND eq(val(protocols), "tcp") AND eq(val(from_ports), 8080)) {
-        %<default_predicates>s
+    query(func: uid(sg)) @cascade {
+      objectId service location label
+      group_id
+      relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 8080)) {
+        objectId service location label
+        ip_protocol
         from_port
-        protocol
+        relates_to @filter(uid(range)) {
+          objectId service location label
+          cidr_ip
+        }
       }
     }
   }
