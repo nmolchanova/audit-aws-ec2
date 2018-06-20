@@ -1185,13 +1185,26 @@ coreo_uni_util_jsrunner "security-groups-ec2" do
       "elasticache_report":COMPOSITE::coreo_aws_rule_runner.advise-unused-security-groups-elasticache.report
   }'
   function <<-EOH
-
+const ruleMetaJSON = {
+     'ec2-not-used-security-groups': COMPOSITE::coreo_aws_rule.ec2-not-used-security-groups.inputs
+};
 const ec2_alerts_list = ${AUDIT_AWS_EC2_ALERT_LIST};
 if(!ec2_alerts_list.includes('ec2-not-used-security-groups')) {
   coreoExport('number_violations', JSON.stringify(COMPOSITE::coreo_aws_rule_runner.advise-ec2.number_violations));
   callback(json_input.main_report);
   return;
 }
+const ruleInputsToKeep = ['service', 'category', 'link', 'display_name', 'suggested_action', 'description', 'level', 'meta_cis_id', 'meta_cis_scored', 'meta_cis_level', 'include_violations_in_count'];
+const ruleMeta = {};
+
+Object.keys(ruleMetaJSON).forEach(rule => {
+    const flattenedRule = {};
+    ruleMetaJSON[rule].forEach(input => {
+        if (ruleInputsToKeep.includes(input.name))
+            flattenedRule[input.name] = input.value;
+    })
+    ruleMeta[rule] = flattenedRule;
+})
 
 const activeSecurityGroups = [];
 
@@ -1235,6 +1248,8 @@ Object.keys(json_input.ec2_report).forEach((region) => {
 
     const currentSecGroup = violations['result_info'][0].object;
     if (activeSecurityGroups.includes(currentSecGroup.group_id)) return;
+    number_violations++;
+    const violationKey = 'ec2-not-used-security-groups';
     const securityGroupIsNotUsedAlert = {
         'display_name': 'EC2 security group is not used',
         'description': 'Security group is not used anywhere',
@@ -1264,9 +1279,8 @@ Object.keys(json_input.ec2_report).forEach((region) => {
                                       'flow_log' => ['flow_log_status']
                                     }`
     };
-    number_violations++;
-    const violationKey = 'ec2-not-used-security-groups';
-    //console.log("working on key: " + key + " in region: " + region);
+    Object.assign(securityGroupIsNotUsedAlert, ruleMeta[violationKey]);
+
     if (!json_input.main_report[region]) {
         json_input.main_report[region] = {};
     }
