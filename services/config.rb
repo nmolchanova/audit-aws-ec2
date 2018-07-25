@@ -484,7 +484,7 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
         }
       }
     }
-    query(func: uid(sg)) @cascade {
+    open_sg as query(func: uid(sg)) @cascade {
       <%= default_predicates %>
       group_id
       relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 3389)) {
@@ -492,6 +492,16 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
         ip_protocol
         from_port
         relates_to @filter(uid(range) AND eq(val(open), true)) {
+          <%= default_predicates %>
+          cidr_ip
+        }
+      }
+    }
+    visualize(func: uid(open_sg)){
+      <%= default_predicates %>
+      relates_to {
+        <%= default_predicates %>
+        relates_to @filter(has(ip_range)) {
           <%= default_predicates %>
           cidr_ip
         }
