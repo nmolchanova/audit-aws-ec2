@@ -627,6 +627,7 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
       relates_to {
         <%= default_predicates %>
         relates_to @filter(has(ip_range)) {
+          <%= default_predicates %>
           cidr_ip
         }
       }
