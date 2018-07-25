@@ -726,33 +726,33 @@ coreo_aws_rule "ec2-TCP-20" do
       }
     }
     query(func: uid(sg)) @cascade {
-      object_id cc_cloud cc_location type
+      <%= default_predicates %>
       group_id
       group_name
       description
       relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 20)) {
-        object_id cc_cloud cc_location type
+        <%= default_predicates %>
         ip_protocol
         from_port
         to_port
         relates_to @filter(uid(range)) {
-          object_id cc_cloud cc_location type
+          <%= default_predicates %>
           cidr_ip
         }
       }
     }
     visualize(func: uid(sg)) @cascade {
-      object_id cc_cloud cc_location type
+      <%= default_predicates %>
       group_id
       group_name
       description
       relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 20)) {
-        object_id cc_cloud cc_location type
+        <%= default_predicates %>
         ip_protocol
         from_port
         to_port
         relates_to @filter(uid(range)) {
-          object_id cc_cloud cc_location type
+          <%= default_predicates %>
           cidr_ip
         }
       }
