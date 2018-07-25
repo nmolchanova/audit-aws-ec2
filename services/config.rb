@@ -138,7 +138,7 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
         }
       }
     }
-    query(func: uid(sg)) @cascade {
+    open_groups as query(func: uid(sg)) @cascade {
       <%= default_predicates %>
       group_id
       relates_to @filter(uid(ip)) {
@@ -148,6 +148,27 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
           <%= default_predicates %>
           cidr_ip
         }
+      }
+    }
+    visualize(func: uid(open_groups)) {
+      <%= default_predicates %>
+      group_id
+      relates_to @filter(uid(ip)) {
+        <%= default_predicates %>
+        ip_protocol
+        relates_to @filter(uid(range) AND eq(val(open), true)) {
+          <%= default_predicates %>
+          cidr_ip
+        }
+      }
+      vpc:relates_to @filter(has(vpc)) {
+        <%= default_predicates %>
+      }
+      instances:relates_to @filter(has(instance)) {
+        <%= default_predicates %>
+      }
+      db_instances:relates_to @filter(has(db_instance)) {
+        <%= default_predicates %>
       }
     }
   }
