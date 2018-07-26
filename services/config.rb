@@ -801,14 +801,14 @@ coreo_aws_rule "ec2-TCP-23" do
       }
     }
     open_sg as query(func: uid(sg)) @cascade {
-      objectId service location label
+      <%= default_predicates %>
       group_id
       relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 23)) {
-        objectId service location label
+        <%= default_predicates %>
         ip_protocol
         from_port
         relates_to @filter(uid(range)) {
-          objectId service location label
+          <%= default_predicates %>
           cidr_ip
         }
       }
@@ -861,14 +861,14 @@ coreo_aws_rule "ec2-TCP-21" do
       }
     }
     open_sg as query(func: uid(sg)) @cascade {
-      objectId service location label
+      <%= default_predicates %>
       group_id
       relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 21)) {
-        objectId service location label
+        <%= default_predicates %>
         ip_protocol
         from_port
         relates_to @filter(uid(range)) {
-          objectId service location label
+          <%= default_predicates %>
           cidr_ip
         }
       }
@@ -921,14 +921,14 @@ coreo_aws_rule "ec2-TCP-20" do
       }
     }
     open_sg as query(func: uid(sg)) @cascade {
-      objectId service location label
+      <%= default_predicates %>
       group_id
       relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 20)) {
-        objectId service location label
+        <%= default_predicates %>
         ip_protocol
         from_port
         relates_to @filter(uid(range)) {
-          objectId service location label
+          <%= default_predicates %>
           cidr_ip
         }
       }
@@ -981,14 +981,14 @@ coreo_aws_rule "ec2-TCP-8080" do
       }
     }
     open_sg as query(func: uid(sg)) @cascade {
-      objectId service location label
+      <%= default_predicates %>
       group_id
       relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 8080)) {
-        objectId service location label
+        <%= default_predicates %>
         ip_protocol
         from_port
         relates_to @filter(uid(range)) {
-          objectId service location label
+          <%= default_predicates %>
           cidr_ip
         }
       }
