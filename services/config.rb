@@ -923,10 +923,13 @@ coreo_aws_rule "ec2-TCP-20" do
     open_sg as query(func: uid(sg)) @cascade {
       <%= default_predicates %>
       group_id
+      group_name
+      description
       relates_to @filter(uid(ip) AND eq(val(protocol), "tcp") AND eq(val(port), 20)) {
         <%= default_predicates %>
         ip_protocol
         from_port
+        to_port
         relates_to @filter(uid(range)) {
           <%= default_predicates %>
           cidr_ip
