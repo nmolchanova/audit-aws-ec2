@@ -117,9 +117,15 @@ coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
       is_encrypted as encrypted
     }
     unencrypted as var(func: uid(encryption_known)) @filter(eq(val(is_encrypted), "false")) { }
-    query(func: uid(encryption_unknown, unencrypted)) {
+    not_encrypted as query(func: uid(encryption_unknown, unencrypted)) {
       <%= default_predicates %>
       snapshot_id
+    }
+    visualize(func: uid(not_encrypted)){
+      <%= default_predicates %>
+      relates_to{
+        owner type cc_cloud cc_location
+      }
     }
   }
   QUERY
@@ -1200,7 +1206,10 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
     v as var(func: uid(vpcs)) @cascade {
       relates_to @filter(uid(fl) AND eq(val(fls), "ACTIVE"))
     }
-    query(func: has(vpc)) @filter(NOT uid(v)) {
+    flow_log_enabled as query(func: has(vpc)) @filter(NOT uid(v)) {
+      <%= default_predicates %>
+    }
+    visualize(func: uid(flow_log_enabled)){
       <%= default_predicates %>
       relates_to @filter(NOT has(flow_log)) {
         <%= default_predicates %>
