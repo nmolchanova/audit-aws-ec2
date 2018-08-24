@@ -124,7 +124,8 @@ coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
     visualize(func: uid(not_encrypted)){
       <%= default_predicates %>
       relates_to{
-        owner type cc_cloud cc_location
+        <%= default_predicates %>
+        owner 
       }
     }
   }
