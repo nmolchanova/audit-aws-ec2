@@ -1100,10 +1100,10 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   id_map "object.security_groups.group_id"
   meta_rule_query <<~QUERY
   { 
-    filter as var(func: <%= filter['security_group'] %>) @cascade { 
+    filter as var(func: has(security_group)) @cascade { 
       relates_to @filter(NOT (has(owner) OR has(vpc) OR has(ip_permission) OR has(ip_permissions_egress))) { }
     } 
-    open_sg as query(func: has(security_group)) @filter(NOT uid(filter)) {
+    open_sg as query(func: <%= filter['security_group'] %>) @filter(NOT uid(filter)) {
       <%= default_predicates %> 
       group_id 
     } 
