@@ -1043,7 +1043,7 @@ coreo_aws_rule "ec2-ports-range" do
   id_map "object.security_groups.group_id"
   meta_rule_query <<~QUERY
   {
-    groups as var(func: <%= filter['security_group'] %> ) {
+    groups as var(func: <%= filter['security_group'] %> ) @cascade {
       permissions as relates_to @filter(<%= filter['ip_permission'] %> AND has(from_port) AND has(to_port)) {
         to_ports as to_port
         from_ports as from_port
