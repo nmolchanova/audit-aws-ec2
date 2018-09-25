@@ -1207,7 +1207,7 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
     v as var(func: uid(vpcs)) @cascade {
       relates_to @filter(uid(fl) AND eq(val(fls), "ACTIVE"))
     }
-    flow_log_enabled as query(func: has(vpc)) @filter(NOT uid(v)) {
+    flow_log_enabled as query(func: <%= filter['vpc'] %>) @filter(NOT uid(v)) {
       <%= default_predicates %>
     }
     visualize(func: uid(flow_log_enabled)){
