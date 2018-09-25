@@ -1219,7 +1219,8 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   }
   QUERY
   meta_rule_node_triggers({
-                              'vpc' => []
+                              'vpc' => [],
+                              'flow_log' => ['flow_log_status']
                           })
 end
 # end of user-visible content. Remaining resources are system-defined
