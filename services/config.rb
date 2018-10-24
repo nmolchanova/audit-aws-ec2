@@ -221,7 +221,7 @@ coreo_aws_rule "ec2-all-ports-all-protocols" do
     open_sg as query(func: uid(sg)) @cascade {
       <%= default_predicates %>
       group_id
-      relates_to @filter(uid(ip) AND eq(val(protocol), "-1")) {
+      relates_to @filter(uid(ip) AND eq(val(protocol), "all")) {
         <%= default_predicates %>
         ip_protocol
       }
