@@ -2,7 +2,7 @@
 coreo_aws_rule "ec2-inventory-instances" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_all-inventory.html"
+  link "https://kb.securestate.vmware.com/aws-all-inventory.html"
   include_violations_in_count false
   display_name "EC2 Instance Inventory"
   description "This rule performs an inventory on all EC2 instances in the target AWS account."
@@ -19,7 +19,7 @@ end
 coreo_aws_rule "ec2-inventory-security-groups" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_all-inventory.html"
+  link "https://kb.securestate.vmware.com/aws-all-inventory.html"
   include_violations_in_count false
   display_name "EC2 Security Group Inventory"
   description "This rule performs an inventory on all EC2 Security Groups in the target AWS account."
@@ -36,7 +36,7 @@ end
 coreo_aws_rule "ec2-ip-address-whitelisted" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-ip-address-whitelisted.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-ip-address-whitelisted.html"
   display_name "Security Group contains IP address"
   description "Security Group contains IP address"
   category "Security"
@@ -97,7 +97,7 @@ end
 coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-ebs-snapshots-encrypted.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-ebs-snapshots-encrypted.html"
   display_name "EBS Volume Snapshots are not Encrypted"
   description "EBS Snapshots should be encrypted to protect data at rest"
   category "Security"
@@ -136,7 +136,7 @@ end
 coreo_aws_rule "ec2-unrestricted-traffic" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-unrestricted-traffic.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-unrestricted-traffic.html"
   display_name "Security group allows unrestricted traffic"
   description "All IP addresses are allowed to access resources in a specific security group."
   category "Security"
@@ -199,7 +199,7 @@ end
 coreo_aws_rule "ec2-all-ports-all-protocols" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-unrestricted-traffic.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-unrestricted-traffic.html"
   display_name "Security group allows traffic on all ports and all protocols"
   description "IP address(es) are allowed to access resources in a specific security group through any port and any protocol."
   category "Security"
@@ -252,7 +252,7 @@ end
 coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 1521"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -318,7 +318,7 @@ end
 coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 3306"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -384,7 +384,7 @@ end
 coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 5432"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -450,7 +450,7 @@ end
 coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 27017"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -516,7 +516,7 @@ end
 coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 1433"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -582,7 +582,7 @@ end
 coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 3389"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -651,7 +651,7 @@ end
 coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 22"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -720,7 +720,7 @@ end
 coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 5439"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -786,7 +786,7 @@ end
 coreo_aws_rule "ec2-TCP-23" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 23"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -846,7 +846,7 @@ end
 coreo_aws_rule "ec2-TCP-21" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 21"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -906,7 +906,7 @@ end
 coreo_aws_rule "ec2-TCP-20" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 20"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -969,7 +969,7 @@ end
 coreo_aws_rule "ec2-TCP-8080" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-tcpportopen.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
   display_name "TCP port is open - 8080"
   description "Important TCP port is open and/or open to the world."
   category "Security"
@@ -1029,7 +1029,7 @@ end
 coreo_aws_rule "ec2-ports-range" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-ports-range.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-ports-range.html"
   display_name "Security group contains a port range"
   description "Security group contains a port range rather than individual ports."
   category "Security"
@@ -1132,7 +1132,7 @@ end
 coreo_aws_rule "ec2-default-security-group-traffic" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_ec2-default-security-group-traffic.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-default-security-group-traffic.html"
   display_name "Default Security Group Unrestricted"
   description "The default security group settings should maximally restrict traffic"
   category "Security"
@@ -1183,7 +1183,7 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   action :define
   service :user
   category "Audit"
-  link "http://kb.cloudcoreo.com/mydoc_ec2-vpc-flow-logs.html"
+  link "https://kb.securestate.vmware.com/aws-ec2-vpc-flow-logs.html"
   display_name "Ensure VPC flow logging is enabled in all VPCs (Scored)"
   suggested_action "VPC Flow Logs be enabled for packet 'Rejects' for VPCs."
   description "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs."
@@ -1229,7 +1229,7 @@ coreo_aws_rule "ec2-security-groups-list" do
   action :define
   service :ec2
   include_violations_in_count false
-  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  link "https://kb.securestate.vmware.com/aws-unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
   description "This is an internally defined alert."
   category "Internal"
@@ -1246,7 +1246,7 @@ coreo_aws_rule "ec2-instances-active-security-groups-list" do
   action :define
   service :ec2
   include_violations_in_count false
-  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  link "https://kb.securestate.vmware.com/aws-unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
   description "This is an internally defined alert."
   category "Internal"
@@ -1263,7 +1263,7 @@ coreo_aws_rule "elb-instances-active-security-groups-list" do
   action :define
   service :elasticloadbalancing
   include_violations_in_count false
-  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  link "https://kb.securestate.vmware.com/aws-unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
   description "This is an internally defined alert."
   category "Internal"
@@ -1280,7 +1280,7 @@ coreo_aws_rule "alb-instances-active-security-groups-list" do
   action :define
   service :elasticloadbalancingv2
   include_violations_in_count false
-  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  link "https://kb.securestate.vmware.com/aws-unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
   description "This is an internally defined alert."
   category "Internal"
@@ -1297,7 +1297,7 @@ coreo_aws_rule "rds-instances-active-security-groups-list" do
   action :define
   service :rds
   include_violations_in_count false
-  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  link "https://kb.securestate.vmware.com/aws-unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
   description "This is an internally defined alert."
   category "Internal"
@@ -1314,7 +1314,7 @@ coreo_aws_rule "redshift-instances-active-security-groups-list" do
   action :define
   service :redshift
   include_violations_in_count false
-  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  link "https://kb.securestate.vmware.com/aws-unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
   description "This is an internally defined alert."
   category "Internal"
@@ -1331,7 +1331,7 @@ coreo_aws_rule "elasticache-instances-active-security-groups-list" do
   action :define
   service :elasticache
   include_violations_in_count false
-  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  link "https://kb.securestate.vmware.com/aws-unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
   description "This is an internally defined alert."
   category "Internal"
@@ -1347,7 +1347,7 @@ end
 coreo_aws_rule "vpc-inventory" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_all-inventory.html"
+  link "https://kb.securestate.vmware.com/aws-all-inventory.html"
   include_violations_in_count false
   display_name "Ensure VPC flow logging is enabled in all VPCs (Scored)"
   suggested_action "VPC Flow Logs be enabled for packet 'Rejects' for VPCs."
@@ -1366,7 +1366,7 @@ end
 coreo_aws_rule "flow-logs-inventory" do
   action :define
   service :ec2
-  link "http://kb.cloudcoreo.com/mydoc_all-inventory.html"
+  link "https://kb.securestate.vmware.com/aws-all-inventory.html"
   include_violations_in_count false
   display_name "VPC for checking Flow logs"
   description "VPC flow logs rules"
