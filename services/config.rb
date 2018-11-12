@@ -249,7 +249,7 @@ coreo_aws_rule "ec2-all-ports-all-protocols" do
                            })
 end
 
-coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-1521-0.0.0.0-0" do
   action :define
   service :ec2
   link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
@@ -315,7 +315,7 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
                           })
 end
 
-coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-3306-0.0.0.0-0" do
   action :define
   service :ec2
   link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
@@ -381,7 +381,7 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
                           })
 end
 
-coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-5432-0.0.0.0-0" do
   action :define
   service :ec2
   link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
@@ -447,7 +447,7 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
                           })
 end
 
-coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-27017-0.0.0.0-0" do
   action :define
   service :ec2
   link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
@@ -513,7 +513,7 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
                           })
 end
 
-coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-1433-0.0.0.0-0" do
   action :define
   service :ec2
   link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
@@ -579,7 +579,7 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
                           })
 end
 
-coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-3389-0.0.0.0-0" do
   action :define
   service :ec2
   link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
@@ -648,7 +648,7 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
                           })
 end
 
-coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-22-0.0.0.0-0" do
   action :define
   service :ec2
   link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
@@ -717,7 +717,7 @@ coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
                           })
 end
 
-coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
+coreo_aws_rule "ec2-TCP-5439-0.0.0.0-0" do
   action :define
   service :ec2
   link "https://kb.securestate.vmware.com/aws-ec2-tcpportopen.html"
