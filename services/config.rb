@@ -156,7 +156,7 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
         range as relates_to @filter(<%= filter['ip_range'] %>) {
           start as range_start
           end as range_end
-          open as math(end - start == #{2**32 - 1})
+          open as math(end - start == <%= 2**32 - 1 %>)
         }
       }
     }
@@ -274,7 +274,7 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0-0" do
         range as relates_to @filter(<%= filter['ip_range'] %>) {
           start as range_start
           end as range_end
-          open as math(end - start == #{2**32 - 1})
+          open as math(end - start == <%= 2**32 - 1 %>)
         }
       }
     }
@@ -340,7 +340,7 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0-0" do
         range as relates_to @filter(<%= filter['ip_range'] %>) {
           start as range_start
           end as range_end
-          open as math(end - start == #{2**32 - 1})
+          open as math(end - start == <%= 2**32 - 1 %>)
         }
       }
     }
@@ -406,7 +406,7 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0-0" do
         range as relates_to @filter(<%= filter['ip_range'] %>) {
           start as range_start
           end as range_end
-          open as math(end - start == #{2**32 - 1})
+          open as math(end - start == <%= 2**32 - 1 %>)
         }
       }
     }
@@ -472,7 +472,7 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0-0" do
         range as relates_to @filter(<%= filter['ip_range'] %>) {
           start as range_start
           end as range_end
-          open as math(end - start == #{2**32 - 1})
+          open as math(end - start == <%= 2**32 - 1 %>)
         }
       }
     }
@@ -538,7 +538,7 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0-0" do
         range as relates_to @filter(<%= filter['ip_range'] %>) {
           start as range_start
           end as range_end
-          open as math(end - start == #{2**32 - 1})
+          open as math(end - start == <%= 2**32 - 1 %>)
         }
       }
     }
@@ -607,7 +607,7 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0-0" do
         range as relates_to @filter(<%= filter['ip_range'] %>) {
           start as range_start
           end as range_end
-          open as math(end - start == #{2**32 - 1})
+          open as math(end - start == <%= 2**32 - 1 %>)
         }
       }
     }
@@ -676,7 +676,7 @@ coreo_aws_rule "ec2-TCP-22-0.0.0.0-0" do
         range as relates_to @filter(<%= filter['ip_range'] %>) {
           start as range_start
           end as range_end
-          open as math(end - start == #{2**32 - 1})
+          open as math(end - start == <%= 2**32 - 1 %>)
         }
       }
     }
@@ -742,7 +742,7 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0-0" do
         range as relates_to @filter(<%= filter['ip_range'] %>) {
           start as range_start
           end as range_end
-          open as math(end - start == #{2**32 - 1})
+          open as math(end - start == <%= 2**32 - 1 %>)
         }
       }
     }
