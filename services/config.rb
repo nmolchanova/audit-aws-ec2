@@ -70,7 +70,11 @@ coreo_aws_rule "ec2-ip-address-whitelisted" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -121,7 +125,11 @@ coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
       <%= default_predicates %>
       snapshot_id
     }
-    visualize(func: uid(not_encrypted)){
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY 
+  {
+    visualize(func: uid(<%= violation_uid %>)){
       <%= default_predicates %>
       relates_to{
         <%= default_predicates %>
@@ -172,7 +180,11 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -226,7 +238,11 @@ coreo_aws_rule "ec2-all-ports-all-protocols" do
         ip_protocol
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -291,7 +307,11 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -357,7 +377,11 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0/0" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -423,7 +447,11 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0/0" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -489,7 +517,11 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0/0" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -555,7 +587,11 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0/0" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -624,7 +660,11 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0/0" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -693,7 +733,11 @@ coreo_aws_rule "ec2-TCP-22-0.0.0.0/0" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -759,7 +803,11 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0/0" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -820,7 +868,11 @@ coreo_aws_rule "ec2-TCP-23" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -880,7 +932,11 @@ coreo_aws_rule "ec2-TCP-21" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -943,7 +999,11 @@ coreo_aws_rule "ec2-TCP-20" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -1003,7 +1063,11 @@ coreo_aws_rule "ec2-TCP-8080" do
         }
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -1061,7 +1125,11 @@ coreo_aws_rule "ec2-ports-range" do
         is_range: val(is_range)
       }
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -1106,8 +1174,12 @@ coreo_aws_rule "ec2-not-used-security-groups" do
     open_sg as query(func: has(security_group)) @filter(NOT uid(filter)) {
       <%= default_predicates %> 
       group_id 
-    } 
-    visualize(func: uid(open_sg)) {
+    }
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -1157,7 +1229,11 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
       <%= default_predicates %>
       group_id
     }
-    visualize(func: uid(open_sg)) {
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)) {
       <%= default_predicates %>
       group_name
       description
@@ -1210,7 +1286,11 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
     flow_log_enabled as query(func: has(vpc)) @filter(NOT uid(v)) {
       <%= default_predicates %>
     }
-    visualize(func: uid(flow_log_enabled)){
+  }
+  QUERY
+  meta_rule_visualize <<~QUERY
+  {
+    visualize(func: uid(<%= violation_uid %>)){
       <%= default_predicates %>
       relates_to @filter(NOT has(flow_log)) {
         <%= default_predicates %>
