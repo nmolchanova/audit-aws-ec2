@@ -110,6 +110,11 @@ coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
   operators ["=="]
   raise_when [false]
   id_map "object.snapshots.snapshot_id"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.8.9" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     encryption_unknown as var(func: <%= filter['snapshot'] %>) @filter(NOT has(encrypted)) { }
@@ -149,6 +154,12 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
   raise_when ["0.0.0.0/0"]
   id_map "object.security_groups.group_id"
   # TODO: Resolve for IPv6
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -211,6 +222,12 @@ coreo_aws_rule "ec2-all-ports-all-protocols" do
   operators ["=="]
   raise_when ["-1"]
   id_map "object.security_groups.group_id"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -265,6 +282,13 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0-0" do
   raise_when ["tcp", 1521, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
   # TODO resolve for IPv6
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.13.6" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -331,6 +355,13 @@ coreo_aws_rule "ec2-TCP-3306-0.0.0.0-0" do
   raise_when ["tcp", 3306, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
   # TODO resolve for IPv6
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.13.6" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -397,6 +428,13 @@ coreo_aws_rule "ec2-TCP-5432-0.0.0.0-0" do
   raise_when ["tcp", 5432, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
   # TODO resolve for IPv6
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.13.6" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -463,6 +501,13 @@ coreo_aws_rule "ec2-TCP-27017-0.0.0.0-0" do
   raise_when ["tcp", 27017, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
   # TODO resolve for IPv6
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.13.6" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -529,6 +574,13 @@ coreo_aws_rule "ec2-TCP-1433-0.0.0.0-0" do
   raise_when ["tcp", 1433, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
   # TODO resolve for IPv6
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.13.6" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -598,6 +650,13 @@ coreo_aws_rule "ec2-TCP-3389-0.0.0.0-0" do
   raise_when ["tcp", 3389, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
   # TODO resolve for IPv6
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.1.14" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.13.6" },
+      { "name" => "cis-aws-foundations-benchmark", "version" => "1.2.0", "requirement" => "4.2" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -667,6 +726,13 @@ coreo_aws_rule "ec2-TCP-22-0.0.0.0-0" do
   raise_when ["tcp", 22, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
   # TODO resolve for IPv6
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.1.14" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.13.6" },
+      { "name" => "cis-aws-foundations-benchmark", "version" => "1.2.0", "requirement" => "4.1" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -733,6 +799,13 @@ coreo_aws_rule "ec2-TCP-5439-0.0.0.0-0" do
   raise_when ["tcp", 5439, "0.0.0.0/0"]
   id_map "object.security_groups.group_id"
   # TODO resolve for IPv6
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.13.6" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -798,6 +871,13 @@ coreo_aws_rule "ec2-TCP-23" do
   operators ["==","=="]
   raise_when ["tcp", 23]
   id_map "object.security_groups.group_id"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.5.4" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -858,6 +938,13 @@ coreo_aws_rule "ec2-TCP-21" do
   operators ["==","=="]
   raise_when ["tcp", 21]
   id_map "object.security_groups.group_id"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.5.4" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -918,6 +1005,13 @@ coreo_aws_rule "ec2-TCP-20" do
   operators ["==","=="]
   raise_when ["tcp", 20]
   id_map "object.security_groups.group_id"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.5.4" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -981,6 +1075,11 @@ coreo_aws_rule "ec2-TCP-8080" do
   operators ["==","=="]
   raise_when ["tcp", 8080]
   id_map "object.security_groups.group_id"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.5.4" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: <%= filter['security_group'] %>) @cascade {
@@ -1041,6 +1140,12 @@ coreo_aws_rule "ec2-ports-range" do
   operators ["!="]
   raise_when ["object[:to_port]"]
   id_map "object.security_groups.group_id"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     groups as var(func: <%= filter['security_group'] %> ) @cascade {
@@ -1098,6 +1203,11 @@ coreo_aws_rule "ec2-not-used-security-groups" do
   operators ["==", "!~"]
   raise_when [false, /^default$/]
   id_map "object.security_groups.group_id"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.6" }
+    ]
+  )
   meta_rule_query <<~QUERY
   { 
     filter as var(func: has(security_group)) @cascade { 
@@ -1147,6 +1257,13 @@ coreo_aws_rule "ec2-default-security-group-traffic" do
   operators ["==","!="]
   raise_when ["default", nil]
   id_map "object.security_groups.group_id"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.7" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.4.8" },
+      { "name" => "cis-aws-foundations-benchmark", "version" => "1.2.0", "requirement" => "4.4" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     sg as var(func: has(security_group)) @cascade {
@@ -1197,6 +1314,13 @@ coreo_aws_rule "ec2-vpc-flow-logs" do
   operators [""]
   raise_when [true]
   id_map "static.no_op"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.13.1" },
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.13.6" },
+      { "name" => "cis-aws-foundations-benchmark", "version" => "1.2.0", "requirement" => "4.3" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     vpcs as var(func: <%= filter['vpc'] %>) @cascade {
