@@ -73,7 +73,7 @@ coreo_aws_rule "ec2-ip-address-whitelisted" do
   }
   QUERY
   meta_rule_visualization ({
-    "visualize": <<~QUERY
+    'visualize'=> <<~QUERY
     {
       visualize(func: uid(<%= violation_uid %>)) {
         <%= default_predicates %>
@@ -139,7 +139,8 @@ coreo_aws_rule "ec2-ebs-snapshots-encrypted" do
       }
     }
   }
-  QUERY})
+  QUERY
+})
   meta_rule_node_triggers ({'snapshot' => []})
 end
 
@@ -202,7 +203,8 @@ coreo_aws_rule "ec2-unrestricted-traffic" do
       }
     }
   }
-  QUERY})
+  QUERY
+})
   meta_rule_node_triggers({
                             'security_group' => [],
                             'ip_permission' => [],
