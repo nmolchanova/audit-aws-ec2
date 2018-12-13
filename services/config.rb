@@ -333,7 +333,7 @@ coreo_aws_rule "ec2-TCP-1521-0.0.0.0/0" do
     }
   }
   QUERY
-                          )}
+  })
   meta_rule_node_triggers({
                             'security_group' => [],
                             'ip_permission' => ['ip_protocol', 'from_port'],
